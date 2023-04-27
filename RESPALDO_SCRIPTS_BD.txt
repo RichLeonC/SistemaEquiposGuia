@@ -1,0 +1,66 @@
+
+CREATE TABLE usuario (
+    cedulaUsuario int NOT NULL PRIMARY KEY,
+    nombre VARCHAR(25) NOT NULL,
+    segundonombre VARCHAR(25),
+    apellido1 VARCHAR(25) NOT NULL,
+    apellido2 VARCHAR(25),
+    correo VARCHAR(100) NOT NULL,
+    clave VARCHAR(16) NOT NULL,
+    celular int NOT NULL,
+    rol VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE estudiante (
+    cedulaEstudiante int NOT NULL FOREIGN KEY REFERENCES usuario(cedulaUsuario),
+    carne int NOT NULL PRIMARY KEY,
+    codigoCarrera VARCHAR(20) NOT NULL FOREIGN KEY REFERENCES carrera(codigoCarrera),
+    idSede int NOT NULL FOREIGN KEY REFERENCES carrera(idSede),
+    generacion int
+);
+
+
+CREATE TABLE carrera (
+    codigoCarrera VARCHAR(20) NOT NULL PRIMARY KEY,
+    idSede INT NOT NULL UNIQUE FOREIGN KEY REFERENCES sede(idSede),
+    nombreCarrera VARCHAR(100) NOT NULL
+);
+
+
+CREATE TABLE sede(
+    idSede int NOT NULL PRIMARY KEY,
+    nombreSede VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE personal (
+    cedulaPersonal INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES usuario(cedulaUsuario),
+    idSede INT NOT NULL FOREIGN KEY REFERENCES sede(idSede),
+    telOficina INT,
+    foto VARCHAR(255)
+);
+
+CREATE TABLE listaEstudiates ( 
+    idArchivo int not null PRIMARY KEY,
+    cedulaPersonal INT NOT NULL FOREIGN KEY REFERENCES personal(cedulaPersonal),
+    excel VARCHAR(255),
+    fecha DATE
+);
+
+CREATE TABLE profesor (
+    cedulaProfesor INT NOT NULL UNIQUE FOREIGN KEY REFERENCES personal(cedulaPersonal),
+    codigo VARCHAR(10) NOT NULL PRIMARY KEY,
+    esCordinador INT
+);
+
+
+CREATE TABLE profesor_equipoGuia  (
+    generacion INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES equipoGuia(generacion),
+    idProfesor VARCHAR(10) NOT NULL UNIQUE FOREIGN KEY REFERENCES profesor(codigo)
+)
+
+CREATE TABLE equipoGuia(
+    generacion INT NOT NULL PRIMARY KEY,
+    idCoordinador INT NOT NULL FOREIGN KEY REFERENCES profesor(cedulaProfesor)
+)
+
+
