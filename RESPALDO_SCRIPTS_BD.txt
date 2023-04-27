@@ -19,6 +19,26 @@ CREATE TABLE estudiante (
     generacion int
 );
 
+CREATE TABLE usuario (
+    cedulaUsuario int NOT NULL PRIMARY KEY,
+    nombre VARCHAR(25) NOT NULL,
+    segundonombre VARCHAR(25),
+    apellido1 VARCHAR(25) NOT NULL,
+    apellido2 VARCHAR(25),
+    correo VARCHAR(100) NOT NULL,
+    clave VARCHAR(16) NOT NULL,
+    celular int NOT NULL,
+    rol VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE estudiante (
+    cedulaEstudiante int NOT NULL FOREIGN KEY REFERENCES usuario(cedulaUsuario),
+    carne int NOT NULL PRIMARY KEY,
+    codigoCarrera VARCHAR(20) NOT NULL FOREIGN KEY REFERENCES carrera(codigoCarrera),
+    idSede int NOT NULL FOREIGN KEY REFERENCES carrera(idSede),
+    generacion int
+);
+
 
 CREATE TABLE carrera (
     codigoCarrera VARCHAR(20) NOT NULL PRIMARY KEY,
@@ -39,12 +59,13 @@ CREATE TABLE personal (
     foto VARCHAR(255)
 );
 
-CREATE TABLE listaEstudiates ( 
+CREATE TABLE listaEstudiantes ( 
     idArchivo int not null PRIMARY KEY,
     cedulaPersonal INT NOT NULL FOREIGN KEY REFERENCES personal(cedulaPersonal),
     excel VARCHAR(255),
     fecha DATE
 );
+
 
 CREATE TABLE profesor (
     cedulaProfesor INT NOT NULL UNIQUE FOREIGN KEY REFERENCES personal(cedulaPersonal),
@@ -63,4 +84,53 @@ CREATE TABLE equipoGuia(
     idCoordinador INT NOT NULL FOREIGN KEY REFERENCES profesor(cedulaProfesor)
 )
 
+CREATE TABLE actividad(
+    codigoActividad INT NOT NULL PRIMARY KEY,
+    tipoActividad INT NOT NULL,
+    nombreActividad VARCHAR(100) NOT NULL,
+    semena INT NOT NULL,
+    fechaInicio DATE,
+    horaInicio DATE, 
+    fechaCreacion DATE,
+    modalidad INT NOT NULL,
+    enlaceReunion VARCHAR(255),
+    estadoActiviad INT NOT NULL
+)
 
+CREATE TABLE actividad_responsables(
+    idActividad INT NOT NULL PRIMARY KEY,
+    generacion INT NOT NULL,
+    idProfesor INT NOT NULL 
+)
+
+CREATE TABLE actividad_recordatorio (
+    idActividad INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES actividad(codigoActividad),
+    fecha DATE
+)
+
+
+CREATE TABLE actividad_afiche(
+    idActividad INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES actividad(codigoActividad),
+    idAfiche INT NOT NULL UNIQUE, 
+    descripcion VARCHAR(400), 
+    enlace VARCHAR(50)
+    
+)
+
+CREATE TABLE actividad_evidencia_asistencia(
+    idActividad INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES actividad(codigoActividad),
+    idImagen VARCHAR(100) UNIQUE,
+    imgAsistencia VARCHAR(200)
+)
+
+CREATE TABLE actividad_evidencia_participante(
+    idActividad INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES actividad(codigoActividad),
+    idImagen VARCHAR(100) UNIQUE,
+    imgParticipantes VARCHAR(200)
+)
+
+CREATE TABLE actividad_cancelada(
+    idActividad INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES actividad(codigoActividad),
+    observacion VARCHAR(500),
+    fecha DATE 
+)
