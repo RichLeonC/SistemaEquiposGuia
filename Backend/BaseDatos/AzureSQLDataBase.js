@@ -1,10 +1,10 @@
 const sql = require('mssql');
 
 const config ={
-    user: "globv28@estudiantec.cr",
-    password: process.env.DB_PASSWORD,
-    server: "servidor-proyecto-ds.database.windows.net",
-    database: "DB_PROYECTO_DS",
+    user: 'CloudSAc56d9739',
+    password: 'pekiLinda123',
+    server: 'servidor-proyecto-ds.database.windows.net',
+    database: 'DB_PROYECTO_DS',
     options:{
         encrypt:true,
         enableArithAbort:true
