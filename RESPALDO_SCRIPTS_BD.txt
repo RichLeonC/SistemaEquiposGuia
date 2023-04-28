@@ -1,4 +1,3 @@
-
 CREATE TABLE usuario (
     cedulaUsuario int NOT NULL PRIMARY KEY,
     nombre VARCHAR(25) NOT NULL,
@@ -12,32 +11,13 @@ CREATE TABLE usuario (
 );
 
 CREATE TABLE estudiante (
-    cedulaEstudiante int NOT NULL FOREIGN KEY REFERENCES usuario(cedulaUsuario),
+    cedulaEstudiante int NOT NULL UNIQUE FOREIGN KEY REFERENCES usuario(cedulaUsuario),
     carne int NOT NULL PRIMARY KEY,
     codigoCarrera VARCHAR(20) NOT NULL FOREIGN KEY REFERENCES carrera(codigoCarrera),
     idSede int NOT NULL FOREIGN KEY REFERENCES carrera(idSede),
     generacion int
 );
 
-CREATE TABLE usuario (
-    cedulaUsuario int NOT NULL PRIMARY KEY,
-    nombre VARCHAR(25) NOT NULL,
-    segundonombre VARCHAR(25),
-    apellido1 VARCHAR(25) NOT NULL,
-    apellido2 VARCHAR(25),
-    correo VARCHAR(100) NOT NULL,
-    clave VARCHAR(16) NOT NULL,
-    celular int NOT NULL,
-    rol VARCHAR(20) NOT NULL
-);
-
-CREATE TABLE estudiante (
-    cedulaEstudiante int NOT NULL FOREIGN KEY REFERENCES usuario(cedulaUsuario),
-    carne int NOT NULL PRIMARY KEY,
-    codigoCarrera VARCHAR(20) NOT NULL FOREIGN KEY REFERENCES carrera(codigoCarrera),
-    idSede int NOT NULL FOREIGN KEY REFERENCES carrera(idSede),
-    generacion int
-);
 
 
 CREATE TABLE carrera (
@@ -61,7 +41,7 @@ CREATE TABLE personal (
 
 CREATE TABLE listaEstudiantes ( 
     idArchivo int not null PRIMARY KEY,
-    cedulaPersonal INT NOT NULL FOREIGN KEY REFERENCES personal(cedulaPersonal),
+    cedulaPersonal INT NOT NULL UNIQUE FOREIGN KEY REFERENCES personal(cedulaPersonal),
     excel VARCHAR(255),
     fecha DATE
 );
@@ -99,8 +79,8 @@ CREATE TABLE actividad(
 
 CREATE TABLE actividad_responsables(
     idActividad INT NOT NULL PRIMARY KEY,
-    generacion INT NOT NULL,
-    idProfesor INT NOT NULL 
+    generacion INT NOT NULL UNIQUE FOREIGN KEY REFERENCES profesor_equipoGuia(generacion),
+    idProfesor VARCHAR(10) NOT NULL UNIQUE FOREIGN KEY REFERENCES profesor(codigo)
 )
 
 CREATE TABLE actividad_recordatorio (
@@ -133,4 +113,26 @@ CREATE TABLE actividad_cancelada(
     idActividad INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES actividad(codigoActividad),
     observacion VARCHAR(500),
     fecha DATE 
+)
+
+
+CREATE TABLE actividad_comentarios(
+    idActividad int NOT NULL UNIQUE FOREIGN KEY REFERENCES actividad(codigoActividad),
+    idComentario int NOT NULL PRIMARY KEY,
+    idProfesor VARCHAR(10) NOT NULL UNIQUE FOREIGN KEY REFERENCES profesor(codigo),
+    mensaje VARCHAR(250) NOT NULL,
+    fecha DATE NOT NULL,
+    hora VARCHAR(10)
+
+
+)
+
+
+CREATE TABLE actividad_comentario_respuesta(
+    idActividad int NOT NULL UNIQUE FOREIGN KEY REFERENCES actividad(codigoActividad),
+    idComentarioRespuesta int NOT NULL PRIMARY KEY,
+    idComentario int NOT NULL UNIQUE FOREIGN KEY REFERENCES actividad_comentarios(idComentario),
+    mensaje VARCHAR(250) NOT NULL,
+    fecha DATE NOT NULL,
+    hora VARCHAR(10)
 )
