@@ -1,14 +1,15 @@
 const Usuario = require("../Modelos/Usuario.js");
 
 const dbSql = require("../BaseDatos/AzureSQLDataBase.js");
+const sql = require("mssql");
 
 class UsuarioDAO {
     async crearUsuario(usuario) {
         try {
-            const query = `INSERT INTO Usuario (cedula,nombre,segundoNombre,apellido1,apellido2,correo,clave,celular,rol)
+            const query = `INSERT INTO usuario (cedulaUsuario,nombre,segundoNombre,apellido1,apellido2,correo,clave,celular,rol)
                         VALUES(@cedula,@nombre,@segundoNombre,@apellido1,@apellido2,@correo,@clave,@celular,@rol)`;
 
-            const request = new dbSql.connection.Request();
+            const request = new sql.Request(dbSql.conection);
             request.input('cedula',sql.Int,usuario.cedula);
             request.input('nombre',sql.NVarChar,usuario.nombre);
 
@@ -21,9 +22,9 @@ class UsuarioDAO {
 
     async actualizarRol(usuario){
         try{
-            const query = `UPDATE Usuario set rol = @rol WHERE cedula = @cedula`;
+            const query = `UPDATE usuario set rol = @rol WHERE cedulaUsuario = @cedula`;
 
-            const request = new dbSql.connection.Request();
+            const request = new sql.Request(dbSql.conection);
             request.input('cedula',sql.Int,usuario.cedula);
             request.input('rol',sql.NVarChar, usuario.rol);
             await request.query(query);
@@ -32,23 +33,11 @@ class UsuarioDAO {
         }
     }
 
-    async actualizarClave(usuario,tokenGenerado,tokenInsertado,claveNueva){
-        try{
-            const query = `UPDATE Usuario set clave = @clave WHERE cedula = @cedula`;
-
-            const request = new dbSql.connection.Request();
-            request.input('cedula',sql.Int,usuario.cedula);
-            request.input('clave',sql.NVarChar, usuario.claveNueva);
-            await request.query(query);
-        }catch(error){
-            console.error(error);
-        }
-    }
 
     async getUsuario(cedula){
         try{
-            const query = `SELECT * FROM Usuario WHERE cedula = @cedula`;
-            const request = new dbSql.connection.Request();
+            const query = `SELECT * FROM usuario WHERE cedulaUsuario = @cedula`;
+            const request = new sql.Request(dbSql.conection);
             request.input('cedula',sql.Int,cedula);
             const resultado = await request.query(query);
 
@@ -67,8 +56,9 @@ class UsuarioDAO {
 
     async getAllUsuarios(){
         try{
-            const query = `SELECT * FROM Usuario`;
-            const request = new dbSql.connection.Request();
+            console.log("entre");
+            const query = `SELECT * FROM usuario`;
+            const request = new sql.Request(dbSql.conection);
             const resultado = await request.query(query);
             
             if(resultado.recordset.length>0){
@@ -86,7 +76,7 @@ class UsuarioDAO {
 
     async eliminarUsuario(cedula){
         try{
-            const query = `DELETE FROM users WHERE cedula = @cedula`;
+            const query = `DELETE FROM usuario WHERE cedulaUsuario = @cedula`;
             const request = new dbSql.connection.Request();
             request.input('cedula',sql.Int,cedula);
             await request.query(query);

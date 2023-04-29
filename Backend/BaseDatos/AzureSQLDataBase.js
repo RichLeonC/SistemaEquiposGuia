@@ -18,13 +18,19 @@ class AzureSQLDataBase{
         }
         AzureSQLDataBase.instance = this;
 
-        this.connection = new sql.ConnectionPool(config)
-        .connect()
-        .then(pool=>{
-            console.log("Conexion a Azure SQL DataBase exitosa");
-            return pool;
-        }).catch(error=>console.log("Error al conectar a la base de datos: ",error));
+        this.conection = new sql.ConnectionPool(config);
+        this.conectionToDatabase();
+
     }
+
+    async conectionToDatabase() {
+        try {
+          await this.conection.connect();
+          console.log('Conexión a Azure SQL Database exitosa');
+        } catch (error) {
+          console.error('Error al conectar a la base de datos:', error);
+        }
+      }
 
 }
 
