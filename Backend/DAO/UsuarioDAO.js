@@ -77,7 +77,7 @@ class UsuarioDAO {
     async eliminarUsuario(cedula){
         try{
             const query = `DELETE FROM usuario WHERE cedulaUsuario = @cedula`;
-            const request = new dbSql.connection.Request();
+            const request = new sql.Request(dbSql.conection);
             request.input('cedula',sql.Int,cedula);
             await request.query(query);
         }catch(error){

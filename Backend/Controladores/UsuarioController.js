@@ -5,7 +5,7 @@ const router = express.Router();
 
 const usuarioDAO  = new UsuarioDAO();
 
-//GET -> localhost::4000/usuarios
+//GET -> localhost:4000/usuarios
 router.get('/',async (req,res)=>{
     try{
         const usuarios = await usuarioDAO.getAllUsuarios();
@@ -17,6 +17,7 @@ router.get('/',async (req,res)=>{
 
 });
 
+//GET -> localhost:4000/usuarios/118180009 
 router.get('/:cedula',async (req,res)=>{
     try{
         const {cedula} = req.params;
@@ -28,5 +29,39 @@ router.get('/:cedula',async (req,res)=>{
     }
 
 });
+
+// POST -> localhost:4000/usuarios
+router.post('/', async (req, res) => {
+    try {
+      const { cedula, nombre, segundoNombre, apellido1, apellido2, correo, clave, celular, rol } = req.body;
+  
+      // Validamos los datos de entrada
+      if (!cedula || !nombre || !apellido1 || !apellido2 || !correo || !clave || !celular || !rol) {
+        return res.status(400).send('Todos los campos son obligatorios, excepto segundoNombre.');
+      }
+  
+      const nuevoUsuario = new Usuario(cedula, nombre, segundoNombre, apellido1, apellido2, correo, clave, celular, rol);
+      await usuarioDAO.crearUsuario(nuevoUsuario);
+  
+      res.status(201).send('Usuario creado exitosamente.');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error al crear el usuario.');
+    }
+  });
+
+// DELETE -> localhost:4000/usuarios/:cedula
+router.delete('/:cedula', async (req, res) => {
+    try {
+      const cedula = req.params.cedula;
+  
+      await usuarioDAO.eliminarUsuario(cedula);
+  
+      res.status(200).send('Usuario eliminado exitosamente.');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error al eliminar el usuario.');
+    }
+  });
 
 module.exports = router;
