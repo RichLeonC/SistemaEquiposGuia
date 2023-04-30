@@ -20,18 +20,19 @@ class UsuarioDAO {
         
     }
 
-    async actualizarRol(usuario){
+    async actualizarRol(cedula,rolNuevo){
         try{
-            const query = `UPDATE usuario set rol = @rol WHERE cedulaUsuario = @cedula`;
+            const query = `UPDATE usuario set rol = @rolNuevo WHERE cedulaUsuario = @cedula`;
 
             const request = new sql.Request(dbSql.conection);
-            request.input('cedula',sql.Int,usuario.cedula);
-            request.input('rol',sql.NVarChar, usuario.rol);
+            request.input('cedula',sql.Int,cedula);
+            request.input('rol',sql.NVarChar, rolNuevo);
             await request.query(query);
         }catch(error){
             console.error(error);
         }
     }
+
 
 
     async getUsuario(cedula){

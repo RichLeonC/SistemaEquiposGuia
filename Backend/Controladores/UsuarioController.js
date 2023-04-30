@@ -2,6 +2,7 @@ const Usuario = require('../Modelos/Usuario.js');
 const UsuarioDAO = require("../DAO/UsuarioDAO.js");
 const express = require("express");
 const router = express.Router();
+const Rol = require('../Modelos/Rol.js');
 
 const usuarioDAO  = new UsuarioDAO();
 
@@ -17,7 +18,7 @@ router.get('/',async (req,res)=>{
 
 });
 
-//GET -> localhost:4000/usuarios/118180009 
+//GET -> localhost:4000/usuarios/:cedula (usuarios/118180009, por ejemplo)
 router.get('/:cedula',async (req,res)=>{
     try{
         const {cedula} = req.params;
@@ -49,6 +50,27 @@ router.post('/', async (req, res) => {
       res.status(500).send('Error al crear el usuario.');
     }
   });
+
+
+//PUT ->localhost:4000/usuarios/:cedula/:rolNuevo (usuarios/118180009/Profesor, por ejemplo)
+router.put('/:cedula/:rolNuevo',async(req,res)=>{
+    try{
+        const {cedula,rolNuevo} = req.params;
+        if(!cedula||!rolNuevo){
+            return res.status(400).send('Campos invalidos');
+        }
+        else if(rolNuevo!=Rol.PROFESOR_GUIA || rolNuevo!=Rol.PROFESOR_GUIA_COORDINADOR || rolNuevo!=Rol.ASISTENTE||
+            rolNuevo!=Rol.ESTUDIANTE){
+                return res.status(400).send('Rol invalido');
+            }
+
+        await UsuarioDAO.actualizarRol(cedula,rolNuevo);
+
+        res.status(200).send('Rol actualizado exitosamente');
+    }catch(error){
+        res.status(500).send('Error al actualizar el rol del usuario');
+    }
+});
 
 // DELETE -> localhost:4000/usuarios/:cedula
 router.delete('/:cedula', async (req, res) => {
