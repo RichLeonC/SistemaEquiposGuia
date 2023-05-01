@@ -93,6 +93,7 @@ router.post('/login', async (req, res) => {
 
   return res.header('authorization', token).json({
     correo: usuario.correo,
+    rol:usuario.rol,
     token
   })
 

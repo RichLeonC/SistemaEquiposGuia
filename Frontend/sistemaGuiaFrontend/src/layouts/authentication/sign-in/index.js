@@ -22,8 +22,9 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import routesProfesor from "routesProfesor";
 
-function Basic() {
+function Basic({ onLogin }) {
   const [rememberMe, setRememberMe] = useState(false);
 
   const apiURI = "http://localhost:4000/usuarios/login";
@@ -45,29 +46,22 @@ function Basic() {
   const iniciarSesion = async () => {
     try {
       const response = await axios.post(apiURI, { correo: form.correo, clave: form.clave });
-      const {correo,token,rol} = response.data;
+      const { correo, token, rol } = response.data;
 
-      localStorage.setItem('token',token);
-      localStorage.setItem('correo',correo);
-      localStorage.setItem('rol',rol);
+      localStorage.setItem('token', token);
+      localStorage.setItem('correo', correo);
+      localStorage.setItem('rol', rol);
 
-      if(rol === "PROFESOR_GUIA"){
-        window.location.replace("");
-      }
-      else if(rol === "PROFESOR_GUIA_COORDINADOR"){
-        window.location.replace("");
-        
-      }
-      else if(rol === "ASISTENTE"){
-        window.location.replace("");
+      console.log("Incio Correcto");
+      console.log(correo);
+      console.log(token);
+      console.log(rol);
+      onLogin(rol);
+      console.log("pase");
 
-      }
-      else if(rol === "ESTUDIANTE"){
-        window.location.replace("");
-        
-      }
     } catch (error) {
       console.log("Error al iniciar sesion");
+      console.error(error);
     }
   };
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
@@ -99,7 +93,7 @@ function Basic() {
               <MDInput name="clave" type="password" label="Contraseña" fullWidth onChange={handleChange} />
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton color="info" fullWidth>
+              <MDButton color="info" fullWidth onClick={() => iniciarSesion()}>
                 Aceptar
               </MDButton>
             </MDBox>

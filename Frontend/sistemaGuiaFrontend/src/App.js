@@ -34,8 +34,9 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "co
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 
+import SignIn from "layouts/authentication/sign-in";
 
-export default function App() {
+export default function App(props) {
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
@@ -51,7 +52,19 @@ export default function App() {
 
   const { pathname } = useLocation();
 
-  const rol = "Profesor";
+  const [rol,setRol] = useState(null);
+
+  const handleLogin=(rol)=>{
+    setRol(rol);
+  }
+
+  const handleLogout=()=>{
+    localStorage.removeItem("token");
+    localStorage.removeItem("correo");
+    localStorage.removeItem("rol");
+
+    setRol(null);
+  }
 
   // Open sidenav when mouse enter on mini sidenav
   const handleOnMouseEnter = () => {
@@ -83,8 +96,9 @@ export default function App() {
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
-  const getRoutes = (allRoutes) =>
-    allRoutes.map((route) => {
+  const getRoutes = (allRoutes) =>{
+    if(!allRoutes) return null;
+    return allRoutes.map((route) => {
       if (route.collapse) {
         return getRoutes(route.collapse);
       }
@@ -95,6 +109,7 @@ export default function App() {
 
       return null;
     });
+  }
 
   const configsButton = (
     <MDBox
@@ -120,18 +135,30 @@ export default function App() {
     </MDBox>
   );
 
+    const mensajeRol = {
+      "PROFESOR_GUIA":"PANEL PROFESORES GUIA",
+      "ASISTENTE":"PANEL ASISTENTES"
+    }
+    const rutasRol={
+      "PROFESOR_GUIA":routesProfesor,
+      "ASISTENTE":routesAsistente
+    }
+
   return (
     <ThemeProvider theme={whiteSidenav ? themeDark : theme}>
     <CssBaseline />
+    {rol ? (
+    <>
     {layout === "dashboard" && (
       <>
         <Sidenav
           color={sidenavColor}
           brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-          brandName={rol === "Profesor"?"PANEL PROFESORES":"PANEL ASISTENTES"}
-          routes={rol ==="Profesor"?routesProfesor:routesAsistente}
+          brandName={mensajeRol[rol]}
+          routes={(rutasRol[rol])}
           onMouseEnter={handleOnMouseEnter}
           onMouseLeave={handleOnMouseLeave}
+          onLogout={handleLogout}
         />
         <Configurator />
         {configsButton}
@@ -139,9 +166,14 @@ export default function App() {
     )}
     {layout === "vr" && <Configurator />}
     <Routes>
-      {getRoutes(rol ==="Profesor"?routesProfesor:routesAsistente)}
-      <Route path="*" element={<Navigate to="/dashboard" />} />
+      
+     {getRoutes(rutasRol[rol]) }
+      <Route path="/" element={<Navigate to="/dashboard" />} /> 
     </Routes>
+    </>
+    ):(
+      <SignIn onLogin={handleLogin}></SignIn>
+    )}
   </ThemeProvider>
   );
 }
