@@ -5,10 +5,12 @@ CREATE TABLE usuario (
     apellido1 VARCHAR(25) NOT NULL,
     apellido2 VARCHAR(25),
     correo VARCHAR(100) NOT NULL,
-    clave VARCHAR(16) NOT NULL,
+    clave VARCHAR(100) NOT NULL,
     celular int NOT NULL,
     rol VARCHAR(20) NOT NULL
 );
+
+ALTER TABLE usuario ALTER COLUMN clave VARCHAR(100) NOT NULL
 
 CREATE TABLE estudiante (
     cedulaEstudiante int NOT NULL UNIQUE FOREIGN KEY REFERENCES usuario(cedulaUsuario),

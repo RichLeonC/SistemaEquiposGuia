@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
-
+require('dotenv').config(); //El dotenv es para poder utilizar el archivo .env (variables de entorno)
 const usuariosRoute = require("./Controladores/UsuarioController");
 
 //Settings

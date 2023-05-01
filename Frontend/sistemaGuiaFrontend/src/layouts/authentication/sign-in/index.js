@@ -1,19 +1,6 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 
 import { useState } from "react";
+import axios from "axios";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -39,6 +26,50 @@ import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
 
+  const apiURI = "http://localhost:4000/usuarios/login";
+
+  const [form, setForm] = useState({
+    correo: '',
+    clave: ''
+  });
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: value
+    })
+    console.log(form);
+  }
+
+  const iniciarSesion = async () => {
+    try {
+      const response = await axios.post(apiURI, { correo: form.correo, clave: form.clave });
+      const {correo,token,rol} = response.data;
+
+      localStorage.setItem('token',token);
+      localStorage.setItem('correo',correo);
+      localStorage.setItem('rol',rol);
+
+      if(rol === "PROFESOR_GUIA"){
+        window.location.replace("");
+      }
+      else if(rol === "PROFESOR_GUIA_COORDINADOR"){
+        window.location.replace("");
+        
+      }
+      else if(rol === "ASISTENTE"){
+        window.location.replace("");
+
+      }
+      else if(rol === "ESTUDIANTE"){
+        window.location.replace("");
+        
+      }
+    } catch (error) {
+      console.log("Error al iniciar sesion");
+    }
+  };
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
   return (
@@ -54,18 +85,18 @@ function Basic() {
           mb={1}
           textAlign="center"
         >
-          <br/>
-          <img src="https://tecdigital.tec.ac.cr/images/logoTECBLANCO.png"width={"250rem"}></img>
+          <br />
+          <img src="https://tecdigital.tec.ac.cr/images/logoTECBLANCO.png" width={"250rem"}></img>
           <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
           </Grid>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="email" label="Correo" fullWidth />
+              <MDInput name="correo" type="email" label="Correo" fullWidth onChange={handleChange} />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Contraseña" fullWidth />
+              <MDInput name="clave" type="password" label="Contraseña" fullWidth onChange={handleChange} />
             </MDBox>
             <MDBox mt={4} mb={1}>
               <MDButton color="info" fullWidth>
