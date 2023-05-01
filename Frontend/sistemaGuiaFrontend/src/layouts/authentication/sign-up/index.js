@@ -28,16 +28,16 @@ import MDButton from "components/MDButton";
 
 // Authentication layout components
 import CoverLayout from "layouts/authentication/components/CoverLayout";
+import BasicLayout from "../components/BasicLayout";
 
 // Images
-import bgImage from "assets/images/bg-sign-up-cover.jpeg";
+import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 
 function Cover() {
   return (
-    <CoverLayout image={bgImage}>
+    <BasicLayout image={bgImage}>
       <Card>
         <MDBox
-          variant="gradient"
           bgColor="info"
           borderRadius="lg"
           coloredShadow="success"
@@ -48,7 +48,7 @@ function Cover() {
           textAlign="center"
         >
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-            Join us today
+            Recuperar Contraseña
           </MDTypography>
           <MDTypography display="block" variant="button" color="white" my={1}>
             Enter your email and password to register
@@ -87,7 +87,7 @@ function Cover() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
+              <MDButton  color="info" fullWidth>
                 sign in
               </MDButton>
             </MDBox>
@@ -109,7 +109,7 @@ function Cover() {
           </MDBox>
         </MDBox>
       </Card>
-    </CoverLayout>
+    </BasicLayout>
   );
 }
 

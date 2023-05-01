@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 
 // react-router components
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation,useNavigate } from "react-router-dom";
 
 // @mui material components
 import { ThemeProvider } from "@mui/material/styles";
@@ -36,6 +36,7 @@ import brandDark from "assets/images/logo-ct-dark.png";
 
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
+import ResetP from "layouts/authentication/reset-password/cover";
 
 export default function App(props) {
   const [controller, dispatch] = useMaterialUIController();
@@ -55,6 +56,8 @@ export default function App(props) {
 
   const [rol,setRol] = useState(null);
 
+  const navigate = useNavigate();
+
   const handleLogin=(rol)=>{
     setRol(rol);
   }
@@ -65,6 +68,7 @@ export default function App(props) {
     localStorage.removeItem("rol");
 
     setRol(null);
+    navigate("/");
   }
 
   // Open sidenav when mouse enter on mini sidenav
@@ -177,8 +181,10 @@ export default function App(props) {
       <>
       
       <Routes>
-        <Route path="/inicioSesion" element={<SignIn onLogin={handleLogin}></SignIn>}></Route>
+        <Route path="/" element={<SignIn onLogin={handleLogin}></SignIn>}></Route>
         <Route path="/recuperar" element={<SignUp></SignUp>} />
+        <Route path="/verificacion" element={<ResetP></ResetP>} />
+        
       </Routes>
       </>
     )}

@@ -1,17 +1,4 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -27,13 +14,20 @@ import CoverLayout from "layouts/authentication/components/CoverLayout";
 
 // Images
 import bgImage from "assets/images/bg-reset-cover.jpeg";
+import { useState } from "react";
+import { Modal} from "@mui/material";
 
 function Cover() {
+  const [modalOtp, setModalOtp] = useState(false);
+
+  const abrirCerrarModalOpt = () => {
+    setModalOtp(!modalOtp);
+  }
+
   return (
     <CoverLayout coverHeight="50vh" image={bgImage}>
       <Card>
         <MDBox
-          variant="gradient"
           bgColor="info"
           borderRadius="lg"
           coloredShadow="success"
@@ -44,25 +38,34 @@ function Cover() {
           textAlign="center"
         >
           <MDTypography variant="h3" fontWeight="medium" color="white" mt={1}>
-            Reset Password
+            Restablecer Contraseña
           </MDTypography>
           <MDTypography display="block" variant="button" color="white" my={1}>
-            You will receive an e-mail in maximum 60 seconds
+            Recibirás un código a tu correo eléctronico
           </MDTypography>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={4}>
-              <MDInput type="email" label="Email" variant="standard" fullWidth />
+              <MDInput name="correo" type="email" label="Correo" variant="standard" fullWidth />
             </MDBox>
             <MDBox mt={6} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
-                reset
+              <MDButton color="info" fullWidth>
+                Enviar
               </MDButton>
             </MDBox>
           </MDBox>
         </MDBox>
       </Card>
+
+      {/* <Modal isOpen={modalOtp}>
+        <ModalBody>
+          Digita el código recibido
+        </ModalBody>
+        <ModalFooter>
+          <MDButton color="info" size="sm" >Sí</MDButton>
+        </ModalFooter>
+      </Modal> */}
     </CoverLayout>
   );
 }
