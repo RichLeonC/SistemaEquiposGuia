@@ -35,6 +35,7 @@ import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 
 import SignIn from "layouts/authentication/sign-in";
+import SignUp from "layouts/authentication/sign-up";
 
 export default function App(props) {
   const [controller, dispatch] = useMaterialUIController();
@@ -168,11 +169,18 @@ export default function App(props) {
     <Routes>
       
      {getRoutes(rutasRol[rol]) }
-      <Route path="/" element={<Navigate to="/dashboard" />} /> 
+      <Route path="/" element={<Navigate to="/dashboard" />} />
+      
     </Routes>
     </>
     ):(
-      <SignIn onLogin={handleLogin}></SignIn>
+      <>
+      
+      <Routes>
+        <Route path="/inicioSesion" element={<SignIn onLogin={handleLogin}></SignIn>}></Route>
+        <Route path="/recuperar" element={<SignUp></SignUp>} />
+      </Routes>
+      </>
     )}
   </ThemeProvider>
   );

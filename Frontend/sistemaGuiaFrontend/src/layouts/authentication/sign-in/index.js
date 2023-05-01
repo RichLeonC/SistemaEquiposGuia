@@ -2,6 +2,8 @@
 import { useState } from "react";
 import axios from "axios";
 
+import SignUp from "../sign-up/index";
+
 // react-router-dom components
 import { Link } from "react-router-dom";
 
@@ -13,6 +15,7 @@ import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
+import MDAlert from "components/MDAlert";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
@@ -90,7 +93,7 @@ function Basic({ onLogin }) {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput name="correo" type="email" label="Correo" fullWidth onChange={handleChange} />
+              <MDInput name="correo" type="email" label="Correo"fullWidth onChange={handleChange} />
             </MDBox>
             <MDBox mb={2}>
               <MDInput name="clave" type="password" label="Contraseña" fullWidth onChange={handleChange} />
@@ -102,10 +105,10 @@ function Basic({ onLogin }) {
             </MDBox>
             <MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
-                Olvidaste la contraseña?{" "}
+                ¿Olvidaste la contraseña?{" "}
                 <MDTypography
                   component={Link}
-                  to="/authentication/sign-up"
+                  to="/recuperar"
                   variant="button"
                   color="info"
                   fontWeight="medium"
