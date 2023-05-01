@@ -46,20 +46,23 @@ function Basic({ onLogin }) {
   const iniciarSesion = async () => {
     try {
       const response = await axios.post(apiURI, { correo: form.correo, clave: form.clave });
-      const { correo, token, rol } = response.data;
+      const { correo,cedula,nombre, token, rol } = response.data;
 
       localStorage.setItem('token', token);
       localStorage.setItem('correo', correo);
+      localStorage.setItem('nombre', nombre);
+      localStorage.setItem('cedula', cedula);
       localStorage.setItem('rol', rol);
 
-      console.log("Incio Correcto");
       console.log(correo);
       console.log(token);
       console.log(rol);
+      alert(`Bievenido ${nombre}`);
       onLogin(rol);
-      console.log("pase");
+      
 
     } catch (error) {
+      alert("Correo o contraseña incorrectas");
       console.log("Error al iniciar sesion");
       console.error(error);
     }
