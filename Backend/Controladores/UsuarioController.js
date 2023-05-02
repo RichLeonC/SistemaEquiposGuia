@@ -5,6 +5,7 @@ const router = express.Router();
 const Rol = require('../Modelos/Rol.js');
 const bcrypt = require('bcrypt'); //Hash para encriptar la clave del usuario.
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 const usuarioDAO = new UsuarioDAO();
 
@@ -40,10 +41,12 @@ router.get('/correo/:correo', async (req, res) => {
   try {
     const { correo } = req.params;
     const usuario = await usuarioDAO.getUsuario_Correo(correo);
-    res.status(200).json(usuario);
+
+    return res.status(200).json(usuario);
+   
   } catch (error) {
     console.error(error);
-    res.status(500).send("Erro al obtener al usuario");
+    return res.status(500).send("Erro al obtener al usuario");
   }
 
 });
@@ -120,7 +123,13 @@ function validarToken(req, res){
 
 
 
+//POST ->localhost:4000/usuarios/enviarCorreo
 
+router.post('/enviarCorreo',async(req,res)=>{
+  const {correo,OTP} = req.body;
+  enviarCorreo(correo,OTP).then(response=>res.status(200).send("Correo Enviado"))
+  .catch((error)=>res.status(500).send("Error al enviar el correo"));
+})
 
 //PUT ->localhost:4000/usuarios/:cedula/:rolNuevo (usuarios/118180009/Profesor, por ejemplo)
 router.put('/:cedula/:rolNuevo', async (req, res) => {
@@ -157,5 +166,33 @@ router.delete('/:cedula', async (req, res) => {
     res.status(500).send('Error al eliminar el usuario.');
   }
 });
+
+
+async function enviarCorreo({correo,OTP}){
+  const transporter = nodemailer.createTransport({
+    service:'gmail',
+    auth:{
+      user:"-",
+      pass:"-"
+    },
+
+  });
+
+  const mailOptions = {
+    from:"r29leonc@gmail.com",
+    to:correo,
+    subject:"Código OTP para recuperar contraseña",
+    text:`El OTP es: ${OTP}`
+  };
+
+  try{
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Correo Enviado")
+    
+  }catch(error){
+    console.error("Erro al enviar el correo: ",error);
+  }
+e  
+}
 
 module.exports = router;
