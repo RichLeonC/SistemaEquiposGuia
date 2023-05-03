@@ -18,6 +18,7 @@ import { useState } from "react";
 import { Modal, Box, Typography } from "@mui/material";
 import axios from "axios";
 import "../cover/index.css"
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: 'absolute',
@@ -37,6 +38,8 @@ function Cover() {
   const [correo, setCorreo] = useState([]);
   const [OTPinput, setOTPinput] = useState('');
   const [OTPvalid, setOTPvalid] = useState(true);
+  const [OTPgenerado, setOTPgenerado] = useState('');
+  const navigate = useNavigate();
 
   const apiURI = "http://localhost:4000/usuarios/correo";
   const apiSendOTP = "http://localhost:4000/usuarios/enviarCorreo";
@@ -56,6 +59,7 @@ function Cover() {
     setModalOtp(!modalOtp);
   }
 
+  //VERIFICA SI EL CORREO EXISTE O ES CORRECTO, SI LO ES, MANDA EL OPT AL CORREO Y ABRE LA VENTANA PARA DIGITAR EL OTP
   const comprobarCorreo = async () => {
 
     if (!correo.includes("@estudiantec.cr") && !correo.includes("@itc.cr")) {
@@ -67,6 +71,8 @@ function Cover() {
       if (usuario) {
         abrirCerrarModalOpt();
         console.log("Correo existe");
+        const otp1 = await generarOTP();
+       setOTPgenerado(otp1);
         return true;
       }
       else return alert("No existe ningún usuario con ese correo");
@@ -80,8 +86,10 @@ function Cover() {
     try {
       const otp = Math.floor(1000+Math.random()*9000);
       const timer = Date.now();
-      await axios.post(apiSendOTP,correo,otp);
-      return {otp,timer}
+      console.log("GenerarOTP invocado -> Correo: "+correo+" --- otp: "+otp);
+      await axios.post(apiSendOTP,{correo:correo,OTP:otp});
+      //return {otp,timer}
+      return otp;
     } catch (error) {
       console.error(error);
     }
@@ -94,16 +102,22 @@ function Cover() {
   }
 
   const verificarOTP=()=>{
-    if(OTPinput === otp){
+    
+    console.log("OTPinput: "+OTPinput+" === otp: "+OTPgenerado);
+    if(OTPinput == OTPgenerado){
       alert("El codigo OTP es correcto");
-      return true;
+      abrirCerrarModalOpt();
+      setOTPgenerado('');
+      localStorage.setItem("correo",correo);
+      return navigate("/recuperar");
     }
     else{
+      alert("OTP Incorrecto");
       return false;
     }
   }
-  setTimeout(invalidarOTP,90*1000);
-  const {otp,timer} = generarOTP();
+ // setTimeout(invalidarOTP,90*1000);
+  
 
 
 
@@ -160,7 +174,7 @@ function Cover() {
             </div>
       
           <br></br>
-          <MDButton color="info" onClick={() => abrirCerrarModalOpt()}>Verificar</MDButton>
+          <MDButton color="info" onClick={() => verificarOTP()}>Verificar</MDButton>
         </Box>
       </Modal>
     </CoverLayout>

@@ -43,7 +43,7 @@ router.get('/correo/:correo', async (req, res) => {
     const usuario = await usuarioDAO.getUsuario_Correo(correo);
 
     return res.status(200).json(usuario);
-   
+
   } catch (error) {
     console.error(error);
     return res.status(500).send("Erro al obtener al usuario");
@@ -98,7 +98,7 @@ router.post('/login', async (req, res) => {
     correo: usuario.correo,
     cedula: usuario.cedula,
     nombre: usuario.nombre,
-    rol:usuario.rol,
+    rol: usuario.rol,
     token
   })
 
@@ -106,7 +106,7 @@ router.post('/login', async (req, res) => {
 });
 
 //MIDDLEWARE
-function validarToken(req, res){
+function validarToken(req, res) {
   const token = req.header['authorization'];
   if (!token) {
     return res.send("Acceso denegado");
@@ -116,7 +116,7 @@ function validarToken(req, res){
       return res.status(403).send("Acceso denegado, token incorrecto");
     }
     else {
-      res.status(200).json({msg:"Acceso aceptado",usuario:usuario});
+      res.status(200).json({ msg: "Acceso aceptado", usuario: usuario });
     }
   })
 }
@@ -125,10 +125,17 @@ function validarToken(req, res){
 
 //POST ->localhost:4000/usuarios/enviarCorreo
 
-router.post('/enviarCorreo',async(req,res)=>{
-  const {correo,OTP} = req.body;
-  enviarCorreo(correo,OTP).then(response=>res.status(200).send("Correo Enviado"))
-  .catch((error)=>res.status(500).send("Error al enviar el correo"));
+router.post('/enviarCorreo', async (req, res) => {
+  try {
+    const { correo, OTP } = req.body;
+    enviarCorreo(correo,OTP);
+    return res.status(200).send("Correo Enviado");
+
+  } catch (error) {
+    return res.status(500).send("Error al enviar el correo");
+  }
+
+
 })
 
 //PUT ->localhost:4000/usuarios/:cedula/:rolNuevo (usuarios/118180009/Profesor, por ejemplo)
@@ -153,6 +160,27 @@ router.put('/:cedula/:rolNuevo', async (req, res) => {
   }
 });
 
+//PUT ->localhost:4000/usuarios/restablecer
+router.put('/restablecer', async (req, res) => {
+  try {
+
+    const { correo, claveNueva } = req.body;
+    console.log("correo: "+correo);
+    console.log("claveNueva: "+claveNueva);
+    if (!correo || !claveNueva) {
+      return res.status(400).send('Campos inválidos');
+    }
+    const salt = await bcrypt.genSalt(10);
+    const claveEncriptada = await bcrypt.hash(claveNueva,salt);
+    console.log("clave Encriptada: "+claveEncriptada);
+    await usuarioDAO.actualizarClave(correo,claveEncriptada);
+
+    return res.status(200).send('Clave actualizada exitosamente');
+  } catch (error) {
+    return res.status(500).send('Error al actualizar la clave del usuario');
+  }
+});
+
 // DELETE -> localhost:4000/usuarios/:cedula
 router.delete('/:cedula', async (req, res) => {
   try {
@@ -168,31 +196,31 @@ router.delete('/:cedula', async (req, res) => {
 });
 
 
-async function enviarCorreo({correo,OTP}){
+async function enviarCorreo( correo, OTP ) {
+  console.log("Correo: "+correo + "-- OTP: "+OTP)
   const transporter = nodemailer.createTransport({
-    service:'gmail',
-    auth:{
-      user:"-",
-      pass:"-"
+    service: process.env.EMAIL_SERVICE,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD
     },
 
   });
 
   const mailOptions = {
-    from:"r29leonc@gmail.com",
-    to:correo,
-    subject:"Código OTP para recuperar contraseña",
-    text:`El OTP es: ${OTP}`
+    from: process.env.EMAIL,
+    to: correo,
+    subject: "Código OTP para recuperar contraseña",
+    text: `El OTP es: ${OTP}`
   };
 
-  try{
+  try {
     const info = await transporter.sendMail(mailOptions);
     console.log("Correo Enviado")
-    
-  }catch(error){
-    console.error("Erro al enviar el correo: ",error);
+
+  } catch (error) {
+    console.error("Erro al enviar el correo: ", error);
   }
-e  
 }
 
 module.exports = router;

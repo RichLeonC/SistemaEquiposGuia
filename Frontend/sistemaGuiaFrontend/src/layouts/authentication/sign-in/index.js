@@ -108,7 +108,7 @@ function Basic({ onLogin }) {
                 ¿Olvidaste la contraseña?{" "}
                 <MDTypography
                   component={Link}
-                  to="/recuperar"
+                  to="/verificacion"
                   variant="button"
                   color="info"
                   fontWeight="medium"

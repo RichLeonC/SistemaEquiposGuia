@@ -1,17 +1,4 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -32,8 +19,60 @@ import BasicLayout from "../components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Cover() {
+
+  const correo = localStorage.getItem("correo");
+  const apiURI = "http://localhost:4000/usuarios/restablecer";
+  const [form,setForm] = useState({
+    claveNueva:"",
+    reconfirmarClave:""
+  });
+
+  const navigate = useNavigate();
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: value
+    })
+    ;
+  }
+
+  const restablecerPassword=async()=>{
+    try {
+
+
+      if(form.claveNueva==="" || form.reconfirmarClave===""){
+        return alert("Campos no pueden estar vacios");
+      }
+      else if(isNaN(form.claveNueva)){
+        return alert("La contraseña debe ser númerica")
+      }
+      else if(form.claveNueva != form.reconfirmarClave){
+        return alert("Clave son distintas")
+      }
+
+      console.log(correo);
+      console.log(form.claveNueva);
+      const response = await axios.put(apiURI,{correo:correo,claveNueva:form.claveNueva});
+
+      if(response.status == 200){
+        localStorage.removeItem("correo");
+        alert("Contraseña actualizada correctamente");
+        return navigate("/");
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
   return (
     <BasicLayout image={bgImage}>
       <Card>
@@ -48,64 +87,27 @@ function Cover() {
           textAlign="center"
         >
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-            Recuperar Contraseña
+            Restablecer Contraseña
           </MDTypography>
           <MDTypography display="block" variant="button" color="white" my={1}>
-            Enter your email and password to register
+            Digite la nueva contraseña
           </MDTypography>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="text" label="Name" variant="standard" fullWidth />
+              <MDInput name="claveNueva" type="password" label="Nueva contraseña" variant="standard" fullWidth onChange={handleChange}/>
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" variant="standard" fullWidth />
+              <MDInput name="reconfirmarClave" type="password" label="Confirmar contraseña" variant="standard" fullWidth  onChange={handleChange} />
             </MDBox>
-            <MDBox mb={2}>
-              <MDInput type="password" label="Password" variant="standard" fullWidth />
-            </MDBox>
-            <MDBox display="flex" alignItems="center" ml={-1}>
-              <Checkbox />
-              <MDTypography
-                variant="button"
-                fontWeight="regular"
-                color="text"
-                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
-              >
-                &nbsp;&nbsp;I agree the&nbsp;
-              </MDTypography>
-              <MDTypography
-                component="a"
-                href="#"
-                variant="button"
-                fontWeight="bold"
-                color="info"
-                textGradient
-              >
-                Terms and Conditions
-              </MDTypography>
-            </MDBox>
+
             <MDBox mt={4} mb={1}>
-              <MDButton  color="info" fullWidth>
-                sign in
+              <MDButton  color="info" fullWidth onClick={()=>restablecerPassword()}>
+                Restablecer
               </MDButton>
             </MDBox>
-            <MDBox mt={3} mb={1} textAlign="center">
-              <MDTypography variant="button" color="text">
-                Already have an account?{" "}
-                <MDTypography
-                  component={Link}
-                  to="/"
-                  variant="button"
-                  color="info"
-                  fontWeight="medium"
-                  textGradient
-                >
-                  Sign In
-                </MDTypography>
-              </MDTypography>
-            </MDBox>
+
           </MDBox>
         </MDBox>
       </Card>

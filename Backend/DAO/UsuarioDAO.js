@@ -137,6 +137,18 @@ class UsuarioDAO {
             console.error(error);
         }
     }
+
+    async actualizarClave(correo,clave){
+        try{
+            const query  = `Update usuario set clave=@clave WHERE correo = @correo`;
+            const request = new sql.Request(dbSql.conection);
+            request.input('correo',sql.VarChar,correo);
+            request.input('clave',sql.VarChar,clave);
+            await request.query(query);
+        }catch(error){
+            console.error(error);
+        }
+    }
 }
 
 module.exports = UsuarioDAO;
