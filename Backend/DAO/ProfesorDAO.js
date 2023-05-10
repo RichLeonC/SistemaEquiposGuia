@@ -48,8 +48,16 @@ class ProfesorDAO{
     //Acepta cedula o codigo
     async getProfe(parametro){
         try {
-            const query = `SELECT `;
+            let query ="";
             const request = new sql.Request(dbSql.conection);
+            if(isNaN(parametro)){
+                query = `EXEC verProfesoresPorCedulaOCodigo @codigo="${parametro}"`;
+            }
+            else{
+                query = `EXEC verProfesoresPorCedulaOCodigo @cedula=${parametro}`;
+            }
+             
+            
             const resultado = await request.query(query);
             if(resultado.recordset.length > 0){
                 const row = resultado.recordset[0];
@@ -78,7 +86,7 @@ class ProfesorDAO{
 
     async getAllProfes(){
         try {
-            const query = ``;
+            const query = `EXEC verProfesores`;
             const request = new sql.Request(dbSql.conection);
             const resultado = await request.query(query);
             if (resultado.recordset.length > 0) {

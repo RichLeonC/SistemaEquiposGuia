@@ -19,10 +19,11 @@ router.get('/', async (req, res) => {
   });
 
 //GET -> localhost:4000/profesores/:cedula
-router.get('/:cedula', async (req, res) => {
+router.get('/:parametro', async (req, res) => {
     try {
-      const { cedula } = req.params;
-      const profesor = await profesorDAO.getProfe(cedula);
+      const { parametro } = req.params;
+      console.log("p: "+parametro);
+      const profesor = await profesorDAO.getProfe(parametro);
       res.status(200).json(profesor);
     } catch (error) {
       console.error(error);
@@ -60,12 +61,12 @@ router.post('/', async (req, res) => {
   router.put('/esCordinador', async (req, res) => {
     try {
   
-      const { cedula, boolean } = req.body;
-      if (!cedula || !boolean) {
+      const { cedula, esCordinador } = req.body;
+      if (!cedula || (!esCordinador&&esCordinador!=0)) {
         return res.status(400).send('Campos inválidos');
       }
 
-      await profesorDAO.ActualizarBoolCoordinador(cedula,boolean);
+      await profesorDAO.ActualizarBoolCoordinador(cedula,esCordinador);
   
       return res.status(200).send('Atributo esCoordinador actualizado correctamente');
     } catch (error) {

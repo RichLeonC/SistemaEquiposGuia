@@ -138,3 +138,58 @@ CREATE TABLE actividad_comentario_respuesta(
     fecha DATE NOT NULL,
     hora VARCHAR(10)
 )
+
+
+
+CREATE PROCEDURE verProfesores
+AS
+BEGIN
+  SELECT 
+    u.cedulaUsuario,
+    u.nombre,
+    u.segundonombre,
+    u.apellido1,
+    u.apellido2,
+    u.correo,
+    u.celular,
+    u.rol,
+    p.idSede,
+    p.telOficina,
+    p.foto,
+    pr.codigo,
+    pr.esCordinador
+  FROM usuario AS u
+  INNER JOIN personal AS p ON u.cedulaUsuario = p.cedulaPersonal
+  INNER JOIN profesor AS pr ON p.cedulaPersonal = pr.cedulaProfesor;
+END
+GO
+drop procedure verProfesores
+EXEC verProfesores;
+
+CREATE PROCEDURE verProfesoresPorCedulaOCodigo
+  @cedula INT = NULL,
+  @codigo VARCHAR(10) = NULL
+AS
+BEGIN
+  SELECT 
+    u.cedulaUsuario,
+    u.nombre,
+    u.segundonombre,
+    u.apellido1,
+    u.apellido2,
+    u.correo,
+    u.clave,
+    u.celular,
+    u.rol,
+    p.idSede,
+    p.telOficina,
+    p.foto,
+    pr.codigo,
+    pr.esCordinador
+  FROM usuario AS u
+  INNER JOIN personal AS p ON u.cedulaUsuario = p.cedulaPersonal
+  INNER JOIN profesor AS pr ON p.cedulaPersonal = pr.cedulaProfesor
+  WHERE (u.cedulaUsuario = @cedula OR pr.codigo = @codigo)
+    AND (@cedula IS NOT NULL OR @codigo IS NOT NULL);
+END
+GO
