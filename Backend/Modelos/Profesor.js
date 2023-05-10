@@ -16,3 +16,5 @@ class Profesor{
         this.foto = foto;
       }
 }
+
+module.exports = Profesor;

@@ -172,7 +172,6 @@ router.put('/restablecer', async (req, res) => {
     }
     const salt = await bcrypt.genSalt(10);
     const claveEncriptada = await bcrypt.hash(claveNueva,salt);
-    console.log("clave Encriptada: "+claveEncriptada);
     await usuarioDAO.actualizarClave(correo,claveEncriptada);
 
     return res.status(200).send('Clave actualizada exitosamente');

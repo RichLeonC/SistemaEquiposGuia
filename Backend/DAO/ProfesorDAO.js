@@ -11,12 +11,12 @@ class ProfesorDAO{
             const request = new sql.Request(dbSql.conection);
 
             request.input('cedulaProfesor', sql.Int, profesor.cedula);
-            request.input('codigo', sql.VarChar, profesor.cedula);
-            request.input('esCordinador', sql.VarChar,profesor.esCordinador);
+            request.input('codigo', sql.VarChar, profesor.codigo);
+            request.input('esCordinador', sql.Int,profesor.esCordinador);
             request.input('nombre', sql.VarChar,profesor.nombre);
             request.input('segundonombre', sql.VarChar,profesor.segundoNombre);
             request.input('apellido1', sql.VarChar,profesor.apellido1);
-            request.input('apelldio2', sql.VarChar,profesor.apellido2);
+            request.input('apellido2', sql.VarChar,profesor.apellido2);
             request.input('correo', sql.VarChar,profesor.correo);
             request.input('clave', sql.VarChar,profesor.clave);
             request.input('rol', sql.VarChar,profesor.rol);
