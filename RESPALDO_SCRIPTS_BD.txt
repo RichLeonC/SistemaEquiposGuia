@@ -37,7 +37,7 @@ CREATE TABLE sede(
 CREATE TABLE personal (
     cedulaPersonal INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES usuario(cedulaUsuario),
     idSede INT NOT NULL FOREIGN KEY REFERENCES sede(idSede),
-    telOficina INT,
+    telOficina VARCHAR(25),
     foto VARCHAR(255)
 );
 
