@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt'); //Hash para encriptar la clave del usuario.
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
-const estudianteDAO = new estudianteDAO();
+const estudianteDAO = new EstudianteDAO();
 
 
 
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
 router.get('/:carne', async (req, res) => {
   try {
     const { carne } = req.params;
-    const estudiante = await estudianteDAO.getUsuario(carne);
+    const estudiante = await estudianteDAO.getEstudianteCarne(carne);
     res.status(200).json(estudiante);
   } catch (error) {
     console.error(error);
@@ -39,53 +39,62 @@ router.get('/:carne', async (req, res) => {
 //GET -> localhost:4000/estudiantes/:sede (estudiantes/Cartago, por ejemplo)
 router.get('/:sede', async (req, res) => {
   try {
-    const { sede } = req.params;
-    const estudiante = await usuarioDAO.getUsuario(sede);
+    const { idSede } = req.params;
+    const estudiante = await estudianteDAO.getEstudianteSede(idSede);
     res.status(200).json(estudiante);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Erro al obtener a los estudiantes por sede");
+    res.status(500).send("Error al obtener a los estudiantes por sede");
   }
 
 });
 
-
-//GET -> localhost:4000/estudiantes/:editar (estudiantes/Cartago, por ejemplo)
-router.get('/:sede', async (req, res) => {
-  try {
-    const { sede } = req.params;
-    const estudiante = await usuarioDAO.getUsuario(sede);
-    res.status(200).json(estudiante);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Erro al obtener a los estudiantes por sede");
-  }
-
-});
-
-
-//PUT ->localhost:4000/usuarios/:sede/:carnet (usuarios/Cartago/2020127158, por ejemplo)
-router.put('/:cedula/:rolNuevo', async (req, res) => {
+//PUT ->localhost:4000/estudiantes/:sede/:carnet (estudiantes/Cartago/2020127158, por ejemplo)
+router.put('/:sede/:carnet', async (req, res) => {
   try {
 
-    const { cedula, rolNuevo } = req.params;
-    console.log(rolNuevo);
-    if (!cedula || !rolNuevo) {
-      return res.status(400).send('Campos invalidos');
-    }
-    else if (rolNuevo != Rol.PROFESOR_GUIA || rolNuevo != Rol.PROFESOR_GUIA_COORDINADOR || rolNuevo != Rol.ASISTENTE ||
-      rolNuevo != Rol.ESTUDIANTE) {
-      return res.status(400).send('Rol invalido');
+    const {carne, cedulaEstudiante, codigoCarrera, idSede, generacion} = req.params;
+    console.log(carne);
+    if (!carne) {
+      return res.status(400).send('Introduzca el carne del estudiante');
     }
 
-    await UsuarioDAO.actualizarRol(cedula, rolNuevo);
+    await EstudianteDAO.actualizarEstudiante(carne, cedulaEstudiante, codigoCarrera, idSede, generacion);
 
-    res.status(200).send('Rol actualizado exitosamente');
+    res.status(200).send('Estudiante actualizado exitosamente');
   } catch (error) {
-    res.status(500).send('Error al actualizar el rol del usuario');
+    res.status(500).send('Error al actualizar el estudiante del usuario');
   }
 });
 
 
+async function generarExcel( idSede) {
+  console.log("Sede: "+idSede);
+
+  try {
+    var fs = require('fs');
+    var writeStream = fs.createWriteStream("file.xls");
+    
+    var header="cedulaEstudiante"+"\t"+" carne"+"\t"+"codigoCarrera"+"\t"+"idSede"+"\t"+"generacion"+"\n";
+    writeStream.write(header);
+
+    const estudiantes = await estudianteDAO.getEstudianteSede(idSede);
+    var row1 = "0"+"\t"+" 21"+"\t"+"Rob"+"\n";
+    var row2 = "1"+"\t"+" 22"+"\t"+"bob"+"\n";
+    
+    writeStream.write(header);
+
+    for(let i=0; i < estudiantes.length; i++){
+      var row = estudiantes[i].cedulaEstudiante+"\t"+estudiantes[i].carne+"\t"+estudiantes[i].codigoCarrera+"\t"+estudiantes[i].idSede+"\t"+estudiantes[i].generacion+"\n";
+      writeStream.write(row);
+    }
+
+    writeStream.close();
+    console.log("Excel generado exitosamente")
+
+  } catch (error) {
+    console.error("Error al generar el Excel ", error);
+  }
+}
 
 module.exports = router;
