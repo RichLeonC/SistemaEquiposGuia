@@ -115,8 +115,23 @@ class UsuarioDAO {
             const resultado = await request.query(query);
 
             if (resultado.recordset.length > 0) {
-                const usuarios = resultado.recordset.map(row => new Usuario(row));
+                const usuarios = resultado.recordset.map(row =>{
+                    const usuario = new Usuario(
+                        row.cedulaUsuario,
+                        row.nombre,
+                        row.segundonombre,
+                        row.apellido1,
+                        row.apellido2,
+                        row.correo,
+                        row.clave,
+                        row.celular,
+                        row.rol
+                    );
+                    return usuario;
+                    
+                });
                 return usuarios;
+
             }
             else {
                 return [];

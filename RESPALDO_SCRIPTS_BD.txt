@@ -193,3 +193,37 @@ BEGIN
     AND (@cedula IS NOT NULL OR @codigo IS NOT NULL);
 END
 GO
+
+CREATE PROCEDURE contarProfesoresPorSede
+  @idSede INT
+AS
+BEGIN
+  SELECT COUNT(*) as cantidad
+  FROM profesor
+  JOIN personal ON profesor.cedulaProfesor = personal.cedulaPersonal
+  WHERE personal.idSede = @idSede
+END
+
+
+
+CREATE PROCEDURE [dbo].[eliminar_profesor]
+    @cedulaProfesor INT
+AS
+BEGIN
+    BEGIN TRY
+        -- Primero, eliminar el registro de la tabla profesor
+        DELETE FROM [dbo].[profesor]
+        WHERE cedulaProfesor = @cedulaProfesor
+
+        -- Luego, eliminar el registro de la tabla personal
+        DELETE FROM [dbo].[personal]
+        WHERE cedulaPersonal = @cedulaProfesor
+
+        -- Finalmente, eliminar el registro de la tabla usuario
+        DELETE FROM [dbo].[usuario]
+        WHERE cedulaUsuario = @cedulaProfesor
+    END TRY
+    BEGIN CATCH
+        PRINT 'Ocurrió un error: ' + ERROR_MESSAGE()
+    END CATCH
+END
