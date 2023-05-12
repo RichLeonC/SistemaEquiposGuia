@@ -29,11 +29,21 @@ import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
+import RegistrarProfes from "layouts/AsistentePanel/RegistrarProfesores/RegistrarProfes";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
 
 const routesAsistente = [
+
+  {
+    type: "collapse",
+    name: "Registrar Profesores",
+    key: "registrarProfes",
+    icon: <Icon fontSize="small">person_add</Icon>,
+    route: "/registrarProfesores",
+    component: <RegistrarProfes/>,
+  },
   {
     type: "collapse",
     name: "Dashboard",
