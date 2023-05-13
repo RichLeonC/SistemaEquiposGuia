@@ -30,6 +30,7 @@ export default function RegistrarProfes() {
 
     const [idSede, setIdSede] = useState('');
     const [foto, setFoto] = useState(null);
+    const [fotoOriginal,setFotoOriginal] = useState(null);
     const [form, setForm] = useState({
         cedula: '',
         nombre: '',
@@ -46,7 +47,7 @@ export default function RegistrarProfes() {
 
     });
 
-    const formLimpio={
+    const formLimpio = {
         cedula: '',
         nombre: '',
         segundoNombre: '',
@@ -57,8 +58,7 @@ export default function RegistrarProfes() {
         clave: '',
         clave2: '',
         idSede: '',
-        telOficina: '',
-        foto: foto
+        telOficina: ''
     }
 
     const apiURI = "http://localhost:4000/profesores"
@@ -90,6 +90,7 @@ export default function RegistrarProfes() {
     const handleChangeFoto = (event) => {
         if (event.target.files.length > 0) {
             const foto = event.target.files[0];
+            setFotoOriginal(foto);
             setFoto(URL.createObjectURL(foto));
         }
         else {
@@ -115,7 +116,7 @@ export default function RegistrarProfes() {
     const validarStrings = (string) => {
         const numeros = /\d/;
 
-        if (numeros.test(string)) return true;
+        if (numeros.test(string)&&string!="") return true;
 
         return false;
     }
@@ -192,15 +193,28 @@ export default function RegistrarProfes() {
                         return false;
                     }
 
-                    const response = await axios.post(apiURI, {
-                        cedula: form.cedula, esCordinador: "0", nombre: form.nombre, segundoNombre: form.segundoNombre,
-                        apellido1: form.apellido1, apellido2: form.apellido2, correo: form.correo, clave: form.clave,
-                        celular: form.celular, idSede: form.idSede, telOficina: form.telOficina, foto: "foto"
-                    });
+                    const formData = new FormData();
+                    formData.append('cedula', form.cedula);
+                    formData.append('esCordinador', "0");
+                    formData.append('nombre', form.nombre);
+                    formData.append('segundoNombre', form.segundoNombre);
+                    formData.append('apellido1', form.apellido1);
+                    formData.append('apellido2', form.apellido2);
+                    formData.append('correo', form.correo);
+                    formData.append('clave', form.clave);
+                    formData.append('celular', form.celular);
+                    formData.append('idSede', form.idSede);
+                    formData.append('telOficina', form.telOficina);
+                    formData.append('foto', fotoOriginal);
+
+                    const response = await axios.post(apiURI, formData);
 
                     if (response.status == 201) {
                         setShowAlertExito(true);
                         setForm(formLimpio);
+                        setFoto(null);
+                        setFotoOriginal(null);
+                        setIdSede('');
                         return true;
                     }
 
@@ -216,6 +230,7 @@ export default function RegistrarProfes() {
 
             }
         }
+        console.log("false")
         setShowAlert(true);
         return false;
     }
@@ -248,7 +263,7 @@ export default function RegistrarProfes() {
                                 <form>
                                     <Grid container spacing={3}>
                                         <Grid item xs={12} sm={6}>
-                                            <TextField name="cedula" label="Cédula" value={form.cedula}variant="outlined" fullWidth onChange={handleChange}
+                                            <TextField name="cedula" label="Cédula" value={form.cedula} variant="outlined" fullWidth onChange={handleChange}
                                                 error={validarCedula()} helperText={validarCedula() && "Cedula inválida"} />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>

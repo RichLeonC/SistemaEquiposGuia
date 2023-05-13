@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt'); //Hash para encriptar la clave del usuario.
 const multer = require('multer'); //Middleware para usar el upload.single, sirve para enviar archivos o recibir
 const upload = multer({ dest: 'uploads/' });
 const blobStorage = require("../BaseDatos/AzureBlobStorage.js");
+const fs = require('fs'); //Lo vamos a utlizar para borrar los files que se crean en la carpeta uploads.
 
 
 const profesorDAO = new ProfesorDAO();
@@ -55,6 +56,7 @@ router.post('/', upload.single('foto'), async (req, res) => {
 
     const fotoUrl = await blobStorage.subirArchivoABlobStorage('imagenes-sistemaguia', req.file);
 
+    fs.unlinkSync(req.file.path);
     const nuevoProfesor = new Profesor(cedula, codigo, esCordinador, nombre, segundoNombre, apellido1, apellido2, correo,
       claveEncriptada, celular, "PROFESOR_GUIA", idSede, telOficina, fotoUrl);
     await profesorDAO.crearProfesor(nuevoProfesor);

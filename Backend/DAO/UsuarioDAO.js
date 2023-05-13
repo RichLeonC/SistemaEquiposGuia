@@ -164,6 +164,26 @@ class UsuarioDAO {
             console.error(error);
         }
     }
+
+    async getFoto(cedula){
+        try{
+            const query = `SELECT foto FROM personal WHERE cedulaPersonal = @cedula`;
+            const request = new sql.Request(dbSql.conection);
+            request.input('cedula', sql.Int, cedula);
+            const resultado = await request.query(query);
+            if (resultado.recordset.length > 0){
+                const row = resultado.recordset[0];
+                return row.foto;
+
+            }else{
+                return null;
+            }
+            
+        }catch(error){
+            console.error(error);
+            return null;
+        }
+    }
 }
 
 module.exports = UsuarioDAO;

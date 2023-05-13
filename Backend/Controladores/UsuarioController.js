@@ -51,6 +51,19 @@ router.get('/correo/:correo', async (req, res) => {
 
 });
 
+//GET -> localhost:4000/usuarios/foto/:cedula 
+router.get('/foto/:cedula', async (req, res) => {
+  try {
+    const { cedula } = req.params;
+    const foto = await usuarioDAO.getFoto(cedula);
+    res.status(200).json(foto);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error al obtener la foto");
+  }
+
+});
+
 // POST -> localhost:4000/usuarios
 router.post('/', async (req, res) => {
   try {
