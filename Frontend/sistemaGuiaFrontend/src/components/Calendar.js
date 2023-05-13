@@ -10,7 +10,7 @@ import {Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, La
 import 'bootstrap/dist/css/bootstrap.css';
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import RegistrarProfes from "layouts/AsistentePanel/RegistrarProfesores/RegistrarProfes";
+import ActividadesForm from './ActividadesForm'
 
 export const Calendar = () => {
   const [events, setEvents] = useState([]);
@@ -83,27 +83,22 @@ export const Calendar = () => {
 
         eventContent={(info) => <EventItem info={info} />}
         height={"90vh"}
-      />  
-      <Modal isOpen={modalOpen}>
-        <ModalHeader>
-          Nueva actividad
+      /> 
+      <DashboardLayout>
+      <Modal isOpen={modalOpen} xl>
+        <ModalHeader className={{justifyContent: 'center'}}>
+          <div style= {{justifyContent: 'center'}}>Nueva actividad</div>
         </ModalHeader>
         <ModalBody>
-          <FormGroup>
-            <Label for="usuario">Nombre</Label>
-            <Input type="text" id="usuario"/> 
-          </FormGroup>
-          <FormGroup>
-            <Label for="password">Descripcion</Label>
-            <Input type="text" id="password"/> 
-          </FormGroup>
+            <ActividadesForm/>
         </ModalBody>
 
         <ModalFooter>
-            <Button color="primary">Crear</Button>
+            <Button color="primary" onClick = {handleSelect}>Crear</Button>
             <Button color="secondary" onClick={toggleModal}>Cerrar</Button>
         </ModalFooter>
       </Modal>
+      </DashboardLayout>
     </div>
     </DashboardLayout>
     );
