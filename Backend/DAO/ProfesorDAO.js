@@ -8,8 +8,15 @@ class ProfesorDAO {
     async crearProfesor(profesor) {
         try {
 
+
+
             const request = new sql.Request(dbSql.conection);
-            console.log("Codigo: "+profesor.codigo);
+
+            const checkIfExists = await request.query(`SELECT COUNT(*) AS count FROM profesor WHERE cedulaProfesor = ${profesor.cedula}`);
+            if (checkIfExists.recordset[0].count > 0) {
+                throw new Error('El profesor ya existe en la base de datos.');
+            }
+            console.log("Codigo: " + profesor.codigo);
             request.input('cedulaProfesor', sql.Int, profesor.cedula);
             request.input('codigo', sql.VarChar, profesor.codigo);
             request.input('esCordinador', sql.Int, profesor.esCordinador);
@@ -79,7 +86,7 @@ class ProfesorDAO {
                 );
                 return profesor;
             }
-            else{
+            else {
                 return null;
             }
         } catch (error) {
@@ -93,7 +100,7 @@ class ProfesorDAO {
             const request = new sql.Request(dbSql.conection);
             const resultado = await request.query(query);
             if (resultado.recordset.length > 0) {
-                const profesores = resultado.recordset.map(row =>{
+                const profesores = resultado.recordset.map(row => {
                     const profesor = new Profesor(
                         row.cedulaUsuario,
                         row.codigo,
@@ -131,21 +138,21 @@ class ProfesorDAO {
             const numeroCodigo = String(cantProfesores + 1).padStart(2, '0'); //Indicamos que agregue un 0 adelante hasta que se alcance la cantidad de dos digitos en cantidad de profesores.
             let prefijo = '';
 
-            switch(idSede){
+            switch (idSede) {
                 case "1":
-                    prefijo="CA";
+                    prefijo = "CA";
                     break;
                 case "2":
-                    prefijo="SJ";
+                    prefijo = "SJ";
                     break;
                 case "3":
-                    prefijo="AL";
+                    prefijo = "AL";
                     break;
                 case "4":
-                    prefijo="LI";
+                    prefijo = "LI";
                     break;
                 case "5":
-                    prefijo="SC";
+                    prefijo = "SC";
                     break;
             }
             return `${prefijo}-${numeroCodigo}`;

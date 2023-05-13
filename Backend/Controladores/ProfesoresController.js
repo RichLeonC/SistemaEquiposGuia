@@ -4,6 +4,11 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt'); //Hash para encriptar la clave del usuario.
 
+const multer = require('multer'); //Middleware para usar el upload.single, sirve para enviar archivos o recibir
+const upload = multer({ dest: 'uploads/' });
+const blobStorage = require("../BaseDatos/AzureBlobStorage.js");
+
+
 const profesorDAO = new ProfesorDAO();
 
 //GET -> localhost:4000/profesores
@@ -34,22 +39,24 @@ router.get('/:parametro', async (req, res) => {
 });
 
 // POST -> localhost:4000/profesores
-router.post('/', async (req, res) => {
+router.post('/', upload.single('foto'), async (req, res) => {
   try {
-    const { cedula, esCordinador, nombre, segundoNombre, apellido1, apellido2, correo, clave, celular, idSede, telOficina, foto } = req.body;
+    const { cedula, esCordinador, nombre, segundoNombre, apellido1, apellido2, correo, clave, celular, idSede, telOficina } = req.body;
 
     // Validamos los datos de entrada
-    console.log(cedula, esCordinador, nombre, segundoNombre, apellido1, apellido2, correo, clave, celular, idSede, telOficina, foto);
     if (!cedula || !nombre || !apellido1 || !apellido2 || !correo || !clave || !celular
-      || !idSede || !telOficina || !foto) {
+      || !idSede || !telOficina) {
       return res.status(400).send('Todos los campos son obligatorios, excepto segundoNombre.');
     }
     const codigo = await profesorDAO.generarCodigoProfesor(idSede);
     const salt = await bcrypt.genSalt(10);
     const claveEncriptada = await bcrypt.hash(clave, salt);
 
+
+    const fotoUrl = await blobStorage.subirArchivoABlobStorage('imagenes-sistemaguia', req.file);
+
     const nuevoProfesor = new Profesor(cedula, codigo, esCordinador, nombre, segundoNombre, apellido1, apellido2, correo,
-      claveEncriptada, celular, "PROFESOR_GUIA", idSede, telOficina, foto);
+      claveEncriptada, celular, "PROFESOR_GUIA", idSede, telOficina, fotoUrl);
     await profesorDAO.crearProfesor(nuevoProfesor);
 
     return res.status(201).send('Profesor creado exitosamente.');
