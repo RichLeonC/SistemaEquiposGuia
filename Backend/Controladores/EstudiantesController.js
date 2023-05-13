@@ -36,8 +36,8 @@ router.get('/:carne', async (req, res) => {
 });
 
 
-//GET -> localhost:4000/estudiantes/:sede (estudiantes/Cartago, por ejemplo)
-router.get('/:sede', async (req, res) => {
+//GET -> localhost:4000/estudiantes/:idSede (estudiantes/1, por ejemplo)
+router.get('/:idSede', async (req, res) => {
   try {
     const { idSede } = req.params;
     const estudiante = await estudianteDAO.getEstudianteSede(idSede);
@@ -49,12 +49,11 @@ router.get('/:sede', async (req, res) => {
 
 });
 
-//PUT ->localhost:4000/estudiantes/:sede/:carnet (estudiantes/Cartago/2020127158, por ejemplo)
-router.put('/:sede/:carnet', async (req, res) => {
+//PUT ->localhost:4000/estudiantes/:idSede/:carnet (estudiantes/1/2020127158, por ejemplo)
+router.put('/:idSede/:carnet', async (req, res) => {
   try {
 
-    const {carne, cedulaEstudiante, codigoCarrera, idSede, generacion} = req.params;
-    console.log(carne);
+    const {carne, cedulaEstudiante, codigoCarrera, idSede, generacion} = req.body;
     if (!carne) {
       return res.status(400).send('Introduzca el carne del estudiante');
     }
@@ -79,9 +78,7 @@ async function generarExcel( idSede) {
     writeStream.write(header);
 
     const estudiantes = await estudianteDAO.getEstudianteSede(idSede);
-    var row1 = "0"+"\t"+" 21"+"\t"+"Rob"+"\n";
-    var row2 = "1"+"\t"+" 22"+"\t"+"bob"+"\n";
-    
+ 
     writeStream.write(header);
 
     for(let i=0; i < estudiantes.length; i++){

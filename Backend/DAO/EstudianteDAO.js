@@ -7,7 +7,7 @@ class EstudianteDAO {
 
     async getAllEstudiantes() {
         try {
-            const query = `EXEC SelectEstudiante`;
+            const query = `SELECT * FROM estudiante`;
             const request = new sql.Request(dbSql.conection);
             const resultado = await request.query(query);
 
