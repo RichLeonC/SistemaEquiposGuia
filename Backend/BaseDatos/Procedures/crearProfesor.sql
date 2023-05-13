@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 <<<<<<< refs/remotes/origin/main
 <<<<<<< refs/remotes/origin/main
+=======
+>>>>>>> Andres
 CREATE OR ALTER PROCEDURE crear_profesor
     @cedulaProfesor INT,
     @codigo VARCHAR(10),
@@ -36,6 +39,7 @@ BEGIN
     END TRY
     BEGIN CATCH
         PRINT 'Ocurrio un error: ' + ERROR_MESSAGE()
+<<<<<<< HEAD
 =======
 CREATE PROCEDURE insertar_profesor
 =======
@@ -82,6 +86,8 @@ BEGIN
 =======
         PRINT 'Ocurrio un error: ' + ERROR_MESSAGE()
 >>>>>>> CRUD y Crear profesor
+=======
+>>>>>>> Andres
     END CATCH
 END
 GO
