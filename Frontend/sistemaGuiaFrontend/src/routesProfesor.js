@@ -5,6 +5,7 @@ import Tables from "layouts/tables";
 import Billing from "layouts/billing";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
+import Calendar from 'components/Calendar';
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
@@ -26,7 +27,7 @@ const routesProfesor = [
     key: "actividades",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/actividades",
-    component: "",
+    component: <Calendar/>,
   },
   {
     type: "collapse",
