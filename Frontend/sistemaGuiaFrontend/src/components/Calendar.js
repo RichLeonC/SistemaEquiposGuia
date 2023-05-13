@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import * as ReactDOM from 'react-dom';
 import { v4 as uuid } from "uuid";
 import Fullcalendar from "@fullcalendar/react";
@@ -13,17 +13,32 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import ActividadesForm from './ActividadesForm'
 
 export const Calendar = () => {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([
+    {
+      title: "Evento 1",
+      start: "2023-05-01",
+      end: "2023-05-02",
+    },
+    {
+      title: "Evento 2",
+      start: "2023-05-05",
+      end: "2023-05-07",
+    },
+    {
+      title: "Evento 3",
+      start: "2023-05-10",
+      end: "2023-05-12",
+    },
+  ]);
   const [modalOpen, setModalOpen] = useState(false);
-
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
-    };
-  
-  const handleSelect = (info) => {
+  };
+
+  /*const handleSelect = (info) => {
     const { start, end } = info;
-    const eventNamePrompt = prompt("Enter event name:");
+    const eventNamePrompt = prompt('Enter event name:');
     if (eventNamePrompt) {
       const newEvent = {
         start,
@@ -33,7 +48,7 @@ export const Calendar = () => {
       };
       setEvents([...events, newEvent]);
     }
-  };
+  };*/
 
   const EventPopover = ({ event }) => (
     <Popover id={event.id}>
@@ -47,9 +62,7 @@ export const Calendar = () => {
 
   const handleEventClick = (info) => {
     const { event } = info;
-    const popover = (
-      <EventPopover event={event} />
-    );
+    const popover = <EventPopover event={event} />;
     ReactDOM.render(popover, document.getElementById('popover-container'));
   };
 
@@ -60,7 +73,6 @@ export const Calendar = () => {
         <p>{event.title}</p>
       </div>
     );
-    
   };
   
   return (
@@ -94,7 +106,7 @@ export const Calendar = () => {
         </ModalBody>
 
         <ModalFooter>
-            <Button color="primary" onClick = {handleSelect}>Crear</Button>
+            <Button color="primary">Crear</Button>
             <Button color="secondary" onClick={toggleModal}>Cerrar</Button>
         </ModalFooter>
       </Modal>
