@@ -53,9 +53,13 @@ function Cover() {
       else if(isNaN(form.claveNueva)){
         return alert("La contraseña debe ser númerica")
       }
+      else if(form.claveNueva.length!=8) {
+        return alert("La contraseña debe tener un tamaño de 8 dígitos")
+      }
       else if(form.claveNueva != form.reconfirmarClave){
         return alert("Clave son distintas")
       }
+      
 
       console.log(correo);
       console.log(form.claveNueva);

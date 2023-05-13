@@ -22,9 +22,10 @@ router.get('/', async (req, res) => {
 router.get('/:parametro', async (req, res) => {
   try {
     const { parametro } = req.params;
-    console.log("p: " + parametro);
     const profesor = await profesorDAO.getProfe(parametro);
-    res.status(200).json(profesor);
+
+    return res.status(200).json(profesor);
+
   } catch (error) {
     console.error(error);
     res.status(500).send("Erro al obtener el profesor");
@@ -32,13 +33,14 @@ router.get('/:parametro', async (req, res) => {
 
 });
 
-// POST -> localhost:4000/profesor
+// POST -> localhost:4000/profesores
 router.post('/', async (req, res) => {
   try {
-    const { cedula, esCordinador, nombre, segundoNombre, apellido1, apellido2, correo, clave, celular, rol, idSede, telOficina, foto } = req.body;
+    const { cedula, esCordinador, nombre, segundoNombre, apellido1, apellido2, correo, clave, celular, idSede, telOficina, foto } = req.body;
 
     // Validamos los datos de entrada
-    if (!cedula || !nombre || !apellido1 || !apellido2 || !correo || !clave || !celular || !rol
+    console.log(cedula, esCordinador, nombre, segundoNombre, apellido1, apellido2, correo, clave, celular, idSede, telOficina, foto);
+    if (!cedula || !nombre || !apellido1 || !apellido2 || !correo || !clave || !celular
       || !idSede || !telOficina || !foto) {
       return res.status(400).send('Todos los campos son obligatorios, excepto segundoNombre.');
     }
@@ -47,7 +49,7 @@ router.post('/', async (req, res) => {
     const claveEncriptada = await bcrypt.hash(clave, salt);
 
     const nuevoProfesor = new Profesor(cedula, codigo, esCordinador, nombre, segundoNombre, apellido1, apellido2, correo,
-      claveEncriptada, celular, rol, idSede, telOficina, foto);
+      claveEncriptada, celular, "PROFESOR_GUIA", idSede, telOficina, foto);
     await profesorDAO.crearProfesor(nuevoProfesor);
 
     return res.status(201).send('Profesor creado exitosamente.');
@@ -60,7 +62,7 @@ router.post('/', async (req, res) => {
 
 
 
-// PUT -> localhost:4000/profesor/esCordinador
+// PUT -> localhost:4000/profesores/esCordinador
 router.put('/esCordinador', async (req, res) => {
   try {
 

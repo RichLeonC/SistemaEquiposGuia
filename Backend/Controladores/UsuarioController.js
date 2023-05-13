@@ -75,7 +75,7 @@ router.post('/', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { correo, clave } = req.body;
 
-  if (!correo.includes("@estudiantec.cr") && !correo.includes("@itc.cr")) {
+  if (!correo.includes("@estudiantec.cr") && !correo.includes("@itcr.ac.cr")) {
     return res.status(401).send("Correo invalido");
   }
 

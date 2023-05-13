@@ -79,6 +79,9 @@ class ProfesorDAO {
                 );
                 return profesor;
             }
+            else{
+                return null;
+            }
         } catch (error) {
             console.error(error);
         }
@@ -129,19 +132,19 @@ class ProfesorDAO {
             let prefijo = '';
 
             switch(idSede){
-                case 1:
+                case "1":
                     prefijo="CA";
                     break;
-                case 2:
+                case "2":
                     prefijo="SJ";
                     break;
-                case 3:
+                case "3":
                     prefijo="AL";
                     break;
-                case 4:
+                case "4":
                     prefijo="LI";
                     break;
-                case 5:
+                case "5":
                     prefijo="SC";
                     break;
             }

@@ -62,7 +62,7 @@ function Cover() {
   //VERIFICA SI EL CORREO EXISTE O ES CORRECTO, SI LO ES, MANDA EL OPT AL CORREO Y ABRE LA VENTANA PARA DIGITAR EL OTP
   const comprobarCorreo = async () => {
 
-    if (!correo.includes("@estudiantec.cr") && !correo.includes("@itc.cr")) {
+    if (!correo.includes("@estudiantec.cr") && !correo.includes("@itcr.ac.cr")) {
       return alert("Correo invalido");
     }
     try {
@@ -102,8 +102,6 @@ function Cover() {
   }
 
   const verificarOTP=()=>{
-    
-    console.log("OTPinput: "+OTPinput+" === otp: "+OTPgenerado);
     if(OTPinput == OTPgenerado){
       alert("El codigo OTP es correcto");
       abrirCerrarModalOpt();
