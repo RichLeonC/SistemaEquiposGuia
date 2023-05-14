@@ -55,30 +55,6 @@ export const Calendar = () => {
     toggleModalEvent();
   };
 
-  /*const handleSelect = (info) => {
-    const { start, end } = info;
-    const eventNamePrompt = prompt('Enter event name:');
-    if (eventNamePrompt) {
-      const newEvent = {
-        start,
-        end,
-        title: eventNamePrompt,
-        id: uuid(),
-      };
-      setEvents([...events, newEvent]);
-    }
-  };*/
-
-  const EventPopover = ({ event }) => (
-    <Popover id={event.id}>
-      <Popover.Title>{event.title}</Popover.Title>
-      <Popover.Content>
-        <p>Start: {event.start}</p>
-        <p>End: {event.end}</p>
-      </Popover.Content>
-    </Popover>
-  );
-
 
   const EventItem = ({ info }) => {
     const { event } = info;
@@ -139,7 +115,6 @@ export const Calendar = () => {
         </ModalBody>
 
         <ModalFooter>
-            <Button color="primary">Crear</Button>
             <Button color="secondary" onClick={toggleModalSelect}>Cerrar</Button>
         </ModalFooter>
       </Modal>
