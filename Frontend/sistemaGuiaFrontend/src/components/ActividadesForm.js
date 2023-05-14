@@ -1,8 +1,81 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { Form, FormGroup, Label, Input, Button  } from 'reactstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'bootstrap/dist/css/bootstrap.css';
 
-export default function ActividadesForm() {
+export default function ActividadesForm({ selectedDate }) {
+
+  const [selectedFinishDate, setSelectedFinishDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [virtual, setVirtual] = useState(false);
+  const [link, setLink] = useState("");
+  const [form, setForm] = useState({
+    tipoActividad: '',
+    nombreActividad:'',
+    fechaInicio: new Date(selectedDate),
+    horaInicio:'',
+    fechaFinal:'',
+    modalidad:'',
+    enlaceReunion:''
+
+});
+
+const handleVirtualChange = (event) => {
+  const isChecked = event.target.checked;
+  setVirtual(isChecked);
+  
+  // Actualizar el valor de modalidad en el estado del formulario
+  setForm((prevForm) => ({
+    ...prevForm,
+    modalidad: isChecked ? 'virtual' : '',
+  }));
+};
+
+const handleLinkChange = (event) => {
+  const linkValue = event.target.value;
+  setLink(linkValue);
+  
+  // Actualizar el valor de enlaceReunion en el estado del formulario
+  setForm((prevForm) => ({
+    ...prevForm,
+    enlaceReunion: linkValue,
+  }));
+};
+
+  const handleFechaFinalChange = (date) => {
+    setSelectedFinishDate(date);
+    setForm((prevForm) => ({
+      ...prevForm,
+      fechaFinal: date,
+    }));
+  };
+  
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setForm({
+        ...form,
+        [name]: value
+    })
+    console.log(form);
+}
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log('Formulario:', form);
+  
+    // Aquí puedes realizar las acciones necesarias con los datos del formulario
+    // Por ejemplo, enviar los datos al servidor o actualizar el estado de la aplicación
+  };
+
+  const handleTimeChange = (event) => {
+    setSelectedTime(event.target.value);
+    handleChange();
+  };
 
   const months = ['January', 'February', 'March', 'April'];
+  const tiposActividad = ['Orientacion', 'Motivacion', 'Apoyo', 'Orden'];
 
   const monthOptions = months.map((month, index) => (
     <option key={index} value={month}>
@@ -10,41 +83,97 @@ export default function ActividadesForm() {
     </option>
   ));
 
+  const actividadOptions = tiposActividad.map((tipo, index) => (
+    <option key={index} value={tipo}>
+      {tipo}
+    </option>
+  ));
+
   return (
-    <>
-    <div>ActividadesForm</div>
-    <div>Tipo de actividad</div>
-      <select class="form-select" aria-label="Default select example">
-        <option selected>Seleccione el tipo de actividad</option>
-        <option value="1">Orientación</option>
-        <option value="2">Motivación</option>
-        <option value="3">Apoyo</option>
-        <option value="4">Orden tecnico</option>
-        <option value="5">Recreación</option>
+    <Form onSubmit={handleSubmit}>
+
+    <div>Seleccione el tipo de la nueva actividad</div>
+    <div class = "form-group">
+      <select 
+      className="form-control" 
+      name="tipoActividad" 
+      value={form.tipoActividad} 
+      id="tiposActividad" 
+      onChange={handleChange}>
+        {actividadOptions}
       </select>
+    </div>
+
+
     <div>Nombre de la actividad</div>
-      <div class="input-group mb-3">
-        <span class="input-group-text" id="inputGroup-sizing-default">Default</span>
-        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"/>
-      </div>
+    <div class="input-group mb-3">
+      <input type="text" 
+      class="form-control" a
+      ria-label="Sizing example input" 
+      aria-describedby="inputGroup-sizing-default" 
+      name = "nombreActividad" 
+      value={form.nombreActividad} 
+      onChange={handleChange}/>
+    </div>
+
+
     <div>SEMANA</div>
-    <div>FECHA INICIO Y FINAL</div>
+
+
+    <div>FECHA INICIO</div>
+    <p>Fecha seleccionada: {selectedDate}</p>
+
+
+    <>FECHA FINAL</>
+    <FormGroup>
+    <Label>Selecciona una fecha:</Label>
+    <DatePicker
+      name="fechaFinal"
+      value= {form.fechaFinal}
+      selected={selectedFinishDate}
+      onChange={handleFechaFinalChange}
+      minDate={new Date(selectedDate)} // Aquí estableces la fecha mínima
+      className="form-control"
+    />
+    </FormGroup>
+
     <div>HORA INICIO</div>
+    <div>
+      <label htmlFor="timePicker">Selecciona una hora:</label>
+      <input
+        type="time"
+        id="timePicker"
+        name="horaInicio"
+        value={form.horaInicio}
+        onChange={handleChange}
+      />
+      <p>Hora seleccionada: {form.horaInicio}</p>
+    </div>
+
+
 
     <div>MODALIDAD</div> 
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"/>
-        <label class="form-check-label" for="flexRadioDefault1">
-        Virtual
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked/>
-        <label class="form-check-label" for="flexRadioDefault2">
-        Presencial
-        </label>
-      </div>
-    <div>ENLACE REUNION</div>
+    <FormGroup check>
+        <Label check>
+          <Input
+            type="checkbox"
+            checked={virtual}
+            onChange={handleVirtualChange}
+          />{" "}
+          Virtual
+        </Label>
+      </FormGroup>
+      {virtual && (
+        <FormGroup>
+          <Label for="link">Enlace:</Label>
+          <Input
+            type="text"
+            id="link"
+            value={link}
+            onChange={handleLinkChange}
+          />
+        </FormGroup>
+      )}
 
     <div>Profesores encargados</div>
     <div class = "form-group">
@@ -53,10 +182,8 @@ export default function ActividadesForm() {
         </select>
     </div>
     <div>AFICHE</div>
-    <div>RECORDATORIO</div>
-    <div>ESTADO</div>
-
-    </>
+    <Button type="submit" color="primary">Guardar</Button>
+    </Form>
     
   )
 }

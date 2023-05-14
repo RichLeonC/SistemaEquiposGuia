@@ -11,6 +11,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import ActividadesForm from './ActividadesForm'
+import CommentSection from "./ComentSection";
 
 export const Calendar = () => {
   const [events, setEvents] = useState([
@@ -32,7 +33,8 @@ export const Calendar = () => {
   ]);
   const [modalOpenSelect, setModalOpenSelect] = useState(false);
   const [modalOpenEvent, setModalOpenEvent] = useState(false);
-  const [selectedRange, setSelectedRange] = useState(null);
+
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const toggleModalSelect = () => {
@@ -43,35 +45,15 @@ export const Calendar = () => {
     setModalOpenEvent(!modalOpenEvent);
   };
 
+  const handleDateSelect = (info) => {
+    setSelectedDate(info.startStr);
+    toggleModalSelect();
+  };
 
   const handleEventClick = (info) => {
     setSelectedEvent(info.event);
     toggleModalEvent();
   };
-
-  /*const handleSelect = (info) => {
-    const { start, end } = info;
-    const eventNamePrompt = prompt('Enter event name:');
-    if (eventNamePrompt) {
-      const newEvent = {
-        start,
-        end,
-        title: eventNamePrompt,
-        id: uuid(),
-      };
-      setEvents([...events, newEvent]);
-    }
-  };*/
-
-  const EventPopover = ({ event }) => (
-    <Popover id={event.id}>
-      <Popover.Title>{event.title}</Popover.Title>
-      <Popover.Content>
-        <p>Start: {event.start}</p>
-        <p>End: {event.end}</p>
-      </Popover.Content>
-    </Popover>
-  );
 
 
   const EventItem = ({ info }) => {
@@ -91,6 +73,9 @@ export const Calendar = () => {
         <p>End: {event.endStr}</p>
       </ModalBody>
       <ModalFooter>
+        <Button color="Secundary">Editar</Button>
+        <Button color="Terciary" onClick={<CommentSection></CommentSection>}>Comentar</Button>
+        <Button color="Quarter">Adminstrar</Button>
         <Button color="primary" onClick={toggleModalEvent}>
           Close
         </Button>
@@ -107,7 +92,7 @@ export const Calendar = () => {
         editable
         selectable
         events={events}
-        select={toggleModalSelect}
+        select={handleDateSelect}
         eventClick ={handleEventClick}
         initialView={"dayGridMonth"}
         headerToolbar={{
@@ -126,11 +111,10 @@ export const Calendar = () => {
           <div style= {{justifyContent: 'center'}}>Nueva actividad</div>
         </ModalHeader>
         <ModalBody>
-            <ActividadesForm/>
+            <ActividadesForm selectedDate={selectedDate}/>
         </ModalBody>
 
         <ModalFooter>
-            <Button color="primary">Crear</Button>
             <Button color="secondary" onClick={toggleModalSelect}>Cerrar</Button>
         </ModalFooter>
       </Modal>
