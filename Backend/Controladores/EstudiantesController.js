@@ -49,8 +49,8 @@ router.get('/:idSede', async (req, res) => {
 
 });
 
-//PUT ->localhost:4000/estudiantes/:idSede/:carnet (estudiantes/1/2020127158, por ejemplo)
-router.put('/:idSede/:carnet', async (req, res) => {
+//PUT ->localhost:4000/actualizarestudiante (actualizarestudiante, por ejemplo)
+router.put('/actualizarestudiante', async (req, res) => {
   try {
 
     const {carne, cedulaEstudiante, codigoCarrera, idSede, generacion} = req.body;

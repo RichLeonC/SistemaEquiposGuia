@@ -4,6 +4,7 @@ const cors = require("cors");
 const app = express();
 require('dotenv').config(); //El dotenv es para poder utilizar el archivo .env (variables de entorno)
 
+// Routes
 const usuariosRoute = require("./Controladores/UsuarioController");
 const profesoresRoute = require("./Controladores/ProfesoresController")
 const estudiantesRoute = require("./Controladores/EstudiantesController");
