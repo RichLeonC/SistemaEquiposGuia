@@ -30,10 +30,23 @@ export const Calendar = () => {
       end: "2023-05-12",
     },
   ]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpenSelect, setModalOpenSelect] = useState(false);
+  const [modalOpenEvent, setModalOpenEvent] = useState(false);
+  const [selectedRange, setSelectedRange] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const toggleModal = () => {
-    setModalOpen(!modalOpen);
+  const toggleModalSelect = () => {
+    setModalOpenSelect(!modalOpenSelect);
+  };
+
+  const toggleModalEvent = () => {
+    setModalOpenEvent(!modalOpenEvent);
+  };
+
+
+  const handleEventClick = (info) => {
+    setSelectedEvent(info.event);
+    toggleModalEvent();
   };
 
   /*const handleSelect = (info) => {
@@ -60,11 +73,6 @@ export const Calendar = () => {
     </Popover>
   );
 
-  const handleEventClick = (info) => {
-    const { event } = info;
-    const popover = <EventPopover event={event} />;
-    ReactDOM.render(popover, document.getElementById('popover-container'));
-  };
 
   const EventItem = ({ info }) => {
     const { event } = info;
@@ -74,6 +82,21 @@ export const Calendar = () => {
       </div>
     );
   };
+
+  const EventModal = ({ event }) => (
+    <Modal isOpen={modalOpenEvent} toggle={toggleModalEvent}>
+      <ModalHeader toggle={toggleModalEvent}>{event.title}</ModalHeader>
+      <ModalBody>
+        <p>Start: {event.startStr}</p>
+        <p>End: {event.endStr}</p>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="primary" onClick={toggleModalEvent}>
+          Close
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
   
   return (
     <DashboardLayout>
@@ -84,7 +107,7 @@ export const Calendar = () => {
         editable
         selectable
         events={events}
-        select={toggleModal}
+        select={toggleModalSelect}
         eventClick ={handleEventClick}
         initialView={"dayGridMonth"}
         headerToolbar={{
@@ -92,12 +115,13 @@ export const Calendar = () => {
           center: "title",
           end: "dayGridMonth, dayGridWeek, dayGridDay",
         }}
-
+        
         eventContent={(info) => <EventItem info={info} />}
         height={"90vh"}
       /> 
+      {selectedEvent && <EventModal event={selectedEvent} />}
       <DashboardLayout>
-      <Modal isOpen={modalOpen} xl>
+      <Modal isOpen={modalOpenSelect} id="ActividadForm">
         <ModalHeader className={{justifyContent: 'center'}}>
           <div style= {{justifyContent: 'center'}}>Nueva actividad</div>
         </ModalHeader>
@@ -107,7 +131,7 @@ export const Calendar = () => {
 
         <ModalFooter>
             <Button color="primary">Crear</Button>
-            <Button color="secondary" onClick={toggleModal}>Cerrar</Button>
+            <Button color="secondary" onClick={toggleModalSelect}>Cerrar</Button>
         </ModalFooter>
       </Modal>
       </DashboardLayout>
