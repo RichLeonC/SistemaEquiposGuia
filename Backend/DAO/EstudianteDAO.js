@@ -90,11 +90,6 @@ class EstudianteDAO {
            ,@generacion = ${generacion}`;
 
             const request = new sql.Request(dbSql.conection);
-            request.input('carne', sql.Int, carne);
-            request.input('cedulaEstudiante', sql.Int, cedulaEstudiante);
-            request.input('codigoCarrera', sql.NVarChar, codigoCarrera);
-            request.input('idSede', sql.Int, idSede);
-            request.input('generacion', sql.Int, generacion);
             await request.query(query);
         } catch (error) {
             console.error(error);
