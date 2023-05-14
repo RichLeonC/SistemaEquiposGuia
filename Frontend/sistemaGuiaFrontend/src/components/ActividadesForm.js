@@ -1,8 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { FormGroup, Label, Input } from 'reactstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'bootstrap/dist/css/bootstrap.css';
+export default function ActividadesForm({ selectedDate }) {
 
-export default function ActividadesForm() {
+  const [selectedFinishDate, setSelectedFinishDate] = useState(null);
 
   const months = ['January', 'February', 'March', 'April'];
+  const tiposActividad = ['Orientacion', 'Motivacion', 'Apoyo', 'Orden'];
+
 
   const monthOptions = months.map((month, index) => (
     <option key={index} value={month}>
@@ -10,25 +17,38 @@ export default function ActividadesForm() {
     </option>
   ));
 
+  const actividadOptions = tiposActividad.map((tipo, index) => (
+    <option key={index} value={tipo}>
+      {tipo}
+    </option>
+  ));
+
   return (
     <>
     <div>ActividadesForm</div>
     <div>Tipo de actividad</div>
-      <select class="form-select" aria-label="Default select example">
-        <option selected>Seleccione el tipo de actividad</option>
-        <option value="1">Orientación</option>
-        <option value="2">Motivación</option>
-        <option value="3">Apoyo</option>
-        <option value="4">Orden tecnico</option>
-        <option value="5">Recreación</option>
-      </select>
+    <div class = "form-group">
+    <select className="form-control" name="" id="tiposActividad">
+          {actividadOptions}
+        </select>
+    </div>
     <div>Nombre de la actividad</div>
       <div class="input-group mb-3">
-        <span class="input-group-text" id="inputGroup-sizing-default">Default</span>
         <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"/>
       </div>
     <div>SEMANA</div>
-    <div>FECHA INICIO Y FINAL</div>
+    <div>FECHA INICIO</div>
+    <p>Fecha seleccionada: {selectedDate}</p>
+    <>Fecha final</>
+    <FormGroup>
+  <Label>Selecciona una fecha:</Label>
+  <DatePicker
+    selected={selectedFinishDate}
+    onChange={(date) => setSelectedFinishDate(date)}
+    minDate={new Date(selectedDate)} // Aquí estableces la fecha mínima
+    className="form-control"
+  />
+</FormGroup>
     <div>HORA INICIO</div>
 
     <div>MODALIDAD</div> 

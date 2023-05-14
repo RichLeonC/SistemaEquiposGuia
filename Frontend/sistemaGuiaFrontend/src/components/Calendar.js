@@ -32,7 +32,8 @@ export const Calendar = () => {
   ]);
   const [modalOpenSelect, setModalOpenSelect] = useState(false);
   const [modalOpenEvent, setModalOpenEvent] = useState(false);
-  const [selectedRange, setSelectedRange] = useState(null);
+
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const toggleModalSelect = () => {
@@ -43,6 +44,10 @@ export const Calendar = () => {
     setModalOpenEvent(!modalOpenEvent);
   };
 
+  const handleDateSelect = (info) => {
+    setSelectedDate(info.startStr);
+    toggleModalSelect();
+  };
 
   const handleEventClick = (info) => {
     setSelectedEvent(info.event);
@@ -107,7 +112,7 @@ export const Calendar = () => {
         editable
         selectable
         events={events}
-        select={toggleModalSelect}
+        select={handleDateSelect}
         eventClick ={handleEventClick}
         initialView={"dayGridMonth"}
         headerToolbar={{
@@ -126,7 +131,7 @@ export const Calendar = () => {
           <div style= {{justifyContent: 'center'}}>Nueva actividad</div>
         </ModalHeader>
         <ModalBody>
-            <ActividadesForm/>
+            <ActividadesForm selectedDate={selectedDate}/>
         </ModalBody>
 
         <ModalFooter>
