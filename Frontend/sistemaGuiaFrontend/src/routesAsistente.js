@@ -44,6 +44,15 @@ const routesAsistente = [
     route: "/registrarProfesores",
     component: <RegistrarProfes/>,
   },
+
+  {
+    type: "collapse",
+    name: "Ver Equipos Guía",
+    key: "verequipos",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/verEquiposGuia",
+    component: "",
+  },
   {
     type: "collapse",
     name: "Dashboard",
