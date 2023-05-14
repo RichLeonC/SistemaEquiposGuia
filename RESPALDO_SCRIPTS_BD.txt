@@ -57,8 +57,9 @@ CREATE TABLE profesor (
 
 
 CREATE TABLE profesor_equipoGuia  (
-    generacion INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES equipoGuia(generacion),
-    idProfesor VARCHAR(10) NOT NULL UNIQUE FOREIGN KEY REFERENCES profesor(codigo)
+    generacion INT NOT NULL FOREIGN KEY REFERENCES equipoGuia(generacion),
+    idProfesor VARCHAR(10) NOT NULL FOREIGN KEY REFERENCES profesor(codigo),
+    PRIMARY KEY (generacion, idProfesor)
 )
 
 CREATE TABLE equipoGuia(
@@ -80,11 +81,12 @@ CREATE TABLE actividad(
 )
 
 CREATE TABLE actividad_responsables(
-    idActividad INT NOT NULL PRIMARY KEY,
-    generacion INT NOT NULL UNIQUE FOREIGN KEY REFERENCES profesor_equipoGuia(generacion),
-    idProfesor VARCHAR(10) NOT NULL UNIQUE FOREIGN KEY REFERENCES profesor(codigo)
+    idActividad INT NOT NULL FOREIGN KEY REFERENCES actividad(codigoActividad),
+    generacion INT NOT NULL,
+    idProfesor VARCHAR(10) NOT NULL,
+    PRIMARY KEY (idActividad, generacion, idProfesor),
+    FOREIGN KEY (generacion, idProfesor) REFERENCES profesor_equipoGuia(generacion, idProfesor)
 )
-
 CREATE TABLE actividad_recordatorio (
     idActividad INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES actividad(codigoActividad),
     fecha DATE
