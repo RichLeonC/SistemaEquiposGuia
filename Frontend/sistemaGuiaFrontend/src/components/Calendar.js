@@ -11,6 +11,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import ActividadesForm from './ActividadesForm'
+import CommentSection from "./ComentSection";
 
 export const Calendar = () => {
   const [events, setEvents] = useState([
@@ -96,6 +97,9 @@ export const Calendar = () => {
         <p>End: {event.endStr}</p>
       </ModalBody>
       <ModalFooter>
+        <Button color="Secundary">Editar</Button>
+        <Button color="Terciary" onClick={<CommentSection></CommentSection>}>Comentar</Button>
+        <Button color="Quarter">Adminstrar</Button>
         <Button color="primary" onClick={toggleModalEvent}>
           Close
         </Button>
