@@ -7,7 +7,7 @@ require('dotenv').config(); //El dotenv es para poder utilizar el archivo .env (
 const usuariosRoute = require("./Controladores/UsuarioController");
 const profesoresRoute = require("./Controladores/ProfesoresController")
 const estudiantesRoute = require("./Controladores/EstudiantesController");
-
+const equiposRoute = require("./Controladores/EquipoGuiaController");
 
 
 //Settings
@@ -22,8 +22,8 @@ app.use(cors());
 
 app.use("/usuarios",usuariosRoute);
 app.use("/profesores",profesoresRoute);
-
 app.use("/estudiantes",estudiantesRoute);
+app.use("/equipos",equiposRoute);
 
 
 app.listen(app.get('port'),()=>{ //Va abrir el server en el puerto 4000

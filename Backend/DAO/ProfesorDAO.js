@@ -7,9 +7,6 @@ class ProfesorDAO {
 
     async crearProfesor(profesor) {
         try {
-
-
-
             const request = new sql.Request(dbSql.conection);
 
             const checkIfExists = await request.query(`SELECT COUNT(*) AS count FROM profesor WHERE cedulaProfesor = ${profesor.cedula}`);
