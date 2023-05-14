@@ -9,7 +9,7 @@ const equipoGuiaDAO = new EquipoGuiaDAO();
 //GET -> localhost:4000/equipos
 router.get('/', async (req, res) => {
     try {
-        const equipos = equipoGuiaDAO.getEquipoGuias();
+        const equipos = await equipoGuiaDAO.getEquipoGuias();
         res.status(200).json(equipos);
     } catch (error) {
         console.error(error);

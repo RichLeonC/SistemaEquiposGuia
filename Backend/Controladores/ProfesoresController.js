@@ -24,6 +24,32 @@ router.get('/', async (req, res) => {
 
 });
 
+//GET -> localhost:4000/profesores/sinEquipo
+router.get('/sinEquipo', async (req, res) => {
+  try {
+    const profesores = await profesorDAO.getProfesSinEquipoGuia();
+    res.status(200).json(profesores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error al obtener los profesores");
+  }
+
+});
+
+//GET -> localhost:4000/profesores/sinEquipo/:idSede
+router.get('/sinEquipo/:idSede', async (req, res) => {
+  try {
+    const {idSede} = req.params;
+    const profesores = await profesorDAO.getProfesSinEquipoGuiaPorSede(idSede);
+    res.status(200).json(profesores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error al obtener los profesores");
+  }
+
+});
+
+
 //GET -> localhost:4000/profesores/:cedula
 router.get('/:parametro', async (req, res) => {
   try {

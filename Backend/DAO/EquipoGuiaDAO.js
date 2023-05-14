@@ -31,6 +31,7 @@ class EquipoGuiaDAO {
 
             const resultado = await request.query(query);
             if (resultado.recordset.length > 0) {
+              
                 const equipos = resultado.recordset.map(row => {
 
                     const equipo = new EquipoGuia(
@@ -52,7 +53,7 @@ class EquipoGuiaDAO {
     async eliminarEquipo(){
         try {
 
-            
+
             
         } catch (error) {
             console.error(error);

@@ -158,6 +158,77 @@ class ProfesorDAO {
 
         }
     }
+
+    async getProfesSinEquipoGuia() {
+        try {
+            const query = `EXEC verProfesoresSinEquipoGuia`;
+            const request = new sql.Request(dbSql.conection);
+            const resultado = await request.query(query);
+            if (resultado.recordset.length > 0) {
+                const profesores = resultado.recordset.map(row => {
+                    const profesor = new Profesor(
+                        row.cedulaUsuario,
+                        row.codigo,
+                        row.esCordinador,
+                        row.nombre,
+                        row.segundonombre,
+                        row.apellido1,
+                        row.apellido2,
+                        row.correo,
+                        row.clave,
+                        row.celular,
+                        row.rol,
+                        row.idSede,
+                        row.telOficina,
+                        row.foto
+                    );
+                    return profesor;
+                });
+                return profesores;
+            }
+            else {
+                return [];
+            }
+        } catch (error) {
+
+        }
+    }
+
+    async getProfesSinEquipoGuiaPorSede(idSede) {
+        try {
+            const query = `EXEC verProfesoresSinEquipoGuiaPorSede @idSede=${idSede}`;
+            const request = new sql.Request(dbSql.conection);
+            
+            const resultado = await request.query(query);
+            if (resultado.recordset.length > 0) {
+                const profesores = resultado.recordset.map(row => {
+                    const profesor = new Profesor(
+                        row.cedulaUsuario,
+                        row.codigo,
+                        row.esCordinador,
+                        row.nombre,
+                        row.segundonombre,
+                        row.apellido1,
+                        row.apellido2,
+                        row.correo,
+                        row.clave,
+                        row.celular,
+                        row.rol,
+                        row.idSede,
+                        row.telOficina,
+                        row.foto
+                    );
+                    return profesor;
+                });
+                return profesores;
+            }
+            else {
+                return [];
+            }
+        } catch (error) {
+
+        }
+    }
 }
 
 module.exports = ProfesorDAO;

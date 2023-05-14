@@ -140,29 +140,7 @@ CREATE TABLE actividad_comentario_respuesta(
 )
 
 
-
-CREATE PROCEDURE verProfesores
-AS
-BEGIN
-  SELECT 
-    u.cedulaUsuario,
-    u.nombre,
-    u.segundonombre,
-    u.apellido1,
-    u.apellido2,
-    u.correo,
-    u.celular,
-    u.rol,
-    p.idSede,
-    p.telOficina,
-    p.foto,
-    pr.codigo,
-    pr.esCordinador
-  FROM usuario AS u
-  INNER JOIN personal AS p ON u.cedulaUsuario = p.cedulaPersonal
-  INNER JOIN profesor AS pr ON p.cedulaPersonal = pr.cedulaProfesor;
-END
-GO
+c
 drop procedure verProfesores
 EXEC verProfesores;
 
@@ -227,3 +205,80 @@ BEGIN
         PRINT 'Ocurrió un error: ' + ERROR_MESSAGE()
     END CATCH
 END
+
+
+CREATE PROCEDURE verProfesoresSinEquipoGuia
+AS
+BEGIN
+  SELECT 
+    u.cedulaUsuario,
+    u.nombre,
+    u.segundonombre,
+    u.apellido1,
+    u.apellido2,
+    u.correo,
+    u.celular,
+    u.rol,
+    p.idSede,
+    p.telOficina,
+    p.foto,
+    pr.codigo,
+    pr.esCordinador
+  FROM usuario AS u
+  INNER JOIN personal AS p ON u.cedulaUsuario = p.cedulaPersonal
+  INNER JOIN profesor AS pr ON p.cedulaPersonal = pr.cedulaProfesor
+  WHERE pr.codigo NOT IN (SELECT idProfesor FROM profesor_equipoGuia);
+END
+
+CREATE PROCEDURE verProfesoresSinEquipoGuiaPorSede
+    @idSede INT
+AS
+BEGIN
+  SELECT 
+    u.cedulaUsuario,
+    u.nombre,
+    u.segundonombre,
+    u.apellido1,
+    u.apellido2,
+    u.correo,
+    u.celular,
+    u.rol,
+    p.idSede,
+    p.telOficina,
+    p.foto,
+    pr.codigo,
+    pr.esCordinador
+  FROM usuario AS u
+  INNER JOIN personal AS p ON u.cedulaUsuario = p.cedulaPersonal
+  INNER JOIN profesor AS pr ON p.cedulaPersonal = pr.cedulaProfesor
+  WHERE pr.codigo NOT IN (SELECT idProfesor FROM profesor_equipoGuia) AND p.idSede = @idSede;
+END
+
+
+CREATE PROCEDURE verAsistentePorCedula
+    @cedula INT
+AS
+BEGIN
+  SELECT 
+    u.cedulaUsuario,
+    u.nombre,
+    u.segundonombre,
+    u.apellido1,
+    u.apellido2,
+    u.correo,
+    u.clave,
+    u.celular,
+    u.rol,
+    p.idSede,
+    p.telOficina,
+    p.foto
+  FROM usuario AS u
+  INNER JOIN personal AS p ON u.cedulaUsuario = p.cedulaPersonal
+  WHERE u.cedulaUsuario = @cedula AND u.rol = 'ASISTENTE';
+END
+
+
+
+
+
+

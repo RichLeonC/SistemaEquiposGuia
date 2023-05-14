@@ -33,6 +33,7 @@ import RegistrarProfes from "layouts/AsistentePanel/RegistrarProfesores/Registra
 
 // @mui icons
 import Icon from "@mui/material/Icon";
+import AdministrarEquipos from "layouts/AsistentePanel/AdministrarEquipos";
 
 const routesAsistente = [
 
@@ -51,7 +52,7 @@ const routesAsistente = [
     key: "verequipos",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/verEquiposGuia",
-    component: "",
+    component: <AdministrarEquipos></AdministrarEquipos>,
   },
   {
     type: "collapse",
