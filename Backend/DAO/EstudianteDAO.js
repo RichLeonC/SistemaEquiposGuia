@@ -82,7 +82,12 @@ class EstudianteDAO {
 
     async actualizarEstudiante(carne, cedulaEstudiante, codigoCarrera, idSede, generacion) {
         try {
-            const query = `UPDATE usuario set rol = @rolNuevo WHERE cedulaUsuario = @cedula`;
+            const query = `EXEC [dbo].[UpdateEstudiante] 
+            @cedulaEstudiante = ${cedulaEstudiante}
+           ,@carne = ${carne}
+           ,@codigoCarrera = ${codigoCarrera}
+           ,@idSede = ${idSede}
+           ,@generacion = ${generacion}`;
 
             const request = new sql.Request(dbSql.conection);
             request.input('carne', sql.Int, carne);
