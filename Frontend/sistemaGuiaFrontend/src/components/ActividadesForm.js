@@ -1,16 +1,39 @@
 import React, { useState } from 'react';
-import { FormGroup, Label, Input } from 'reactstrap';
+import { Form, FormGroup, Label, Input, Button  } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.css';
+
 export default function ActividadesForm({ selectedDate }) {
 
   const [selectedFinishDate, setSelectedFinishDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [virtual, setVirtual] = useState(false);
+  const [link, setLink] = useState("");
+
+  const handleVirtualChange = (event) => {
+    setVirtual(event.target.checked);
+  };
+
+  const handleLinkChange = (event) => {
+    setLink(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    // Aquí puedes realizar las acciones necesarias con los datos del formulario
+    // Por ejemplo, enviar los datos al servidor o realizar alguna acción en el estado de la aplicación
+    console.log("Virtual:", virtual);
+    console.log("Link:", link);
+  };
 
   const months = ['January', 'February', 'March', 'April'];
   const tiposActividad = ['Orientacion', 'Motivacion', 'Apoyo', 'Orden'];
 
-
+  const handleTimeChange = (event) => {
+    setSelectedTime(event.target.value);
+  };
   const monthOptions = months.map((month, index) => (
     <option key={index} value={month}>
       {month}
@@ -24,9 +47,8 @@ export default function ActividadesForm({ selectedDate }) {
   ));
 
   return (
-    <>
-    <div>ActividadesForm</div>
-    <div>Tipo de actividad</div>
+    <Form>
+    <div>Seleccione el tipo de la nueva actividad</div>
     <div class = "form-group">
     <select className="form-control" name="" id="tiposActividad">
           {actividadOptions}
@@ -49,22 +71,43 @@ export default function ActividadesForm({ selectedDate }) {
     className="form-control"
   />
 </FormGroup>
+
     <div>HORA INICIO</div>
+    <div>
+      <label htmlFor="timePicker">Selecciona una hora:</label>
+      <input
+        type="time"
+        id="timePicker"
+        value={selectedTime}
+        onChange={handleTimeChange}
+      />
+      <p>Hora seleccionada: {selectedTime}</p>
+    </div>
+
+
 
     <div>MODALIDAD</div> 
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"/>
-        <label class="form-check-label" for="flexRadioDefault1">
-        Virtual
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked/>
-        <label class="form-check-label" for="flexRadioDefault2">
-        Presencial
-        </label>
-      </div>
-    <div>ENLACE REUNION</div>
+    <FormGroup check>
+        <Label check>
+          <Input
+            type="checkbox"
+            checked={virtual}
+            onChange={handleVirtualChange}
+          />{" "}
+          Virtual
+        </Label>
+      </FormGroup>
+      {virtual && (
+        <FormGroup>
+          <Label for="link">Enlace:</Label>
+          <Input
+            type="text"
+            id="link"
+            value={link}
+            onChange={handleLinkChange}
+          />
+        </FormGroup>
+      )}
 
     <div>Profesores encargados</div>
     <div class = "form-group">
@@ -73,10 +116,8 @@ export default function ActividadesForm({ selectedDate }) {
         </select>
     </div>
     <div>AFICHE</div>
-    <div>RECORDATORIO</div>
-    <div>ESTADO</div>
-
-    </>
+    <Button type="submit" color="primary">Guardar</Button>
+    </Form>
     
   )
 }

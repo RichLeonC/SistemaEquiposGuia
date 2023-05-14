@@ -6,6 +6,7 @@ import Billing from "layouts/billing";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import Calendar from 'components/Calendar';
+import CommentSection from "components/ComentSection";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
@@ -19,7 +20,7 @@ const routesProfesor = [
     key: "estudiantes",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/estudiantes",
-    component: "",
+    component: <CommentSection/>,
   },
   {
     type: "collapse",
