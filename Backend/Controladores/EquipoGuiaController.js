@@ -18,6 +18,18 @@ router.get('/', async (req, res) => {
 
 });
 
+//GET -> localhost:4000/equipos/profesEquipoGuia
+router.get('/profesEquipoGuia', async (req, res) => {
+    try {
+        const profes = await equipoGuiaDAO.getProfesEquipoGuia();
+        res.status(200).json(profes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al obtener los Profesores");
+    }
+
+});
+
 //POST ->localhost:4000/equipos
 router.post('/', async (req, res) => {
     try {
@@ -33,6 +45,24 @@ router.post('/', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send("Error al crear el equipo");
+    }
+
+});
+
+//POST ->localhost:4000/equipos/agregarProfe
+router.post('/agregarProfe', async (req, res) => {
+    try {
+        const {generacion,idProfesor} = req.body;
+        if(!generacion||!idProfesor){
+            return res.status(400).send('Generacion o idProfesor invalido');
+        }
+
+        await equipoGuiaDAO.agregarProfeAEquipoGuia(idProfesor,generacion);
+
+        return res.status(201).send('Profesor agreado a Equipo Guia exitosamente.');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al agregar profesor a equipo guia");
     }
 
 });

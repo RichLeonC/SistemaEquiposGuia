@@ -15,6 +15,8 @@ import DataTable from "examples/Tables/DataTable";
 import MDButton from 'components/MDButton';
 import MDAlert from "components/MDAlert";
 import { Modal, Box, TextField, MenuItem } from "@mui/material";
+import MDAvatar from "components/MDAvatar";
+import Icon from "@mui/material/Icon";
 
 export default function AdministrarEquipos() {
     const style = {
@@ -37,8 +39,9 @@ export default function AdministrarEquipos() {
     const [equipoActual, setEquipoActual] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
     const [asistenteActual, setAsistenteActual] = useState([]);
-    const [profesPorSede,setProfesPorSede] = useState([]);
-
+    const [profesPorSede, setProfesPorSede] = useState([]);
+    const [profesTablas, setProfesTablas] = useState([]);
+    const [allProfes, setAllProfes] = useState([]);
 
 
     const alertContent = (msj) => (
@@ -49,23 +52,22 @@ export default function AdministrarEquipos() {
     const apiURIEquipos = "http://localhost:4000/equipos";
     const apiURi = "http://localhost:4000"
 
-    const handleModalProfe = (equipo) => {
+    const handleModalProfe = async (equipo) => {
         setEquipoActual(equipo);
+        peticionGetProfesSinEquipo();
+        filtrarProfesPorSede();
         setSelectedProfe('');
-        if (modalProfe) {
-            peticionGetProfesSinEquipo();
-            filtrarProfesPorSede();
-        }
+
         setModalProfe(!modalProfe);
 
     }
 
-    const filtrarProfesPorSede=()=>{
-        if(asistenteActual.idSede!=1){
-            setProfesPorSede(dataProfes.filter(p=>p.idSede == asistenteActual.idSede));
+    const filtrarProfesPorSede = () => {
+        if (asistenteActual.idSede != 1) {
+            setProfesPorSede(dataProfes.filter(p => p.idSede == asistenteActual.idSede));
 
         }
-        else{
+        else {
             setProfesPorSede(dataProfes);
         }
     }
@@ -92,8 +94,27 @@ export default function AdministrarEquipos() {
         try {
             const response = await axios.get(apiURi + "/profesores/sinEquipo");
             setDataProfes(response.data);
+            filtrarProfesPorSede();
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    const peticionGetProfes = async () => {
+        try {
+            const response = await axios.get(apiURIEquipos + "/profesEquipoGuia");
+            setProfesTablas(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const peticionGetAllProfes = async () => {
+        try {
+            const response = await axios.get(`${apiURi}/profesores`);
+            setAllProfes(response.data);
+        } catch (error) {
+            console.error(error);
         }
     }
 
@@ -108,14 +129,28 @@ export default function AdministrarEquipos() {
             alert("Debe seleccionar algun profesor");
             return false;
         }
-        return true;
         try {
-
+            await axios.post(`${apiURIEquipos}/agregarProfe`, { idProfesor: selectedProfe, generacion: equipoActual.generacion });
+            handleModalProfe(null);
+            return true;
         } catch (error) {
-
+            alert("No se puede agregar el profesor al equipo")
         }
 
     }
+
+    const Author = ({ image, name, email }) => (
+        <MDBox display="flex" alignItems="center" lineHeight={1}>
+            <MDAvatar src={image} name={name} size="sm" />
+            <MDBox ml={2} lineHeight={1}>
+                <MDTypography display="block" variant="button" fontWeight="medium">
+                    {name}
+                </MDTypography>
+                <MDTypography variant="caption">{email}</MDTypography>
+            </MDBox>
+        </MDBox>
+    );
+
 
     const columns = [
         { Header: "Profesor", accessor: "author", width: "45%", align: "left" },
@@ -128,54 +163,120 @@ export default function AdministrarEquipos() {
     ];
 
 
+    function createRow(profe) {
+        let sedeP = '';
+        switch(profe.idSede){
+            case 1: 
+                sedeP = 'Cartago'
+                break;
+            case 2:
+                sedeP = 'San José'
+                break;
+            case 3:
+                sedeP = 'Alajuela';
+                break;
+            case 4: 
+                sedeP='Limón';
+                break;
+            case 5:
+                sedeP = 'San Carlos';
+                break;
+        }
+      
+        const nombreCompleto = `${profe.nombre} ${profe.segundoNombre} ${profe.apellido1} ${profe.apellido2}`;
+        return {
+            
+            author: <Author image={profe.foto} name={nombreCompleto} email={profe.correo} />,
+            codigo: (
+                <MDTypography variant="caption h7" color="text" fontWeight="medium">
+                    {profe.codigo}
+                </MDTypography>
+            ),
+            cedula: (
+                <MDTypography variant="caption h7" color="text" fontWeight="medium">
+                    {profe.cedula}
+                </MDTypography>
+            ),
+            celular: (
+                <MDTypography variant="caption h7" color="text" fontWeight="medium">
+                    {profe.celular}
+                </MDTypography>
+            ),
+            sede: (
+                <MDTypography variant="caption h7" color="text" fontWeight="medium">
+                    {sedeP}
+                </MDTypography>
+            ),
+            telOficina: (
+                <MDTypography variant="caption h7" color="text" fontWeight="medium">
+                    {profe.telOficina}
+                </MDTypography>
+            ),
+            action: (
+                <MDButton color="dark" size={"small"}>Dar de Baja</MDButton>
+            )
+        };
+    }
+
+
+
     useEffect(() => { //Hace efecto la peticion
         peticionGetEquipos();
         peticionGetAsistenteActual();
-    }, [equipoActual])
+        peticionGetProfes();
+        peticionGetAllProfes();
+
+    }, [equipoActual, profesPorSede, dataProfes])
 
     return (
         <DashboardLayout>
             <DashboardNavbar />
             <MDBox pt={6} pb={3}>
                 <Grid container spacing={6}>
-                    {dataEquipos.map((equipo, index) => (
+                    {dataEquipos.map((equipo, index) => {
+                        const profesGenActual = profesTablas.filter(p=>p.generacion == equipo.generacion);
+                        const profesCompletos = allProfes.filter(p=>profesGenActual.some(pg=>pg.idProfesor == p.codigo));
+                        console.log(profesCompletos);
+                        const rows = profesCompletos.map(createRow);
+                       
+                        return (
+                            <Grid item xs={12} key={index}>
 
-                        <Grid item xs={12} key={index}>
+                                <Card>
+                                    <MDBox
+                                        mx={2}
+                                        mt={-3}
+                                        py={3}
+                                        px={2}
+                                        variant="gradient"
+                                        bgColor="info"
+                                        borderRadius="lg"
+                                        coloredShadow="info"
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="space-between"
+                                    >
+                                        <MDTypography variant="h6" color="white">
+                                            {`Tabla del Equipo Guía: ${equipo.generacion}`}
+                                        </MDTypography>
+                                        <MDButton size="small" color="primary" style={{ marginLeft: '900px' }}>Definir Coordinador</MDButton>
+                                        <MDButton size="small" color="primary" onClick={() => handleModalProfe(equipo)} >Agregar Profesor</MDButton>
 
-                            <Card>
-                                <MDBox
-                                    mx={2}
-                                    mt={-3}
-                                    py={3}
-                                    px={2}
-                                    variant="gradient"
-                                    bgColor="info"
-                                    borderRadius="lg"
-                                    coloredShadow="info"
-                                    display="flex"
-                                    alignItems="center"
-                                    justifyContent="space-between"
-                                >
-                                    <MDTypography variant="h6" color="white">
-                                        {`Tabla del Equipo Guía: ${equipo.generacion}`}
-                                    </MDTypography>
-                                    <MDButton size="small" color="primary" style={{ marginLeft: '900px' }}>Definir Coordinador</MDButton>
-                                    <MDButton size="small" color="primary" onClick={() => handleModalProfe(equipo)} >Agregar Profesor</MDButton>
+                                    </MDBox>
 
-                                </MDBox>
-
-                                <MDBox pt={3}>
-                                    <DataTable
-                                        table={{ columns: columns, rows: [] }}
-                                        isSorted={false}
-                                        entriesPerPage={false}
-                                        showTotalEntries={false}
-                                        noEndBorder
-                                    />
-                                </MDBox>
-                            </Card>
-                        </Grid>
-                    ))}
+                                    <MDBox pt={3}>
+                                        <DataTable
+                                            table={{ columns: columns, rows: rows }}
+                                            isSorted={false}
+                                            entriesPerPage={false}
+                                            showTotalEntries={false}
+                                            noEndBorder
+                                        />
+                                    </MDBox>
+                                </Card>
+                            </Grid>
+                        )
+                    })}
                 </Grid>
             </MDBox>
 
@@ -209,7 +310,7 @@ export default function AdministrarEquipos() {
                         </TextField>
                         <br></br>
                         <MDButton style={{ top: "60px" }} size={"small"} color="primary" onClick={() => agregarProfes()}>Aceptar</MDButton>
-                        <MDButton style={{ top: "60px", left: "10px" }} size={"small"} color="primary" onClick={() => handleModalProfe()}>Cancelar</MDButton>
+                        <MDButton style={{ top: "60px", left: "10px" }} size={"small"} color="primary" onClick={() => setModalProfe(false)}>Cancelar</MDButton>
 
                     </div>
                     {/* {showAlert && (
