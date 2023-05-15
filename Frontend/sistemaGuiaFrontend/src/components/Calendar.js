@@ -16,19 +16,28 @@ import CommentSection from "./ComentSection";
 export const Calendar = () => {
   const [events, setEvents] = useState([
     {
+      id: uuid(),
       title: "Evento 1",
       start: "2023-05-01",
       end: "2023-05-02",
+      description: "Descripción del evento 1",
+      location: "Ubicación del evento 1",
     },
     {
+      id: uuid(),
       title: "Evento 2",
       start: "2023-05-05",
       end: "2023-05-07",
+      description: "Descripción del evento 2",
+      location: "Ubicación del evento 2",
     },
     {
+      id: uuid(),
       title: "Evento 3",
       start: "2023-05-10",
       end: "2023-05-12",
+      description: "Descripción del evento 3",
+      location: "Ubicación del evento 3",
     },
   ]);
   const [modalOpenSelect, setModalOpenSelect] = useState(false);
@@ -36,6 +45,9 @@ export const Calendar = () => {
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const [comments, setComments] = useState([]);
+  
 
   const toggleModalSelect = () => {
     setModalOpenSelect(!modalOpenSelect);
@@ -61,6 +73,7 @@ export const Calendar = () => {
     return (
       <div>
         <p>{event.title}</p>
+
       </div>
     );
   };
@@ -69,12 +82,14 @@ export const Calendar = () => {
     <Modal isOpen={modalOpenEvent} toggle={toggleModalEvent}>
       <ModalHeader toggle={toggleModalEvent}>{event.title}</ModalHeader>
       <ModalBody>
-        <p>Start: {event.startStr}</p>
-        <p>End: {event.endStr}</p>
+      <p>Start: {event.startStr}</p>
+      <p>End: {event.endStr}</p>
+      <p>Description: {event.extendedProps.description}</p>
+      <p>Location: {event.extendedProps.location}</p>
       </ModalBody>
       <ModalFooter>
         <Button color="Secundary">Editar</Button>
-        <Button color="Terciary" onClick={<CommentSection></CommentSection>}>Comentar</Button>
+        <Button color="Terciary" >Comentar</Button>
         <Button color="Quarter">Adminstrar</Button>
         <Button color="primary" onClick={toggleModalEvent}>
           Close
