@@ -103,6 +103,35 @@ class EquipoGuiaDAO {
             throw error;
         }
     }
+
+    async getProfesEquipoGuiaPorGeneracion(generacion){
+        try {
+            const request = new sql.Request(dbSql.conection);
+            request.input('generacion',sql.Int,generacion)
+            const query = "SELECT * FROM profesor_equipoGuia WHERE generacion=@generacion";
+
+        
+            const resultado = await request.query(query);
+            if (resultado.recordset.length > 0) {
+              
+                const profesores = resultado.recordset.map(row => {
+                    
+                    const profesor = new Profesor_EquipoGuia(
+                        row.generacion,
+                        row.idProfesor
+                    );
+                    return profesor;
+                });
+                return profesores
+            }
+            else {
+                return null;
+            }
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 }
 
 module.exports = EquipoGuiaDAO;

@@ -280,6 +280,29 @@ BEGIN
 END
 
 
+CREATE PROCEDURE GetProfesoresPorGeneracion
+    @generacion INT
+AS
+BEGIN
+    SELECT 
+        p.codigo, 
+        u.nombre,
+        u.segundonombre,
+        u.apellido1,
+        u.apellido2,
+        u.correo,
+        u.celular,
+        per.telOficina,
+        per.foto,
+        p.esCordinador
+    FROM profesor_equipoGuia AS peg
+    INNER JOIN profesor AS p ON peg.idProfesor = p.codigo
+    INNER JOIN personal AS per ON p.cedulaProfesor = per.cedulaPersonal
+    INNER JOIN usuario AS u ON per.cedulaPersonal = u.cedulaUsuario
+    WHERE peg.generacion = @generacion;
+END
+
+
 
 
 

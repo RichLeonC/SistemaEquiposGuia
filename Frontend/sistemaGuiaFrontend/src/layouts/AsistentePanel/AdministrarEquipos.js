@@ -213,7 +213,7 @@ export default function AdministrarEquipos() {
                 </MDTypography>
             ),
             action: (
-                <MDButton color="dark" size={"small"}>Dar de Baja</MDButton>
+                <MDButton disabled={asistenteActual.idSede != profe.idSede && asistenteActual.idSede!=1} color="dark" size={"small"}>Dar de Baja</MDButton>
             )
         };
     }
@@ -259,7 +259,9 @@ export default function AdministrarEquipos() {
                                         <MDTypography variant="h6" color="white">
                                             {`Tabla del Equipo Guía: ${equipo.generacion}`}
                                         </MDTypography>
-                                        <MDButton size="small" color="primary" style={{ marginLeft: '900px' }}>Definir Coordinador</MDButton>
+                                        <MDButton size="small" color="primary" style={{ marginLeft: '900px' }}
+                                        disabled={asistenteActual.idSede!=1}
+                                        >Definir Coordinador</MDButton>
                                         <MDButton size="small" color="primary" onClick={() => handleModalProfe(equipo)} >Agregar Profesor</MDButton>
 
                                     </MDBox>

@@ -30,6 +30,20 @@ router.get('/profesEquipoGuia', async (req, res) => {
 
 });
 
+
+//GET -> localhost:4000/equipos/profesEquipoGuia
+router.get('/profesEquipoGuia/:generacion', async (req, res) => {
+    try {
+        const {generacion} = req.params;
+        const profes = await equipoGuiaDAO.getProfesEquipoGuiaPorGeneracion(generacion);
+        res.status(200).json(profes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al obtener los Profesores");
+    }
+
+});
+
 //POST ->localhost:4000/equipos
 router.post('/', async (req, res) => {
     try {
