@@ -12,13 +12,16 @@ export default function ActividadesForm({ selectedDate }) {
   const [virtual, setVirtual] = useState(false);
   const [link, setLink] = useState("");
   const [form, setForm] = useState({
-    tipoActividad: '',
+    codigoActividad: "1",
+    tipoActividad:'',
     nombreActividad:'',
     fechaInicio: new Date(selectedDate),
     horaInicio:'',
-    fechaFinal:'',
-    modalidad:'',
-    enlaceReunion:''
+    fechaCreacion: new Date(),
+    modalidad: '',
+    enlaceReunion: '',
+    estadoActividad:2,
+    fechaFinal: ''
 
 });
 
@@ -62,13 +65,19 @@ const handleLinkChange = (event) => {
     console.log(form);
 }
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log('Formulario:', form);
-  
-    // Aquí puedes realizar las acciones necesarias con los datos del formulario
-    // Por ejemplo, enviar los datos al servidor o actualizar el estado de la aplicación
-  };
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  console.log('Formulario:', form);
+
+  try {
+    await axios.post('http://localhost:4000/actividades', form);
+    console.log('Actividad creada exitosamente.');
+    // Realiza cualquier acción adicional después de almacenar los datos en la base de datos
+  } catch (error) {
+    console.error('Error al crear la Actividad:', error);
+    // Maneja el error de acuerdo a tus necesidades
+  }
+};
 
   const handleTimeChange = (event) => {
     setSelectedTime(event.target.value);
