@@ -13,33 +13,10 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import ActividadesForm from './ActividadesForm'
 import CommentSection from "./ComentSection";
 
+import axios from 'axios';
+
 export const Calendar = () => {
-  const [events, setEvents] = useState([
-    {
-      id: uuid(),
-      title: "Evento 1",
-      start: "2023-05-01",
-      end: "2023-05-02",
-      description: "Descripción del evento 1",
-      location: "Ubicación del evento 1",
-    },
-    {
-      id: uuid(),
-      title: "Evento 2",
-      start: "2023-05-05",
-      end: "2023-05-07",
-      description: "Descripción del evento 2",
-      location: "Ubicación del evento 2",
-    },
-    {
-      id: uuid(),
-      title: "Evento 3",
-      start: "2023-05-10",
-      end: "2023-05-12",
-      description: "Descripción del evento 3",
-      location: "Ubicación del evento 3",
-    },
-  ]);
+  const [events, setEvents] = useState([]);
   const [modalOpenSelect, setModalOpenSelect] = useState(false);
   const [modalOpenEvent, setModalOpenEvent] = useState(false);
 
@@ -97,6 +74,20 @@ export const Calendar = () => {
       </ModalFooter>
     </Modal>
   );
+
+  useEffect(() => {
+    const obtenerActividades = async () => {
+      try {
+        const response = await axios.get("/actividades"); // Ruta de la API para obtener las actividades
+        const actividades = response.data;
+        setEvents(actividades);
+      } catch (error) {
+        console.error('Error al obtener las actividades:', error);
+      }
+    };
+
+    obtenerActividades();
+  }, []);
   
   return (
     <DashboardLayout>

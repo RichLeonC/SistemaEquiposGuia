@@ -33,6 +33,17 @@ class ActividadDAO{
       console.error('Error al insertar la actividad:', error);
     }
   }
+
+  async obtenerActividades() {
+    try {
+      const pool = await sql.connect(dbSql.conection);
+      const result = await pool.request().query("SELECT * FROM Actividad");
+      return result.recordset;
+    } catch (error) {
+      console.error("Error al obtener las actividades:", error);
+      throw error;
+    }
+  }
 }
 
   module.exports = ActividadDAO;
