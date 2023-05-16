@@ -81,4 +81,21 @@ router.post('/agregarProfe', async (req, res) => {
 
 });
 
+//POST ->localhost:4000/equipos/definirCoordinador
+router.put('/definirCoordinador', async (req, res) => {
+    try {
+        const {generacion,idProfesor} = req.body;
+        if(!generacion||!idProfesor){
+            return res.status(400).send('Generacion o idProfesor invalido');
+        }
+
+        await equipoGuiaDAO.definirCoordinador(idProfesor,generacion);
+
+        return res.status(201).send('Coordinador definido correctamente');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al definir el coordinador");
+    }
+
+});
 module.exports = router;

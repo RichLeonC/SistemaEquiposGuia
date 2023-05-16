@@ -16,10 +16,11 @@ class EquipoGuiaDAO {
             }
 
             request.input('generacion', sql.Int, equipoGuia.generacion);
-            request.input('idCoordinador', sql.Int, equipoGuia.idCoordinador);
+            request.input('idCoordinador', sql.VarChar, equipoGuia.idCoordinador);
             await request.query(`INSERT INTO equipoGuia (generacion, idCoordinador) VALUES (@generacion, @idCoordinador)`);
         } catch (error) {
             console.error(error);
+            throw error;
         }
 
 
@@ -127,6 +128,20 @@ class EquipoGuiaDAO {
             else {
                 return null;
             }
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async definirCoordinador(idProfesor,generacion){
+        try {
+            const request = new sql.Request(dbSql.conection); 
+            const query = `EXEC definirCoordinador @codigoProfesor, @generacion`;
+            request.input('generacion', sql.Int, generacion);
+            request.input('codigoProfesor', sql.VarChar, idProfesor);
+            
+            await request.query(query);
         } catch (error) {
             console.error(error);
             throw error;
