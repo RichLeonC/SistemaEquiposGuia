@@ -303,7 +303,37 @@ BEGIN
 END
 
 
+CREATE PROCEDURE definirCoordinador 
+    @codigoProfesor VARCHAR(10), 
+    @generacion INT
+AS
+BEGIN
+    -- Declaramos una variable para guardar el código del coordinador anterior
+    DECLARE @codigoProfesorAntiguo VARCHAR(10);
 
+    -- Buscamos el coordinador antiguo
+    SELECT @codigoProfesorAntiguo = idCoordinador 
+    FROM equipoGuia
+    WHERE generacion = @generacion;
+
+    -- Si existe un coordinador antiguo, cambiamos su esCordinador a 0
+    IF (@codigoProfesorAntiguo IS NOT NULL) 
+    BEGIN
+        UPDATE profesor 
+        SET esCordinador = 0 
+        WHERE codigo = @codigoProfesorAntiguo;
+    END
+
+    -- Cambiamos el idCoordinador de la tabla equipoGuia al nuevo profesor
+    UPDATE equipoGuia 
+    SET idCoordinador = @codigoProfesor 
+    WHERE generacion = @generacion;
+
+    -- Cambiamos el esCordinador a 1 del nuevo profesor
+    UPDATE profesor 
+    SET esCordinador = 1 
+    WHERE codigo = @codigoProfesor;
+END;
 
 
 
