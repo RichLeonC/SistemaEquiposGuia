@@ -8,14 +8,16 @@ const actividadDAO = new ActividadDAO();
 // POST -> localhost:4000/actividades
 router.post('/', async (req, res) => {
     try {
-      const { codigoActividad, tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActividad, fechaFinalizacion } = req.body;
+      const { codigoActividad, tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActividad, fechaFinal } = req.body;
   
      /* // Validar los datos de entrada
       if (!codigoActividad || !tipoActividad || !nombreActividad || !fechaInicio || !horaInicio || !fechaCreacion || !modalidad || !enlaceReunion || !estadoActividad || !fechaFinalizacion) {
         return res.status(400).send('Todos los campos son obligatorios');
       }*/
+
+        // Convertir codigoActividad a número entero
   
-      const nuevaActividad = new Actividad({
+      const nuevaActividad = new Actividad(
         codigoActividad,
         tipoActividad,
         nombreActividad,
@@ -25,8 +27,8 @@ router.post('/', async (req, res) => {
         modalidad,
         enlaceReunion,
         estadoActividad,
-        fechaFinalizacion
-      });
+        fechaFinal
+      );
   
       await actividadDAO.insertActividad(nuevaActividad);
   
