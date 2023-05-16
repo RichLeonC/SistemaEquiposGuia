@@ -13,29 +13,18 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import ActividadesForm from './ActividadesForm'
 import CommentSection from "./ComentSection";
 
+import axios from 'axios';
+
 export const Calendar = () => {
-  const [events, setEvents] = useState([
-    {
-      title: "Evento 1",
-      start: "2023-05-01",
-      end: "2023-05-02",
-    },
-    {
-      title: "Evento 2",
-      start: "2023-05-05",
-      end: "2023-05-07",
-    },
-    {
-      title: "Evento 3",
-      start: "2023-05-10",
-      end: "2023-05-12",
-    },
-  ]);
+  const [events, setEvents] = useState([]);
   const [modalOpenSelect, setModalOpenSelect] = useState(false);
   const [modalOpenEvent, setModalOpenEvent] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const [comments, setComments] = useState([]);
+  
 
   const toggleModalSelect = () => {
     setModalOpenSelect(!modalOpenSelect);
@@ -61,6 +50,7 @@ export const Calendar = () => {
     return (
       <div>
         <p>{event.title}</p>
+
       </div>
     );
   };
@@ -69,12 +59,14 @@ export const Calendar = () => {
     <Modal isOpen={modalOpenEvent} toggle={toggleModalEvent}>
       <ModalHeader toggle={toggleModalEvent}>{event.title}</ModalHeader>
       <ModalBody>
-        <p>Start: {event.startStr}</p>
-        <p>End: {event.endStr}</p>
+      <p>Start: {event.startStr}</p>
+      <p>End: {event.endStr}</p>
+      <p>Description: {event.extendedProps.description}</p>
+      <p>Location: {event.extendedProps.location}</p>
       </ModalBody>
       <ModalFooter>
         <Button color="Secundary">Editar</Button>
-        <Button color="Terciary" onClick={<CommentSection></CommentSection>}>Comentar</Button>
+        <Button color="Terciary" >Comentar</Button>
         <Button color="Quarter">Adminstrar</Button>
         <Button color="primary" onClick={toggleModalEvent}>
           Close
@@ -82,6 +74,20 @@ export const Calendar = () => {
       </ModalFooter>
     </Modal>
   );
+
+  useEffect(() => {
+    const obtenerActividades = async () => {
+      try {
+        const response = await axios.get("/actividades"); // Ruta de la API para obtener las actividades
+        const actividades = response.data;
+        setEvents(actividades);
+      } catch (error) {
+        console.error('Error al obtener las actividades:', error);
+      }
+    };
+
+    obtenerActividades();
+  }, []);
   
   return (
     <DashboardLayout>

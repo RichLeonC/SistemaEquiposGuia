@@ -1,88 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button  } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import axios from "axios";
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.css';
 
-export default function ActividadesForm({ selectedDate }) {
-
-  const [selectedFinishDate, setSelectedFinishDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
-  const [virtual, setVirtual] = useState(false);
-  const [link, setLink] = useState("");
-  const [form, setForm] = useState({
-    codigoActividad: "1",
-    tipoActividad:'',
-    nombreActividad:'',
-    fechaInicio: new Date(selectedDate),
-    horaInicio:'',
-    fechaCreacion: new Date(),
-    modalidad: '',
-    enlaceReunion: '',
-    estadoActividad:2,
-    fechaFinal: ''
-
-});
-
-const handleVirtualChange = (event) => {
-  const isChecked = event.target.checked;
-  setVirtual(isChecked);
+export default function FormularioEdicion({ actividad }) {
+    const [selectedFinishDate, setSelectedFinishDate] = useState(null);
+    const [selectedTime, setSelectedTime] = useState(null);
+    const [virtual, setVirtual] = useState(false);
+    const [link, setLink] = useState("");
+    const [form, setForm] = useState({
+      tipoActividad: '',
+      nombreActividad:'',
+      fechaInicio:'',
+      horaInicio:'',
+      fechaFinal:'',
+      modalidad:'',
+      enlaceReunion:''
   
-  // Actualizar el valor de modalidad en el estado del formulario
-  setForm((prevForm) => ({
-    ...prevForm,
-    modalidad: isChecked ? 'virtual' : '',
-  }));
-};
+  });
 
-const handleLinkChange = (event) => {
-  const linkValue = event.target.value;
-  setLink(linkValue);
-  
-  // Actualizar el valor de enlaceReunion en el estado del formulario
-  setForm((prevForm) => ({
-    ...prevForm,
-    enlaceReunion: linkValue,
-  }));
-};
-
-  const handleFechaFinalChange = (date) => {
-    setSelectedFinishDate(date);
+  const handleVirtualChange = (event) => {
+    const isChecked = event.target.checked;
+    setVirtual(isChecked);
+    
+    // Actualizar el valor de modalidad en el estado del formulario
     setForm((prevForm) => ({
       ...prevForm,
-      fechaFinal: date,
+      modalidad: isChecked ? 'virtual' : '',
     }));
   };
   
-
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setForm({
-        ...form,
-        [name]: value
-    })
-    console.log(form);
-}
-
-const handleSubmit = async (event) => {
-  event.preventDefault();
-  console.log('Formulario:', form);
-
-  try {
-    await axios.post('http://localhost:4000/actividades', form);
-    console.log('Actividad creada exitosamente.');
-    // Realiza cualquier acción adicional después de almacenar los datos en la base de datos
-  } catch (error) {
-    console.error('Error al crear la Actividad:', error);
-    // Maneja el error de acuerdo a tus necesidades
-  }
-};
-
-  const handleTimeChange = (event) => {
-    setSelectedTime(event.target.value);
-    handleChange();
+  const handleLinkChange = (event) => {
+    const linkValue = event.target.value;
+    setLink(linkValue);
+    
+    // Actualizar el valor de enlaceReunion en el estado del formulario
+    setForm((prevForm) => ({
+      ...prevForm,
+      enlaceReunion: linkValue,
+    }));
   };
+  
+    const handleFechaFinalChange = (date) => {
+      setSelectedFinishDate(date);
+      setForm((prevForm) => ({
+        ...prevForm,
+        fechaFinal: date,
+      }));
+    };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  };
+
+  // Actualizar el estado del formulario cuando cambien los datos de la actividad
+  useEffect(() => {
+    setForm({
+      tipoActividad: actividad.tipoActividad || '',
+      nombreActividad: actividad.nombreActividad || '',
+      fechaInicio: actividad.fechaInicio || '',
+      horaInicio: actividad.horaInicio || '',
+      fechaFinal: actividad.fechaFinal || '',
+      modalidad: actividad.modalidad || '',
+      enlaceReunion: actividad.enlaceReunion || '',
+    });
+  }, [actividad]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log('Formulario:', form);
+    // Aquí puedes realizar las acciones necesarias con los datos del formulario editado
+  };
+
+
+
 
   const months = ['January', 'February', 'March', 'April'];
   const tiposActividad = ['Orientacion', 'Motivacion', 'Apoyo', 'Orden'];
@@ -131,7 +128,7 @@ const handleSubmit = async (event) => {
 
 
     <div>FECHA INICIO</div>
-    <p>Fecha seleccionada: {selectedDate}</p>
+    <p>Fecha seleccionada:</p>
 
 
     <>FECHA FINAL</>
@@ -142,7 +139,7 @@ const handleSubmit = async (event) => {
       value= {form.fechaFinal}
       selected={selectedFinishDate}
       onChange={handleFechaFinalChange}
-      minDate={new Date(selectedDate)} // Aquí estableces la fecha mínima
+      minDate={new Date()} // Aquí estableces la fecha mínima
       className="form-control"
     />
     </FormGroup>

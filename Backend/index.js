@@ -1,6 +1,8 @@
 const express = require('express');
 const morgan = require("morgan");
 const cors = require("cors");
+
+
 const app = express();
 require('dotenv').config(); //El dotenv es para poder utilizar el archivo .env (variables de entorno)
 
@@ -10,6 +12,7 @@ const profesoresRoute = require("./Controladores/ProfesoresController")
 const estudiantesRoute = require("./Controladores/EstudiantesController");
 const equiposRoute = require("./Controladores/EquipoGuiaController");
 const personalRoute = require("./Controladores/PersonalController");
+const actividadRoute = require("./Controladores/ActividadesController");
 
 
 //Settings
@@ -27,6 +30,7 @@ app.use("/profesores",profesoresRoute);
 app.use("/estudiantes",estudiantesRoute);
 app.use("/equipos",equiposRoute);
 app.use("/asistentes",personalRoute);
+app.use("/actividades",actividadRoute);
 
 
 app.listen(app.get('port'),()=>{ //Va abrir el server en el puerto 4000
