@@ -12,15 +12,15 @@ export default function ActividadesForm({ selectedDate }) {
   const [virtual, setVirtual] = useState(false);
   const [link, setLink] = useState("");
   const [form, setForm] = useState({
-    codigoActividad: "1",
-    tipoActividad:'',
+    codigoActividad: 1,
+    tipoActividad:1,
     nombreActividad:'',
     fechaInicio: new Date(selectedDate),
     horaInicio:'',
     fechaCreacion: new Date(),
-    modalidad: '',
+    modalidad: 1,
     enlaceReunion: '',
-    estadoActividad:2,
+    estadoActividad: 2,
     fechaFinal: ''
 
 });
