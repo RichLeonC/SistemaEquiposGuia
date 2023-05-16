@@ -64,7 +64,7 @@ CREATE TABLE profesor_equipoGuia  (
 
 CREATE TABLE equipoGuia(
     generacion INT NOT NULL PRIMARY KEY,
-    idCoordinador INT NOT NULL FOREIGN KEY REFERENCES profesor(cedulaProfesor)
+    idCoordinador VARCHAR(10) FOREIGN KEY REFERENCES profesor(codigo)
 )
 
 CREATE TABLE actividad(
