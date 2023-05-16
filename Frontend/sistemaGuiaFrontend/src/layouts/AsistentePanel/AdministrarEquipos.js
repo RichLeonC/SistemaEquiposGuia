@@ -169,6 +169,23 @@ export default function AdministrarEquipos() {
 
     }
 
+    const definirCoordinador=async()=>{
+        if (!selectedProfe) {
+            alert("Debe seleccionar algun profesor");
+            return false;
+        }
+
+        try {
+            console.log(selectedProfe,equipoActual.generacion);
+            await axios.put(`${apiURIEquipos}/definirCoordinador`, { idProfesor: selectedProfe, generacion: equipoActual.generacion });
+            handleModalPC(null, 0);
+            return true;
+        } catch (error) {
+            alert("No se puede definir el coordinador")
+        }
+
+    }
+
     const Author = ({ image, name, email }) => (
         <MDBox display="flex" alignItems="center" lineHeight={1}>
             <MDAvatar src={image} name={name} size="sm" />
@@ -213,7 +230,9 @@ export default function AdministrarEquipos() {
                 break;
         }
 
-        const nombreCompleto = `${profe.nombre} ${profe.segundoNombre} ${profe.apellido1} ${profe.apellido2}`;
+        
+
+        const nombreCompleto = `${profe.nombre} ${profe.segundoNombre} ${profe.apellido1} ${profe.apellido2} ${profe.esCordinador==1?"(COORDINADOR)":""}`;
         return {
 
             author: <Author image={profe.foto} name={nombreCompleto} email={profe.correo} />,
@@ -267,7 +286,8 @@ export default function AdministrarEquipos() {
                         let rows = [];
                         if(profesTablas && allProfes){
                             const profesGenActual = profesTablas.filter(p => p.generacion == equipo.generacion);
-                            const profesCompletos = allProfes.filter(p => profesGenActual.some(pg => pg.idProfesor == p.codigo));
+                            const profesCompletos = allProfes.filter(p => profesGenActual.some(pg => pg.idProfesor == p.codigo))
+                            .sort((a, b) => b.esCordinador - a.esCordinador);
                             rows = profesCompletos.map(createRow);
                         }
 
@@ -315,43 +335,7 @@ export default function AdministrarEquipos() {
                 </Grid>
             </MDBox>
 
-            <Modal
-                open={modalProfe}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
 
-                    <MDTypography variant="h8" >Agregar Profesor: {equipoActual && equipoActual.generacion}</MDTypography>
-                    <br></br>
-                    <br></br>
-                    <TextField
-                        select
-                        label="Profesor"
-                        value={selectedProfe}
-                        onChange={handleChangeProfe}
-                        variant='outlined'
-                        fullWidth
-                        InputProps={{
-                            style: {
-                                paddingTop: '14px',
-                                paddingBottom: '14px',
-                            },
-                        }}
-                    >
-                        {profesPorSede.map((profe, index) =>
-                            <MenuItem value={profe.codigo}>{profe.codigo} - {profe.nombre} {profe.apellido1}</MenuItem>
-                        )}
-                    </TextField>
-                    <br></br>
-                    <MDButton style={{ top: "60px" }} size={"small"} color="primary" onClick={() => agregarProfes()}>Aceptar</MDButton>
-                    <MDButton style={{ top: "60px", left: "10px" }} size={"small"} color="primary" onClick={() => setModalProfe(false)}>Cancelar</MDButton>
-
-
-
-                </Box>
-
-            </Modal>
 
             <Modal
                 open={modalProfe || modalCoordinador}
@@ -387,7 +371,7 @@ export default function AdministrarEquipos() {
                             }
                         </TextField>
                         <br></br>
-                        <MDButton style={{ top: "60px" }} size={"small"} color="primary" onClick={() => agregarProfes()}>Aceptar</MDButton>
+                        <MDButton style={{ top: "60px" }} size={"small"} color="primary" onClick={() => modalProfe?agregarProfes():definirCoordinador()}>Aceptar</MDButton>
                         <MDButton style={{ top: "60px", left: "10px" }} size={"small"} color="primary" onClick={() => modalProfe ? setModalProfe(false) : setModalCoordinador(false)}>Cancelar</MDButton>
 
                     </div>
