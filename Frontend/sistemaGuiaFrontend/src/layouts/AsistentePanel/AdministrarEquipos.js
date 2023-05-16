@@ -10,13 +10,11 @@ import MDTypography from "components/MDTypography";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import MDButton from 'components/MDButton';
 import MDAlert from "components/MDAlert";
-import { Modal, Box, TextField, MenuItem } from "@mui/material";
+import { Modal, Box, TextField, MenuItem,Alert } from "@mui/material";
 import MDAvatar from "components/MDAvatar";
-import Icon from "@mui/material/Icon";
 
 export default function AdministrarEquipos() {
     const style = {
@@ -34,17 +32,19 @@ export default function AdministrarEquipos() {
 
     const [dataEquipos, setDataEquipos] = useState([]);
     const [dataProfes, setDataProfes] = useState([]);
-    const [dataCoordinador, setDataCoordinador] = useState([]);
     const [modalProfe, setModalProfe] = useState(false);
     const [modalCoordinador, setModalCoordinador] = useState(false);
     const [selectedProfe, setSelectedProfe] = useState('');
     const [equipoActual, setEquipoActual] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
+    const [showAlertExito,setShowAlertExito] = useState(false);
     const [asistenteActual, setAsistenteActual] = useState([]);
     const [profesPorSede, setProfesPorSede] = useState([]);
     const [profesTablas, setProfesTablas] = useState([]);
     const [allProfes, setAllProfes] = useState([]);
     const [profesGeneracion, setProfesGeneracion] = useState([]);
+
+    const [generacionInput, setGeneracionInput] = useState("");
 
 
     const alertContent = (msj) => (
@@ -70,7 +70,27 @@ export default function AdministrarEquipos() {
         }
     }
 
+    const handleChangeGeneracion=e=>{
+        setGeneracionInput(e.target.value);
+    }
+
+    const validarGeneracion=()=>{
+        const formato = /^\d{4}/;
+        const existeGeneracion = dataEquipos.some(e=>e.generacion == generacionInput)
+        if(!formato.test(generacionInput) && generacionInput!=""){
+            return true;
+        }
+        else if(existeGeneracion){
+            
+            return true;
+        }
+
+        return false;
+
+    }
+
     const filtrarProfesPorSede = () => {
+       
         if (asistenteActual.idSede != 1) {
             setProfesPorSede(dataProfes.filter(p => p.idSede == asistenteActual.idSede));
 
@@ -81,7 +101,7 @@ export default function AdministrarEquipos() {
     }
 
     const filtrasProfesGeneracion = (equipo) => {
-        if(profesTablas && allProfes){
+        if (profesTablas && allProfes) {
             const profesGenActual = profesTablas.filter(p => p.generacion == equipo.generacion);
             const profesCompletos = allProfes.filter(p => profesGenActual.some(pg => pg.idProfesor == p.codigo));
             setProfesGeneracion(profesCompletos);
@@ -89,15 +109,15 @@ export default function AdministrarEquipos() {
 
     }
 
-    const hayProfesores=(equipo)=>{
+    const hayProfesores = (equipo) => {
 
         let profesCompletos = [];
-        if(profesTablas && allProfes){
+        if (profesTablas && allProfes) {
             const profesGenActual = profesTablas.filter(p => p.generacion == equipo.generacion);
             profesCompletos = allProfes.filter(p => profesGenActual.some(pg => pg.idProfesor == p.codigo));
         }
 
-        if(profesCompletos.length>0) return true
+        if (profesCompletos.length > 0) return true
 
         return false;
     }
@@ -169,14 +189,14 @@ export default function AdministrarEquipos() {
 
     }
 
-    const definirCoordinador=async()=>{
+    const definirCoordinador = async () => {
         if (!selectedProfe) {
             alert("Debe seleccionar algun profesor");
             return false;
         }
 
         try {
-            console.log(selectedProfe,equipoActual.generacion);
+
             await axios.put(`${apiURIEquipos}/definirCoordinador`, { idProfesor: selectedProfe, generacion: equipoActual.generacion });
             handleModalPC(null, 0);
             return true;
@@ -184,6 +204,33 @@ export default function AdministrarEquipos() {
             alert("No se puede definir el coordinador")
         }
 
+    }
+
+    const crearGeneracion = async()=>{
+        setShowAlert(false);
+        setShowAlertExito(false);
+        if(!validarGeneracion()){
+            if(generacionInput!=""){
+                try {
+                    const response = await axios.post(apiURIEquipos,{generacion:generacionInput,idCoordinador:null});
+                    if(response.status == 201){
+                        setShowAlertExito(true);
+                        setGeneracionInput("");
+                        return true;
+                    }
+                    setShowAlert(true);
+                    return false;
+                } catch (error) {
+                    setShowAlert(true);
+                   
+                    console.error(error);
+                }
+            }
+        }
+        else{
+            setShowAlert(true);
+            return false;
+        }
     }
 
     const Author = ({ image, name, email }) => (
@@ -230,9 +277,9 @@ export default function AdministrarEquipos() {
                 break;
         }
 
-        
 
-        const nombreCompleto = `${profe.nombre} ${profe.segundoNombre} ${profe.apellido1} ${profe.apellido2} ${profe.esCordinador==1?"(COORDINADOR)":""}`;
+
+        const nombreCompleto = `${profe.nombre} ${profe.segundoNombre} ${profe.apellido1} ${profe.apellido2} ${profe.esCordinador == 1 ? "(COORDINADOR)" : ""}`;
         return {
 
             author: <Author image={profe.foto} name={nombreCompleto} email={profe.correo} />,
@@ -270,24 +317,48 @@ export default function AdministrarEquipos() {
 
 
     useEffect(() => { //Hace efecto la peticion
-         peticionGetEquipos();
-         peticionGetAsistenteActual();
-         peticionGetProfes();
-         peticionGetAllProfes();
+        peticionGetEquipos();
+        peticionGetAsistenteActual();
+        peticionGetProfes();
+        peticionGetAllProfes();
+        if(showAlert) {
+            const timer = setTimeout(() => {
+                setShowAlert(false);
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
+        if(showAlertExito) {
+            const timer = setTimeout(() => {
+                setShowAlertExito(false);
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
 
-    }, [equipoActual, profesPorSede, dataProfes])
+    }, [equipoActual, profesPorSede, dataProfes,showAlert,showAlertExito])
 
     return (
         <DashboardLayout>
             <DashboardNavbar />
+            <Grid container marginLeft={2}>
+                
+                <Grid item xs={10} sm={2}>
+                    <TextField name="generacion" value={generacionInput} label="Generación" onChange={handleChangeGeneracion} variant="outlined" fullWidth
+                        error={validarGeneracion()} helperText={validarGeneracion()&&"Generación inválida o ya existe"}/>
+                </Grid>
+                <MDButton size="small" color="primary" style={{ "left": "1rem" }} onClick={()=>crearGeneracion()} >Crear Equipo Guia</MDButton>
+                {showAlert&& <Alert severity="error">No se pudo crear el equipo guía, verifica los datos</Alert>}
+                {showAlertExito&& <Alert severity="success">Equipo guía creado correctamente</Alert>}
+
+            </Grid>
+
             <MDBox pt={6} pb={3}>
                 <Grid container spacing={6}>
                     {dataEquipos.map((equipo, index) => {
                         let rows = [];
-                        if(profesTablas && allProfes){
+                        if (profesTablas && allProfes) {
                             const profesGenActual = profesTablas.filter(p => p.generacion == equipo.generacion);
                             const profesCompletos = allProfes.filter(p => profesGenActual.some(pg => pg.idProfesor == p.codigo))
-                            .sort((a, b) => b.esCordinador - a.esCordinador);
+                                .sort((a, b) => b.esCordinador - a.esCordinador);
                             rows = profesCompletos.map(createRow);
                         }
 
@@ -371,7 +442,7 @@ export default function AdministrarEquipos() {
                             }
                         </TextField>
                         <br></br>
-                        <MDButton style={{ top: "60px" }} size={"small"} color="primary" onClick={() => modalProfe?agregarProfes():definirCoordinador()}>Aceptar</MDButton>
+                        <MDButton style={{ top: "60px" }} size={"small"} color="primary" onClick={() => modalProfe ? agregarProfes() : definirCoordinador()}>Aceptar</MDButton>
                         <MDButton style={{ top: "60px", left: "10px" }} size={"small"} color="primary" onClick={() => modalProfe ? setModalProfe(false) : setModalCoordinador(false)}>Cancelar</MDButton>
 
                     </div>

@@ -54,6 +54,7 @@ import {
   setOpenConfigurator,
 } from "context";
 import axios from "axios";
+import MDTypography from "components/MDTypography";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
@@ -147,8 +148,10 @@ function DashboardNavbar({ absolute, light, isMini }) {
         <MDBox color="inherit" mb={{ xs: 1, md: 0 }} sx={(theme) => navbarRow(theme, { isMini })}>
           <Breadcrumbs icon="home" title={route[route.length - 1]} route={route} light={light} />
         </MDBox>
+        <MDTypography variant="h5" fontWeight="medium" style={{ marginLeft: '1150px' }}>{localStorage.getItem("nombre")}</MDTypography>
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
+            
             <MDBox color={light ? "white" : "inherit"}>
               <Link to="/profile">
                  <Avatar src={foto}></Avatar> 
