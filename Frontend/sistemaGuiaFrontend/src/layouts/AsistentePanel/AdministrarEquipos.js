@@ -25,6 +25,7 @@ export default function AdministrarEquipos() {
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: 400,
+        height: 250,
         bgcolor: 'background.paper',
         boxShadow: 24,
         borderRadius: '15px',
@@ -35,6 +36,7 @@ export default function AdministrarEquipos() {
     const [dataProfes, setDataProfes] = useState([]);
     const [dataCoordinador, setDataCoordinador] = useState([]);
     const [modalProfe, setModalProfe] = useState(false);
+    const [modalCoordinador, setModalCoordinador] = useState(false);
     const [selectedProfe, setSelectedProfe] = useState('');
     const [equipoActual, setEquipoActual] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
@@ -42,6 +44,7 @@ export default function AdministrarEquipos() {
     const [profesPorSede, setProfesPorSede] = useState([]);
     const [profesTablas, setProfesTablas] = useState([]);
     const [allProfes, setAllProfes] = useState([]);
+    const [profesGeneracion, setProfesGeneracion] = useState([]);
 
 
     const alertContent = (msj) => (
@@ -52,14 +55,19 @@ export default function AdministrarEquipos() {
     const apiURIEquipos = "http://localhost:4000/equipos";
     const apiURi = "http://localhost:4000"
 
-    const handleModalProfe = async (equipo) => {
+
+    const handleModalPC = async (equipo, tipo) => {
         setEquipoActual(equipo);
         peticionGetProfesSinEquipo();
         filtrarProfesPorSede();
         setSelectedProfe('');
 
-        setModalProfe(!modalProfe);
-
+        if (tipo == 1) {
+            setModalProfe(!modalProfe);
+        } else {
+            setModalCoordinador(!modalCoordinador);
+            filtrasProfesGeneracion(equipo);
+        }
     }
 
     const filtrarProfesPorSede = () => {
@@ -70,6 +78,28 @@ export default function AdministrarEquipos() {
         else {
             setProfesPorSede(dataProfes);
         }
+    }
+
+    const filtrasProfesGeneracion = (equipo) => {
+        if(profesTablas && allProfes){
+            const profesGenActual = profesTablas.filter(p => p.generacion == equipo.generacion);
+            const profesCompletos = allProfes.filter(p => profesGenActual.some(pg => pg.idProfesor == p.codigo));
+            setProfesGeneracion(profesCompletos);
+        }
+
+    }
+
+    const hayProfesores=(equipo)=>{
+
+        let profesCompletos = [];
+        if(profesTablas && allProfes){
+            const profesGenActual = profesTablas.filter(p => p.generacion == equipo.generacion);
+            profesCompletos = allProfes.filter(p => profesGenActual.some(pg => pg.idProfesor == p.codigo));
+        }
+
+        if(profesCompletos.length>0) return true
+
+        return false;
     }
 
     const peticionGetAsistenteActual = async () => {
@@ -131,7 +161,7 @@ export default function AdministrarEquipos() {
         }
         try {
             await axios.post(`${apiURIEquipos}/agregarProfe`, { idProfesor: selectedProfe, generacion: equipoActual.generacion });
-            handleModalProfe(null);
+            handleModalPC(null, 1);
             return true;
         } catch (error) {
             alert("No se puede agregar el profesor al equipo")
@@ -165,8 +195,8 @@ export default function AdministrarEquipos() {
 
     function createRow(profe) {
         let sedeP = '';
-        switch(profe.idSede){
-            case 1: 
+        switch (profe.idSede) {
+            case 1:
                 sedeP = 'Cartago'
                 break;
             case 2:
@@ -175,17 +205,17 @@ export default function AdministrarEquipos() {
             case 3:
                 sedeP = 'Alajuela';
                 break;
-            case 4: 
-                sedeP='Limón';
+            case 4:
+                sedeP = 'Limón';
                 break;
             case 5:
                 sedeP = 'San Carlos';
                 break;
         }
-      
+
         const nombreCompleto = `${profe.nombre} ${profe.segundoNombre} ${profe.apellido1} ${profe.apellido2}`;
         return {
-            
+
             author: <Author image={profe.foto} name={nombreCompleto} email={profe.correo} />,
             codigo: (
                 <MDTypography variant="caption h7" color="text" fontWeight="medium">
@@ -213,7 +243,7 @@ export default function AdministrarEquipos() {
                 </MDTypography>
             ),
             action: (
-                <MDButton disabled={asistenteActual.idSede != profe.idSede && asistenteActual.idSede!=1} color="dark" size={"small"}>Dar de Baja</MDButton>
+                <MDButton disabled={asistenteActual.idSede != profe.idSede && asistenteActual.idSede != 1} color="dark" size={"small"}>Dar de Baja</MDButton>
             )
         };
     }
@@ -221,10 +251,10 @@ export default function AdministrarEquipos() {
 
 
     useEffect(() => { //Hace efecto la peticion
-        peticionGetEquipos();
-        peticionGetAsistenteActual();
-        peticionGetProfes();
-        peticionGetAllProfes();
+         peticionGetEquipos();
+         peticionGetAsistenteActual();
+         peticionGetProfes();
+         peticionGetAllProfes();
 
     }, [equipoActual, profesPorSede, dataProfes])
 
@@ -234,11 +264,14 @@ export default function AdministrarEquipos() {
             <MDBox pt={6} pb={3}>
                 <Grid container spacing={6}>
                     {dataEquipos.map((equipo, index) => {
-                        const profesGenActual = profesTablas.filter(p=>p.generacion == equipo.generacion);
-                        const profesCompletos = allProfes.filter(p=>profesGenActual.some(pg=>pg.idProfesor == p.codigo));
-                        console.log(profesCompletos);
-                        const rows = profesCompletos.map(createRow);
-                       
+                        let rows = [];
+                        if(profesTablas && allProfes){
+                            const profesGenActual = profesTablas.filter(p => p.generacion == equipo.generacion);
+                            const profesCompletos = allProfes.filter(p => profesGenActual.some(pg => pg.idProfesor == p.codigo));
+                            rows = profesCompletos.map(createRow);
+                        }
+
+
                         return (
                             <Grid item xs={12} key={index}>
 
@@ -260,9 +293,9 @@ export default function AdministrarEquipos() {
                                             {`Tabla del Equipo Guía: ${equipo.generacion}`}
                                         </MDTypography>
                                         <MDButton size="small" color="primary" style={{ marginLeft: '900px' }}
-                                        disabled={asistenteActual.idSede!=1}
+                                            disabled={asistenteActual.idSede != 1 || !hayProfesores(equipo)} onClick={() => handleModalPC(equipo, 0)}
                                         >Definir Coordinador</MDButton>
-                                        <MDButton size="small" color="primary" onClick={() => handleModalProfe(equipo)} >Agregar Profesor</MDButton>
+                                        <MDButton size="small" color="primary" onClick={() => handleModalPC(equipo, 1)} >Agregar Profesor</MDButton>
 
                                     </MDBox>
 
@@ -288,13 +321,51 @@ export default function AdministrarEquipos() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
+
+                    <MDTypography variant="h8" >Agregar Profesor: {equipoActual && equipoActual.generacion}</MDTypography>
+                    <br></br>
+                    <br></br>
+                    <TextField
+                        select
+                        label="Profesor"
+                        value={selectedProfe}
+                        onChange={handleChangeProfe}
+                        variant='outlined'
+                        fullWidth
+                        InputProps={{
+                            style: {
+                                paddingTop: '14px',
+                                paddingBottom: '14px',
+                            },
+                        }}
+                    >
+                        {profesPorSede.map((profe, index) =>
+                            <MenuItem value={profe.codigo}>{profe.codigo} - {profe.nombre} {profe.apellido1}</MenuItem>
+                        )}
+                    </TextField>
+                    <br></br>
+                    <MDButton style={{ top: "60px" }} size={"small"} color="primary" onClick={() => agregarProfes()}>Aceptar</MDButton>
+                    <MDButton style={{ top: "60px", left: "10px" }} size={"small"} color="primary" onClick={() => setModalProfe(false)}>Cancelar</MDButton>
+
+
+
+                </Box>
+
+            </Modal>
+
+            <Modal
+                open={modalProfe || modalCoordinador}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
                     <div style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'absolute', width: 400, height: 250, backgroundColor: 'white', padding: '20px' }}>
-                        <MDTypography variant="h8" >Agregar Profesor: {equipoActual && equipoActual.generacion}</MDTypography>
+                        <MDTypography variant="h8" >Seleccionar para equipo guía: {equipoActual && equipoActual.generacion}</MDTypography>
                         <br></br>
                         <br></br>
                         <TextField
                             select
-                            label="Profesor"
+                            label={modalProfe ? "Profesor" : "Coordinador"}
                             value={selectedProfe}
                             onChange={handleChangeProfe}
                             variant='outlined'
@@ -306,25 +377,22 @@ export default function AdministrarEquipos() {
                                 },
                             }}
                         >
-                            {profesPorSede.map((profe, index) =>
-                                <MenuItem value={profe.codigo}>{profe.codigo} - {profe.nombre} {profe.apellido1}</MenuItem>
-                            )}
+                            {modalProfe
+                                ? profesPorSede.map((profe, index) =>
+                                    <MenuItem value={profe.codigo}>{profe.codigo} - {profe.nombre} {profe.apellido1}</MenuItem>
+                                )
+                                : profesGeneracion.map((profe, index) =>
+                                    <MenuItem value={profe.codigo}>{profe.codigo} - {profe.nombre} {profe.apellido1}</MenuItem>
+                                )
+                            }
                         </TextField>
                         <br></br>
                         <MDButton style={{ top: "60px" }} size={"small"} color="primary" onClick={() => agregarProfes()}>Aceptar</MDButton>
-                        <MDButton style={{ top: "60px", left: "10px" }} size={"small"} color="primary" onClick={() => setModalProfe(false)}>Cancelar</MDButton>
+                        <MDButton style={{ top: "60px", left: "10px" }} size={"small"} color="primary" onClick={() => modalProfe ? setModalProfe(false) : setModalCoordinador(false)}>Cancelar</MDButton>
 
                     </div>
-                    {/* {showAlert && (
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', bottom: "5rem" }}>
-                            <MDAlert color="primary" dismissible>
-                                {alertContent("Datos incorrectos. Revisa si hay algún campo vacío o erróneo")}
-                            </MDAlert>
-                        </div>
-                    )} */}
 
                 </Box>
-
 
             </Modal>
 

@@ -31,7 +31,7 @@ router.get('/profesEquipoGuia', async (req, res) => {
 });
 
 
-//GET -> localhost:4000/equipos/profesEquipoGuia
+//GET -> localhost:4000/equipos/profesEquipoGuia/:generacion (2023)
 router.get('/profesEquipoGuia/:generacion', async (req, res) => {
     try {
         const {generacion} = req.params;
