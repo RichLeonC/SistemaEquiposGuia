@@ -98,4 +98,23 @@ router.put('/definirCoordinador', async (req, res) => {
     }
 
 });
+
+
+//DELETE -> localhost:4000/equipos/darBaja/:codigo
+router.delete('/darBaja/:idProfesor', async (req, res) => {
+    try {
+        const {idProfesor} = req.params;
+        if(!idProfesor){
+            return res.status(400).send('dProfesor invalido');
+        }
+
+        await equipoGuiaDAO.darDeBajaProfesorEquipoGuia(idProfesor);
+        
+        return res.status(201).send('Profesor eliminado correctamente');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error al dar de baja al profesor");
+    }
+
+});
 module.exports = router;

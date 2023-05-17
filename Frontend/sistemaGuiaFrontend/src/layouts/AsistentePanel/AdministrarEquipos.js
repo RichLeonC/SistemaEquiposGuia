@@ -13,7 +13,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import DataTable from "examples/Tables/DataTable";
 import MDButton from 'components/MDButton';
 import MDAlert from "components/MDAlert";
-import { Modal, Box, TextField, MenuItem,Alert } from "@mui/material";
+import { Modal, Box, TextField, MenuItem, Alert } from "@mui/material";
 import MDAvatar from "components/MDAvatar";
 
 export default function AdministrarEquipos() {
@@ -37,14 +37,16 @@ export default function AdministrarEquipos() {
     const [selectedProfe, setSelectedProfe] = useState('');
     const [equipoActual, setEquipoActual] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
-    const [showAlertExito,setShowAlertExito] = useState(false);
+    const [showAlertExito, setShowAlertExito] = useState(false);
     const [asistenteActual, setAsistenteActual] = useState([]);
     const [profesPorSede, setProfesPorSede] = useState([]);
     const [profesTablas, setProfesTablas] = useState([]);
     const [allProfes, setAllProfes] = useState([]);
     const [profesGeneracion, setProfesGeneracion] = useState([]);
+    const [alertDarBajaError,setAlertDarBajaError] = useState(false);
 
     const [generacionInput, setGeneracionInput] = useState("");
+
 
 
     const alertContent = (msj) => (
@@ -58,30 +60,30 @@ export default function AdministrarEquipos() {
 
     const handleModalPC = async (equipo, tipo) => {
         setEquipoActual(equipo);
-        peticionGetProfesSinEquipo();
-        filtrarProfesPorSede();
+        await peticionGetProfesSinEquipo();// Espera a que esta función termine
+       // await filtrarProfesPorSede(); // Espera a que esta función termine
         setSelectedProfe('');
 
         if (tipo == 1) {
             setModalProfe(!modalProfe);
         } else {
             setModalCoordinador(!modalCoordinador);
-            filtrasProfesGeneracion(equipo);
+           // await filtrasProfesGeneracion(equipo);
         }
     }
 
-    const handleChangeGeneracion=e=>{
+    const handleChangeGeneracion = e => {
         setGeneracionInput(e.target.value);
     }
 
-    const validarGeneracion=()=>{
+    const validarGeneracion = () => {
         const formato = /^\d{4}/;
-        const existeGeneracion = dataEquipos.some(e=>e.generacion == generacionInput)
-        if(!formato.test(generacionInput) && generacionInput!=""){
+        const existeGeneracion = dataEquipos.some(e => e.generacion == generacionInput)
+        if (!formato.test(generacionInput) && generacionInput != "") {
             return true;
         }
-        else if(existeGeneracion){
-            
+        else if (existeGeneracion) {
+
             return true;
         }
 
@@ -90,7 +92,7 @@ export default function AdministrarEquipos() {
     }
 
     const filtrarProfesPorSede = () => {
-       
+
         if (asistenteActual.idSede != 1) {
             setProfesPorSede(dataProfes.filter(p => p.idSede == asistenteActual.idSede));
 
@@ -101,7 +103,7 @@ export default function AdministrarEquipos() {
     }
 
     const filtrasProfesGeneracion = (equipo) => {
-        if (profesTablas && allProfes) {
+        if (profesTablas && allProfes &&equipo) {
             const profesGenActual = profesTablas.filter(p => p.generacion == equipo.generacion);
             const profesCompletos = allProfes.filter(p => profesGenActual.some(pg => pg.idProfesor == p.codigo));
             setProfesGeneracion(profesCompletos);
@@ -206,14 +208,14 @@ export default function AdministrarEquipos() {
 
     }
 
-    const crearGeneracion = async()=>{
+    const crearGeneracion = async () => {
         setShowAlert(false);
         setShowAlertExito(false);
-        if(!validarGeneracion()){
-            if(generacionInput!=""){
+        if (!validarGeneracion()) {
+            if (generacionInput != "") {
                 try {
-                    const response = await axios.post(apiURIEquipos,{generacion:generacionInput,idCoordinador:null});
-                    if(response.status == 201){
+                    const response = await axios.post(apiURIEquipos, { generacion: generacionInput, idCoordinador: null });
+                    if (response.status == 201) {
                         setShowAlertExito(true);
                         setGeneracionInput("");
                         return true;
@@ -222,15 +224,31 @@ export default function AdministrarEquipos() {
                     return false;
                 } catch (error) {
                     setShowAlert(true);
-                   
+
                     console.error(error);
                 }
             }
         }
-        else{
+        else {
             setShowAlert(true);
             return false;
         }
+    }
+
+    const darDeBajaProfesorEquipo=async(profesor)=>{
+        try {
+            const response = axios.delete(`${apiURIEquipos}/darBaja/${profesor.codigo}`)
+            await peticionGetProfes();
+            await peticionGetAllProfes();
+            await peticionGetProfes();
+            await peticionGetEquipos();
+
+        } catch (error) {
+            setAlertDarBajaError(true);
+            console.error(error);
+            
+        }
+
     }
 
     const Author = ({ image, name, email }) => (
@@ -278,7 +296,6 @@ export default function AdministrarEquipos() {
         }
 
 
-
         const nombreCompleto = `${profe.nombre} ${profe.segundoNombre} ${profe.apellido1} ${profe.apellido2} ${profe.esCordinador == 1 ? "(COORDINADOR)" : ""}`;
         return {
 
@@ -309,7 +326,9 @@ export default function AdministrarEquipos() {
                 </MDTypography>
             ),
             action: (
-                <MDButton disabled={asistenteActual.idSede != profe.idSede && asistenteActual.idSede != 1} color="dark" size={"small"}>Dar de Baja</MDButton>
+                
+                <MDButton disabled={asistenteActual.idSede != profe.idSede && asistenteActual.idSede != 1} color="dark" size={"small"}
+                onClick={()=>darDeBajaProfesorEquipo(profe)}>Dar de Baja</MDButton>
             )
         };
     }
@@ -321,33 +340,45 @@ export default function AdministrarEquipos() {
         peticionGetAsistenteActual();
         peticionGetProfes();
         peticionGetAllProfes();
-        if(showAlert) {
+        if (showAlert) {
             const timer = setTimeout(() => {
                 setShowAlert(false);
             }, 4000);
             return () => clearTimeout(timer);
         }
-        if(showAlertExito) {
+        if (showAlertExito) {
             const timer = setTimeout(() => {
                 setShowAlertExito(false);
             }, 4000);
             return () => clearTimeout(timer);
         }
 
-    }, [equipoActual, profesPorSede, dataProfes,showAlert,showAlertExito])
+    }, [equipoActual, profesPorSede, dataProfes, showAlert, showAlertExito])
+
+    useEffect(() => {
+  if (asistenteActual && dataProfes) {
+    filtrarProfesPorSede();
+  }
+}, [asistenteActual, dataProfes,equipoActual]);
+
+useEffect(() => {
+  if (profesTablas && allProfes) {
+    filtrasProfesGeneracion(equipoActual);
+  }
+}, [profesTablas, allProfes, equipoActual]);
 
     return (
         <DashboardLayout>
             <DashboardNavbar />
             <Grid container marginLeft={2}>
-                
+
                 <Grid item xs={10} sm={2}>
                     <TextField name="generacion" value={generacionInput} label="Generación" onChange={handleChangeGeneracion} variant="outlined" fullWidth
-                        error={validarGeneracion()} helperText={validarGeneracion()&&"Generación inválida o ya existe"}/>
+                        error={validarGeneracion()} helperText={validarGeneracion() && "Generación inválida o ya existe"} />
                 </Grid>
-                <MDButton size="small" color="primary" style={{ "left": "1rem" }} onClick={()=>crearGeneracion()} >Crear Equipo Guia</MDButton>
-                {showAlert&& <Alert severity="error">No se pudo crear el equipo guía, verifica los datos</Alert>}
-                {showAlertExito&& <Alert severity="success">Equipo guía creado correctamente</Alert>}
+                <MDButton size="small" color="primary" style={{ "left": "1rem" }} onClick={() => crearGeneracion()} >Crear Equipo Guia</MDButton>
+                {showAlert && <Alert severity="error">No se pudo crear el equipo guía, verifica los datos</Alert>}
+                {showAlertExito && <Alert severity="success">Equipo guía creado correctamente</Alert>}
 
             </Grid>
 

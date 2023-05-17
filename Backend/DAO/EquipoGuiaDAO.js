@@ -147,6 +147,17 @@ class EquipoGuiaDAO {
             throw error;
         }
     }
+
+    async darDeBajaProfesorEquipoGuia(idProfesor){
+        try {
+            const request = new sql.Request(dbSql.conection); 
+            const query = `EXEC darDeBajaProfesorEquipoGuia @codigo`;
+            request.input('codigo',sql.VarChar,idProfesor);
+            await request.query(query);
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = EquipoGuiaDAO;
