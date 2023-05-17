@@ -42,16 +42,16 @@ async getAllActividades(){
           if(resultado.recordset.length > 0){
             const actividades = resultado.recordset.map(row => {
               const actividad = {
-                codigo: row.codigoActividad,
-                tipo: row.tipoActividad,
                 title: row.nombreActividad,
                 start: row.fechaInicio,
+                end: row.fechaFinal,
+                codigo: row.codigoActividad,
+                tipo: row.tipoActividad,
                 horaInicio: row.horaInicio,
                 creacion: row.fechaCreacion,
                 modalidad: row.modalidad,
                 enlace: row.enlaceReunion,
                 estado: row.estadoActiviad,
-                end: row.fechaFinal
               };
               return actividad;
             });

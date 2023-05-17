@@ -74,8 +74,6 @@ export const Calendar = () => {
       <ModalBody>
       <p>Start: {event.startStr}</p>
       <p>End: {event.endStr}</p>
-      <p>Description: {event.extendedProps.description}</p>
-      <p>Location: {event.extendedProps.location}</p>
       </ModalBody>
       <ModalFooter>
         <Button color="Secundary">Editar</Button>
@@ -92,7 +90,7 @@ export const Calendar = () => {
     const obtenerActividades = async () => {
       try {
         const response = await axios.get('http://localhost:4000/actividades'); // Ruta de la API para obtener las actividades
-        //setEvents(response.data);
+        setEvents(response.data);
       } catch (error) {
         console.error('Error al obtener las actividades:', error);
       }

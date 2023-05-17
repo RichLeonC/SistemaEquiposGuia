@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, FormGroup, Label, Input, Button  } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import axios from "axios";
@@ -12,19 +12,33 @@ export default function ActividadesForm({ selectedDate }) {
   const [selectedTime, setSelectedTime] = useState(null);
   const [virtual, setVirtual] = useState(false);
   const [link, setLink] = useState("");
+  const [profesores, setProfesores] = useState([]); 
   const [form, setForm] = useState({
-    codigoActividad: 2,
-    tipoActividad: 3,
+    codigoActividad: '',
+    tipoActividad: '',
     nombreActividad:'',
     fechaInicio: new Date(selectedDate),
     horaInicio:'',
     fechaCreacion: new Date(),
-    modalidad: 1,
+    modalidad: '',
     enlaceReunion: '',
-    estadoActividad: 1,
+    estadoActividad: '',
     fechaFinal: ''
 
 });
+
+useEffect(() => {
+  obtenerProfesores();
+}, []);
+
+const obtenerProfesores = async () => {
+  try {
+    const response = await axios.get('http://localhost:4000/profesores');
+    setProfesores(response.data);
+  } catch (error){
+    console.error("error en obtener profesores", error);
+  }
+};
 
 
 const handleVirtualChange = (event) => {
@@ -88,7 +102,7 @@ const handleSubmit = async (event) => {
 
   const months = ['January', 'February', 'March', 'April'];
   const tiposActividad = ['Orientacion', 'Motivacion', 'Apoyo', 'Orden'];
-
+  
   const monthOptions = months.map((month, index) => (
     <option key={index} value={month}>
       {month}
@@ -100,6 +114,10 @@ const handleSubmit = async (event) => {
       {tipo}
     </option>
   ));
+
+  useEffect(() => {
+
+  })
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -189,9 +207,13 @@ const handleSubmit = async (event) => {
 
     <div>Profesores encargados</div>
     <div class = "form-group">
-    <select className="form-control" name="" id="month">
-          {monthOptions}
-        </select>
+      <select>
+        {profesores.map((profesor) => (
+          <option key={profesor.codigo} value={profesor.nombre}>
+            {profesor.nombre}
+          </option>
+        ))}
+      </select>
     </div>
     <div>AFICHE</div>
     <Button type="submit" color="primary">Guardar</Button>
