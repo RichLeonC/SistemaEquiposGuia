@@ -20,7 +20,7 @@ const routesProfesor = [
     key: "estudiantes",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/estudiantes",
-    component: <CommentSection/>,
+    component: "",
   },
   {
     type: "collapse",

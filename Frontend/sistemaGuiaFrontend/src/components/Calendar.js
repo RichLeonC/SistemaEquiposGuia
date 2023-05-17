@@ -1,11 +1,8 @@
 import React, {useState, useEffect} from "react";
-import * as ReactDOM from 'react-dom';
-import { v4 as uuid } from "uuid";
 import Fullcalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import Popover from 'react-bootstrap/Popover';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Label} from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -16,7 +13,23 @@ import CommentSection from "./ComentSection";
 import axios from 'axios';
 
 export const Calendar = () => {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([
+    {
+      title: "Evento 1",
+      start: "2023-05-01",
+      end: "2023-05-02",
+    },
+    {
+      title: "Evento 2",
+      start: "2023-05-05",
+      end: "2023-05-07",
+    },
+    {
+      title: "Evento 3",
+      start: "2023-05-10",
+      end: "2023-05-12",
+    },
+  ]);
   const [modalOpenSelect, setModalOpenSelect] = useState(false);
   const [modalOpenEvent, setModalOpenEvent] = useState(false);
 
@@ -78,9 +91,8 @@ export const Calendar = () => {
   useEffect(() => {
     const obtenerActividades = async () => {
       try {
-        const response = await axios.get("/actividades"); // Ruta de la API para obtener las actividades
-        const actividades = response.data;
-        setEvents(actividades);
+        const response = await axios.get('http://localhost:4000/actividades'); // Ruta de la API para obtener las actividades
+        //setEvents(response.data);
       } catch (error) {
         console.error('Error al obtener las actividades:', error);
       }

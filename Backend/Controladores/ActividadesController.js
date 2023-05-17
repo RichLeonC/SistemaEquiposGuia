@@ -41,10 +41,10 @@ router.post('/', async (req, res) => {
 
   
 // GET -> localhost:4000/actividades
-router.get("/actividades", async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-      const actividades = await actividadDAO.obtenerActividades();
-      res.json(actividades);
+      const actividades = await actividadDAO.getAllActividades();
+      res.status(200).json(actividades);
     } catch (error) {
       console.error("Error al obtener las actividades:", error);
       res.status(500).json({ error: "Error al obtener las actividades" });

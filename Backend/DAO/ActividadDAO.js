@@ -34,16 +34,35 @@ class ActividadDAO{
     }
   }
 
-  async obtenerActividades() {
-    try {
-      const pool = await sql.connect(dbSql.conection);
-      const result = await pool.request().query("SELECT * FROM Actividad");
-      return result.recordset;
-    } catch (error) {
-      console.error("Error al obtener las actividades:", error);
-      throw error;
-    }
-  }
+async getAllActividades(){
+        try{
+          const query = `Select * from actividad`;
+          const request = new sql.Request(dbSql.conection);
+          const resultado = await request.query(query);
+          if(resultado.recordset.length > 0){
+            const actividades = resultado.recordset.map(row => {
+              const actividad = {
+                codigo: row.codigoActividad,
+                tipo: row.tipoActividad,
+                title: row.nombreActividad,
+                start: row.fechaInicio,
+                horaInicio: row.horaInicio,
+                creacion: row.fechaCreacion,
+                modalidad: row.modalidad,
+                enlace: row.enlaceReunion,
+                estado: row.estadoActiviad,
+                end: row.fechaFinal
+              };
+              return actividad;
+            });
+            return actividades;
+          }
+          else{
+            console.log("oh no");
+            return[];
+          }
+        } catch (error){
+        }
+      }
 }
-
   module.exports = ActividadDAO;

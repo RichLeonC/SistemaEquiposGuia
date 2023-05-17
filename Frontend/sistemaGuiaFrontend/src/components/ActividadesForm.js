@@ -5,6 +5,7 @@ import axios from "axios";
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.css';
 
+
 export default function ActividadesForm({ selectedDate }) {
 
   const [selectedFinishDate, setSelectedFinishDate] = useState(null);
@@ -12,18 +13,19 @@ export default function ActividadesForm({ selectedDate }) {
   const [virtual, setVirtual] = useState(false);
   const [link, setLink] = useState("");
   const [form, setForm] = useState({
-    codigoActividad: 1,
-    tipoActividad:1,
+    codigoActividad: 2,
+    tipoActividad: 3,
     nombreActividad:'',
     fechaInicio: new Date(selectedDate),
     horaInicio:'',
     fechaCreacion: new Date(),
     modalidad: 1,
     enlaceReunion: '',
-    estadoActividad: 2,
+    estadoActividad: 1,
     fechaFinal: ''
 
 });
+
 
 const handleVirtualChange = (event) => {
   const isChecked = event.target.checked;
