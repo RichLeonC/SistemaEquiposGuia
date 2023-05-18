@@ -12,7 +12,6 @@ export default function ActividadesForm({ selectedDate }) {
   const [selectedTime, setSelectedTime] = useState(null);
   const [virtual, setVirtual] = useState(false);
   const [link, setLink] = useState("");
-  const [profesores, setProfesores] = useState([]); 
   const [form, setForm] = useState({
     codigoActividad: '',
     tipoActividad: '',
@@ -22,23 +21,10 @@ export default function ActividadesForm({ selectedDate }) {
     fechaCreacion: new Date(),
     modalidad: '',
     enlaceReunion: '',
-    estadoActividad: '',
+    estadoActividad: 1, //se crea como planeada
     fechaFinal: ''
 
 });
-
-useEffect(() => {
-  obtenerProfesores();
-}, []);
-
-const obtenerProfesores = async () => {
-  try {
-    const response = await axios.get('http://localhost:4000/profesores');
-    setProfesores(response.data);
-  } catch (error){
-    console.error("error en obtener profesores", error);
-  }
-};
 
 
 const handleVirtualChange = (event) => {
@@ -47,8 +33,10 @@ const handleVirtualChange = (event) => {
   
   // Actualizar el valor de modalidad en el estado del formulario
   setForm((prevForm) => ({
+    //en caso de estar marcado se clasifica como true 1
+    //caso contrario es 0 false
     ...prevForm,
-    modalidad: isChecked ? 'virtual' : '',
+    modalidad: isChecked ? 1 : 0,
   }));
 };
 
@@ -84,7 +72,7 @@ const handleLinkChange = (event) => {
 const handleSubmit = async (event) => {
   event.preventDefault();
   console.log('Formulario:', form);
-
+//proceso de insercion a la base de datos 
   try {
     await axios.post('http://localhost:4000/actividades', form);
     console.log('Actividad creada exitosamente.');
@@ -101,7 +89,7 @@ const handleSubmit = async (event) => {
   };
 
   const months = ['January', 'February', 'March', 'April'];
-  const tiposActividad = ['Orientacion', 'Motivacion', 'Apoyo', 'Orden'];
+  const tiposActividad = ['Orientacion', 'Motivacion', 'Apoyo', 'Orden', 'Recreacion'];
   
   const monthOptions = months.map((month, index) => (
     <option key={index} value={month}>
@@ -110,14 +98,10 @@ const handleSubmit = async (event) => {
   ));
 
   const actividadOptions = tiposActividad.map((tipo, index) => (
-    <option key={index} value={tipo}>
+    <option key={index} value={index}>
       {tipo}
     </option>
   ));
-
-  useEffect(() => {
-
-  })
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -205,16 +189,6 @@ const handleSubmit = async (event) => {
         </FormGroup>
       )}
 
-    <div>Profesores encargados</div>
-    <div class = "form-group">
-      <select>
-        {profesores.map((profesor) => (
-          <option key={profesor.codigo} value={profesor.nombre}>
-            {profesor.nombre}
-          </option>
-        ))}
-      </select>
-    </div>
     <div>AFICHE</div>
     <Button type="submit" color="primary">Guardar</Button>
     </Form>

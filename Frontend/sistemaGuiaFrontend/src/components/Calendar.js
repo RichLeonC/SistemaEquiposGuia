@@ -67,13 +67,15 @@ export const Calendar = () => {
       </div>
     );
   };
+  
 
   const EventModal = ({ event }) => (
+    
     <Modal isOpen={modalOpenEvent} toggle={toggleModalEvent}>
       <ModalHeader toggle={toggleModalEvent}>{event.title}</ModalHeader>
       <ModalBody>
-      <p>Start: {event.startStr}</p>
-      <p>End: {event.endStr}</p>
+      <p>Start: { event.start ? event.start.toISOString().split("T")[0] : ""}</p>
+      <p>End: {event.end ? event.end.toISOString().split("T")[0] : ""}</p>
       </ModalBody>
       <ModalFooter>
         <Button color="Secundary">Editar</Button>
@@ -90,7 +92,9 @@ export const Calendar = () => {
     const obtenerActividades = async () => {
       try {
         const response = await axios.get('http://localhost:4000/actividades'); // Ruta de la API para obtener las actividades
+
         setEvents(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error('Error al obtener las actividades:', error);
       }
@@ -108,6 +112,8 @@ export const Calendar = () => {
         editable
         selectable
         events={events}
+        timeZone="UTC"
+        navLinks // Agrega esta opción
         select={handleDateSelect}
         eventClick ={handleEventClick}
         initialView={"dayGridMonth"}
