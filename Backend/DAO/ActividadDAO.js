@@ -45,7 +45,7 @@ async getAllActividades(){
               const fechaInicio = new Date(row.fechaInicio);
               const fechaFinal = new Date(row.fechaFinal);
       
-              fechaInicio.setHours(0, 0, 0); // Establecer hora de inicio a las 12 AM, minutos y segundos a 0
+              fechaInicio.setHours(23, 59, 0); // Establecer hora de inicio a las 12 AM, minutos y segundos a 0
               fechaFinal.setHours(23, 59, 0); // Establecer hora de finalización a las 11:59 PM, segundos a 0
               const actividad = {
                 title: row.nombreActividad,
