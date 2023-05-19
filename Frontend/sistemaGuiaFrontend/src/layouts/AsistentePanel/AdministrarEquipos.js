@@ -276,7 +276,7 @@ export default function AdministrarEquipos() {
     ];
 
 
-    function createRow(profe) {
+    function createRow(profe,equipo) {
         let sedeP = '';
         switch (profe.idSede) {
             case 1:
@@ -297,7 +297,8 @@ export default function AdministrarEquipos() {
         }
 
 
-        const nombreCompleto = `${profe.nombre} ${profe.segundoNombre} ${profe.apellido1} ${profe.apellido2} ${profe.esCordinador == 1 ? "(COORDINADOR)" : ""}`;
+        const nombreCompleto = `${profe.nombre} ${profe.segundoNombre} ${profe.apellido1} ${profe.apellido2} ${profe.esCordinador == 1
+            &&equipo.idCoordinador == profe.codigo ? "(COORDINADOR)" : ""}`;
         return {
 
             author: <Author image={profe.foto} name={nombreCompleto} email={profe.correo} />,
@@ -391,10 +392,10 @@ useEffect(() => {
                             const profesGenActual = profesTablas.filter(p => p.generacion == equipo.generacion);
                             const profesCompletos = allProfes.filter(p => profesGenActual.some(pg => pg.idProfesor == p.codigo))
                                 .sort((a, b) => b.esCordinador - a.esCordinador);
-                            rows = profesCompletos.map(createRow);
+                            rows = profesCompletos.map(p=>createRow(p,equipo));
                         }
 
-
+                       
                         return (
                             <Grid item xs={12} key={index}>
 
