@@ -43,6 +43,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
       const actividades = await actividadDAO.getAllActividades();
+      console.log(actividades)
       res.status(200).json(actividades);
     } catch (error) {
       console.error("Error al obtener las actividades:", error);

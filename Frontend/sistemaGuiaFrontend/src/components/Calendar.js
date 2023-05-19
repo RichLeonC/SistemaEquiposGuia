@@ -13,23 +13,7 @@ import CommentSection from "./ComentSection";
 import axios from 'axios';
 
 export const Calendar = () => {
-  const [events, setEvents] = useState([
-    {
-      title: "Evento 1",
-      start: "2023-05-01",
-      end: "2023-05-02",
-    },
-    {
-      title: "Evento 2",
-      start: "2023-05-05",
-      end: "2023-05-07",
-    },
-    {
-      title: "Evento 3",
-      start: "2023-05-10",
-      end: "2023-05-12",
-    },
-  ]);
+  const [events, setEvents] = useState([]);
   const [modalOpenSelect, setModalOpenSelect] = useState(false);
   const [modalOpenEvent, setModalOpenEvent] = useState(false);
 
@@ -53,6 +37,7 @@ export const Calendar = () => {
   };
 
   const handleEventClick = (info) => {
+    console.log(info.event.extendedProps)
     setSelectedEvent(info.event);
     toggleModalEvent();
   };
@@ -67,41 +52,93 @@ export const Calendar = () => {
       </div>
     );
   };
+
+  const getTipoActividad = (tipo) => {
+    switch(tipo){
+      case 0:
+        return "Orientadoras";
+      case 1:
+        return "Motivacionales";
+      case 2:
+        return "De Apoyo";
+      case 3:
+        return "Orden Tecnico";
+      case 4:
+        return "Recreacion";
+      default:
+        return "Tipo desconocido";
+    }
+  };
+
+  const getTipoEstado = (tipo) => {
+    switch(tipo){
+      case 0:
+        return "Planeada";
+      case 1:
+        return "Notificada";
+      case 2:
+        return "Realizada";
+      case 3:
+        return "Cancelada";
+      default:
+        return "Estado desconocido";
+    }
+  };
+
+  const getIsVirtual = (tipo) => {
+    switch(tipo){
+      case 0:
+        return "Presencial";
+      case 1:
+        return "Virtual";
+      default:
+        return "Modalidad desconocido";
+    }
+  };
   
 
-  const EventModal = ({ event }) => (
+  
+
+  const EventModal = ({ event }) => {
+
+    return(
     
     <Modal isOpen={modalOpenEvent} toggle={toggleModalEvent}>
       <ModalHeader toggle={toggleModalEvent}>{event.title}</ModalHeader>
       <ModalBody>
-      <p>Start: { event.start ? event.start.toISOString().split("T")[0] : ""}</p>
-      <p>End: {event.end ? event.end.toISOString().split("T")[0] : ""}</p>
+      <p>Fecha de Inicio: { event.start ? event.start.toISOString().split("T")[0] : ""}</p>
+      <p>Hora de incio: {event.extendedProps.horaInicio}</p>
+      <p>Fecha de Finalización: {event.end ? event.end.toISOString().split("T")[0] : ""}</p>
+      <p>Tipo de actividad: {getTipoActividad(event.extendedProps.tipo)}</p>
+      <p>Modalidad: {getIsVirtual(event.extendedProps.modalidad)}</p>
+      <p>Enlace: {event.extendedProps.enlace}</p>
+      <p>Estado: {getTipoEstado(event.extendedProps.estado)}</p>
       </ModalBody>
       <ModalFooter>
-        <Button color="Secundary">Editar</Button>
-        <Button color="Terciary" >Comentar</Button>
-        <Button color="Quarter">Adminstrar</Button>
+        <Button color="Quarter">Administrar</Button>
+        <Button color="Secundary">Recordatorios</Button>
         <Button color="primary" onClick={toggleModalEvent}>
           Close
         </Button>
       </ModalFooter>
     </Modal>
-  );
-
-  useEffect(() => {
-    const obtenerActividades = async () => {
-      try {
-        const response = await axios.get('http://localhost:4000/actividades'); // Ruta de la API para obtener las actividades
-
-        setEvents(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error('Error al obtener las actividades:', error);
-      }
+    );
     };
 
-    obtenerActividades();
-  }, []);
+    useEffect(() => {
+      const obtenerActividades = async () => {
+        try {
+          const response = await axios.get('http://localhost:4000/actividades'); // Ruta de la API para obtener las actividades
+          const actividades = response.data;
+          setEvents(response.data);
+          console.log(actividades);
+        } catch (error) {
+          console.error('Error al obtener las actividades:', error);
+        }
+      };
+    
+      obtenerActividades();
+    }, []);
   
   return (
     <DashboardLayout>
