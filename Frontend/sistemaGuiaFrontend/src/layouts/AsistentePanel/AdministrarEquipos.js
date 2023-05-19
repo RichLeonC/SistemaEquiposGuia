@@ -60,7 +60,8 @@ export default function AdministrarEquipos() {
 
     const handleModalPC = async (equipo, tipo) => {
         setEquipoActual(equipo);
-        await peticionGetProfesSinEquipo();// Espera a que esta función termine
+        if(equipo!=null)
+        await peticionGetProfesDisponibles(equipo.generacion);// Espera a que esta función termine
        // await filtrarProfesPorSede(); // Espera a que esta función termine
         setSelectedProfe('');
 
@@ -142,9 +143,9 @@ export default function AdministrarEquipos() {
         }
     }
 
-    const peticionGetProfesSinEquipo = async () => {
+    const peticionGetProfesDisponibles = async (generacion) => {
         try {
-            const response = await axios.get(apiURi + "/profesores/sinEquipo");
+            const response = await axios.get(apiURi + "/profesores/disponibles/"+generacion);
             setDataProfes(response.data);
             filtrarProfesPorSede();
         } catch (error) {
