@@ -236,9 +236,9 @@ export default function AdministrarEquipos() {
         }
     }
 
-    const darDeBajaProfesorEquipo=async(profesor)=>{
+    const darDeBajaProfesorEquipo=async(profesor,generacion)=>{
         try {
-            const response = axios.delete(`${apiURIEquipos}/darBaja/${profesor.codigo}`)
+            const response = axios.delete(`${apiURIEquipos}/darBaja/${profesor.codigo}/${generacion}`)
             await peticionGetProfes();
             await peticionGetAllProfes();
             await peticionGetProfes();
@@ -330,7 +330,7 @@ export default function AdministrarEquipos() {
             action: (
                 
                 <MDButton disabled={asistenteActual.idSede != profe.idSede && asistenteActual.idSede != 1} color="dark" size={"small"}
-                onClick={()=>darDeBajaProfesorEquipo(profe)}>Dar de Baja</MDButton>
+                onClick={()=>darDeBajaProfesorEquipo(profe,equipo.generacion)}>Dar de Baja</MDButton>
             )
         };
     }

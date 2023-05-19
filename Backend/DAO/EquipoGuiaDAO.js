@@ -148,11 +148,12 @@ class EquipoGuiaDAO {
         }
     }
 
-    async darDeBajaProfesorEquipoGuia(idProfesor){
+    async darDeBajaProfesorEquipoGuia(idProfesor,generacion){
         try {
             const request = new sql.Request(dbSql.conection); 
-            const query = `EXEC darDeBajaProfesorEquipoGuia @codigo`;
+            const query = `EXEC darDeBajaProfesorEquipoGuia @codigo,@generacion`;
             request.input('codigo',sql.VarChar,idProfesor);
+            request.input('generacion',sql.Int,generacion);
             await request.query(query);
         } catch (error) {
             throw error;

@@ -369,3 +369,32 @@ BEGIN
     WHERE peg.idProfesor IS NULL OR peg.generacion IS NULL;
 END
 
+
+CREATE PROCEDURE [dbo].[darDeBajaProfesorEquipoGuia]
+    @codigo VARCHAR(10), -- Código del profesor a eliminar
+    @generacion INT
+AS
+BEGIN
+    DECLARE @countEquipoGuia INT;
+    SELECT @countEquipoGuia = COUNT(*)
+    FROM equipoGuia
+    WHERE idCoordinador = @codigo;
+
+    -- Cambia el idCoordinador a NULL en la tabla equipoGuia
+    -- si el profesor a eliminar es el coordinador
+    UPDATE equipoGuia
+    SET idCoordinador = NULL
+    WHERE idCoordinador = @codigo AND generacion = @generacion
+
+    IF (@countEquipoGuia <= 1)
+    BEGIN
+        UPDATE profesor
+        SET esCordinador = 0
+        WHERE codigo = @codigo AND esCordinador = 1;
+    END
+
+
+    -- Elimina el profesor de la tabla profesor_equipoGuia
+    DELETE FROM profesor_equipoGuia
+    WHERE idProfesor = @codigo AND generacion = @generacion;
+END

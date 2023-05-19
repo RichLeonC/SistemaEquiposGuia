@@ -101,14 +101,14 @@ router.put('/definirCoordinador', async (req, res) => {
 
 
 //DELETE -> localhost:4000/equipos/darBaja/:codigo
-router.delete('/darBaja/:idProfesor', async (req, res) => {
+router.delete('/darBaja/:idProfesor/:generacion', async (req, res) => {
     try {
-        const {idProfesor} = req.params;
+        const {idProfesor,generacion} = req.params;
         if(!idProfesor){
             return res.status(400).send('dProfesor invalido');
         }
 
-        await equipoGuiaDAO.darDeBajaProfesorEquipoGuia(idProfesor);
+        await equipoGuiaDAO.darDeBajaProfesorEquipoGuia(idProfesor,generacion);
         
         return res.status(201).send('Profesor eliminado correctamente');
     } catch (error) {
