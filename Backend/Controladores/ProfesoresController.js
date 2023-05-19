@@ -36,6 +36,19 @@ router.get('/sinEquipo', async (req, res) => {
 
 });
 
+//GET -> localhost:4000/profesores/dispobibles
+router.get('/disponibles/:generacion', async (req, res) => {
+  try {
+    const {generacion}=req.params;
+    const profesores = await profesorDAO.getProfesDisponibles(generacion);
+    res.status(200).json(profesores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error al obtener los profesores");
+  }
+
+});
+
 //GET -> localhost:4000/profesores/sinEquipo/:idSede
 router.get('/sinEquipo/:idSede', async (req, res) => {
   try {

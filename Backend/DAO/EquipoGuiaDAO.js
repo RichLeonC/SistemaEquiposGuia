@@ -67,7 +67,7 @@ class EquipoGuiaDAO {
             const request = new sql.Request(dbSql.conection);   
             request.input('generacion', sql.Int, generacion);
             request.input('idProfesor', sql.VarChar, idProfesor);
-            const checkIfExists = await request.query(`SELECT COUNT(*) AS count FROM profesor_equipoGuia WHERE idProfesor = @idProfesor`);
+            const checkIfExists = await request.query(`SELECT COUNT(*) AS count FROM profesor_equipoGuia WHERE idProfesor = @idProfesor AND generacion = @generacion`);
             if (checkIfExists.recordset[0].count > 0) {
                 throw new Error('El profesor ya tiene equipo guia.');
             }

@@ -335,5 +335,28 @@ BEGIN
     WHERE codigo = @codigoProfesor;
 END;
 
-
+CREATE PROCEDURE [dbo].[verProfesoresDisponibles]
+    @generacion INT
+AS
+BEGIN
+    SELECT
+        u.cedulaUsuario,
+        u.nombre,
+        u.segundonombre,
+        u.apellido1,
+        u.apellido2,
+        u.correo,
+        u.celular,
+        u.rol,
+        p.idSede,
+        p.telOficina,
+        p.foto,
+        pr.codigo,
+        pr.esCordinador
+    FROM usuario AS u
+    INNER JOIN personal AS p ON u.cedulaUsuario = p.cedulaPersonal
+    INNER JOIN profesor AS pr ON p.cedulaPersonal = pr.cedulaProfesor
+    LEFT JOIN profesor_equipoGuia AS peg ON pr.codigo = peg.idProfesor AND peg.generacion = @generacion
+    WHERE peg.idProfesor IS NULL OR peg.generacion IS NULL;
+END
 
