@@ -12,6 +12,7 @@ import SignUp from "layouts/authentication/sign-up";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
+import ConsultarEstudiantes from "layouts/ProfesorPanel/ConsultarEstudiantes";
 
 const routesProfesor = [
   {
@@ -20,7 +21,7 @@ const routesProfesor = [
     key: "estudiantes",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/estudiantes",
-    component: "",
+    component: <ConsultarEstudiantes/>,
   },
   {
     type: "collapse",

@@ -7,6 +7,7 @@ import {Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, La
 import 'bootstrap/dist/css/bootstrap.css';
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import ActividadesForm from './ActividadesForm'
 import CommentSection from "./ComentSection";
 
@@ -142,6 +143,7 @@ export const Calendar = () => {
   
   return (
     <DashboardLayout>
+      <DashboardNavbar />
     <div id='full-calendar'>
       <Fullcalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
