@@ -398,3 +398,70 @@ BEGIN
     DELETE FROM profesor_equipoGuia
     WHERE idProfesor = @codigo AND generacion = @generacion;
 END
+
+
+
+CREATE PROCEDURE verEstudiantes
+AS
+BEGIN
+    SELECT
+        u.cedulaUsuario,
+        u.nombre,
+        u.segundonombre,
+        u.apellido1,
+        u.apellido2,
+        u.correo,
+        u.celular,
+        u.rol,
+        e.carne,
+        e.codigoCarrera,
+        e.idSede,
+        e.generacion
+    FROM usuario AS u
+    INNER JOIN estudiante AS e ON u.cedulaUsuario = e.cedulaEstudiante
+    ORDER BY u.apellido1 ASC;
+END;
+
+CREATE PROCEDURE verEstudiantesPorCarne
+    @carne int
+AS
+BEGIN
+    SELECT
+        u.cedulaUsuario,
+        u.nombre,
+        u.segundonombre,
+        u.apellido1,
+        u.apellido2,
+        u.correo,
+        u.celular,
+        u.rol,
+        e.carne,
+        e.codigoCarrera,
+        e.idSede,
+        e.generacion
+    FROM usuario AS u
+    INNER JOIN estudiante AS e ON u.cedulaUsuario = e.cedulaEstudiante
+    WHERE e.carne = @carne
+END;
+
+CREATE PROCEDURE verEstudiantesPorSede
+    @idSede int
+AS
+BEGIN
+    SELECT
+        u.cedulaUsuario,
+        u.nombre,
+        u.segundonombre,
+        u.apellido1,
+        u.apellido2,
+        u.correo,
+        u.celular,
+        u.rol,
+        e.carne,
+        e.codigoCarrera,
+        e.idSede,
+        e.generacion
+    FROM usuario AS u
+    INNER JOIN estudiante AS e ON u.cedulaUsuario = e.cedulaEstudiante
+    WHERE e.idSede = @idSede;
+END;

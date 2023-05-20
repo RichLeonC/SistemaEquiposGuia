@@ -217,7 +217,7 @@ export default function RegistrarProfes() {
                         setIdSede('');
                         return true;
                     }
-
+                    setShowAlert(true);
                     return false;
                 } catch (error) {
                     setShowAlert(true);
@@ -230,7 +230,6 @@ export default function RegistrarProfes() {
 
             }
         }
-        console.log("false")
         setShowAlert(true);
         return false;
     }
