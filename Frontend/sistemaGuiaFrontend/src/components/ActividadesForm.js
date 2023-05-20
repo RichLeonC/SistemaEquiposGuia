@@ -12,6 +12,11 @@ export default function ActividadesForm({ selectedDate }) {
   const [selectedTime, setSelectedTime] = useState(null);
   const [virtual, setVirtual] = useState(false);
   const [link, setLink] = useState("");
+  const [profesores, setProfesores] = useState([]); 
+  const [profesorEncargado, setProfesorEncargado] = useState({
+      generacion: new Date().getFullYear(), //se tiene que hacer otro proceso para obtener la generacion del profesor seleccionado
+      idProfesor: '' //codigo de profesor seleccionado      
+    });
   const [form, setForm] = useState({
     codigoActividad: '',
     tipoActividad: '',
@@ -21,11 +26,21 @@ export default function ActividadesForm({ selectedDate }) {
     fechaCreacion: new Date(),
     modalidad: '',
     enlaceReunion: '',
-    estadoActividad: 1, //se crea como planeada
-    fechaFinal: ''
+    estadoActividad: 0, //se crea como planeada
+    fechaFinal: '',
+    generacion: new Date().getFullYear(),
+    idProfesor: ''
 
 });
 
+const obtenerProfesores = async () => {
+  try {
+    const response = await axios.get('http://localhost:4000/profesores');
+    setProfesores(response.data);
+  } catch (error){
+    console.error("error en obtener profesores", error);
+  }
+};
 
 const handleVirtualChange = (event) => {
   const isChecked = event.target.checked;
@@ -69,13 +84,23 @@ const handleLinkChange = (event) => {
     console.log(form);
 }
 
+const handleChangeProf = e => {
+  const { name, value } = e.target;
+  setProfesorEncargado({
+      ...profesorEncargado,
+      [name]: value
+  })
+  console.log(profesorEncargado);
+}
+
 const handleSubmit = async (event) => {
   event.preventDefault();
   console.log('Formulario:', form);
+  console.log('Profesor: ', profesorEncargado)
 //proceso de insercion a la base de datos 
   try {
     await axios.post('http://localhost:4000/actividades', form);
-    console.log('Actividad creada exitosamente.');
+    //console.log('Actividad creada exitosamente.');
     // Realiza cualquier acción adicional después de almacenar los datos en la base de datos
   } catch (error) {
     console.error('Error al crear la Actividad:', error);
@@ -83,25 +108,25 @@ const handleSubmit = async (event) => {
   }
 };
 
-  const handleTimeChange = (event) => {
-    setSelectedTime(event.target.value);
-    handleChange();
-  };
-
-  const months = ['January', 'February', 'March', 'April'];
   const tiposActividad = ['Orientacion', 'Motivacion', 'Apoyo', 'Orden', 'Recreacion'];
   
-  const monthOptions = months.map((month, index) => (
-    <option key={index} value={month}>
-      {month}
-    </option>
-  ));
 
   const actividadOptions = tiposActividad.map((tipo, index) => (
     <option key={index} value={index}>
       {tipo}
     </option>
   ));
+
+  const profesoresOptions =  profesores.map((profesor) => (
+    <option key={profesor.codigo} value={profesor.codigo}>
+      {profesor.codigo + " " + profesor.nombre}
+    </option>
+  ));
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useEffect(() => {
+        obtenerProfesores();
+      }, []);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -188,6 +213,18 @@ const handleSubmit = async (event) => {
           />
         </FormGroup>
       )}
+
+  <div>Profesore encargado</div>
+    <div class = "form-group">
+      <select
+      className="form-control"
+      name = "idProfesor"
+      value = {form.idProfesor}
+      id ="idProfesor"
+      onChange={handleChange}>
+        {profesoresOptions}
+      </select>
+    </div>
 
     <div>AFICHE</div>
     <Button type="submit" color="primary">Guardar</Button>
