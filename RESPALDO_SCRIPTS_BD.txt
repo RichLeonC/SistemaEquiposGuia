@@ -4,9 +4,9 @@ CREATE TABLE usuario (
     segundonombre VARCHAR(25),
     apellido1 VARCHAR(25) NOT NULL,
     apellido2 VARCHAR(25),
-    correo VARCHAR(100) NOT NULL,
+    correo VARCHAR(100) NOT NULL UNIQUE,
     clave VARCHAR(100) NOT NULL,
-    celular int NOT NULL,
+    celular int NOT NULL UNIQUE,
     rol VARCHAR(20) NOT NULL
 );
 
@@ -37,7 +37,7 @@ CREATE TABLE sede(
 CREATE TABLE personal (
     cedulaPersonal INT NOT NULL PRIMARY KEY FOREIGN KEY REFERENCES usuario(cedulaUsuario),
     idSede INT NOT NULL FOREIGN KEY REFERENCES sede(idSede),
-    telOficina VARCHAR(25),
+    telOficina VARCHAR(25) UNIQUE,
     foto VARCHAR(255)
 );
 

@@ -13,7 +13,6 @@ class ProfesorDAO {
             if (checkIfExists.recordset[0].count > 0) {
                 throw new Error('El profesor ya existe en la base de datos.');
             }
-            console.log("Codigo: " + profesor.codigo);
             request.input('cedulaProfesor', sql.Int, profesor.cedula);
             request.input('codigo', sql.VarChar, profesor.codigo);
             request.input('esCordinador', sql.Int, profesor.esCordinador);
@@ -31,6 +30,7 @@ class ProfesorDAO {
 
             await request.execute("crear_profesor");
         } catch (error) {
+            throw new Error("Verifica que no existan elementos duplicados")
             console.log(error);
         }
     }
