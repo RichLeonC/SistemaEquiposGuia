@@ -3,8 +3,7 @@ const EstudianteDAO = require("../DAO/EstudianteDAO.js");
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt'); //Hash para encriptar la clave del usuario.
-const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
+
 
 const estudianteDAO = new EstudianteDAO();
 
@@ -22,76 +21,30 @@ router.get('/', async (req, res) => {
 
 });
 
-//GET -> localhost:4000/estudiantes/:carne (estudiantes/2020127158, por ejemplo)
-router.get('/:carne', async (req, res) => {
+
+//POST ->localhost:4000/estudiantes
+router.post('/', async (req, res) => {
   try {
-    const { carne } = req.params;
-    const estudiante = await estudianteDAO.getEstudianteCarne(carne);
-    res.status(200).json(estudiante);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error al obtener al estudiante por canre");
-  }
+    const { cedula, nombre, segundonombre, apellido1, apellido2, correo, clave, celular, idSede, codigoCarrera,generacion} = req.body;
 
-});
-
-
-//GET -> localhost:4000/estudiantes/:idSede (estudiantes/1, por ejemplo)
-router.get('/:idSede', async (req, res) => {
-  try {
-    const { idSede } = req.params;
-    const estudiante = await estudianteDAO.getEstudianteSede(idSede);
-    res.status(200).json(estudiante);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error al obtener a los estudiantes por sede");
-  }
-
-});
-
-//PUT ->localhost:4000/actualizarestudiante (actualizarestudiante, por ejemplo)
-router.put('/actualizarestudiante', async (req, res) => {
-  try {
-
-    const {carne, cedulaEstudiante, codigoCarrera, idSede, generacion} = req.body;
-    if (!carne) {
-      return res.status(400).send('Introduzca el carne del estudiante');
+    // Validamos los datos de entrada
+    if (!cedula || !nombre || !apellido1 || !apellido2 || !correo || !clave || !celular
+      || !idSede ||!codigoCarrera||!generacion) {
+      return res.status(400).send('Todos los campos son obligatorios, excepto segundoNombre.');
     }
 
-    await EstudianteDAO.actualizarEstudiante(carne, cedulaEstudiante, codigoCarrera, idSede, generacion);
+    const salt = await bcrypt.genSalt(10);
+    const claveEncriptada = await bcrypt.hash(clave, salt);
 
-    res.status(200).send('Estudiante actualizado exitosamente');
+
+    const nuevoEstudiante = new Estudiante(cedula, nombre, segundonombre, apellido1, apellido2, correo,
+      claveEncriptada, celular, "ESTUDIANTE",codigoCarrera,idSede, generacion);
+    await estudianteDAO.crearEstudiante(nuevoEstudiante);
+
+    return res.status(201).send('Estudiante creado exitosamente.');
   } catch (error) {
-    res.status(500).send('Error al actualizar el estudiante del usuario');
+    console.error(error);
+    return res.status(500).send('Error al crear el Estudiante.');
   }
 });
-
-
-async function generarExcel( idSede) {
-  console.log("Sede: "+idSede);
-
-  try {
-    var fs = require('fs');
-    var writeStream = fs.createWriteStream("file.xls");
-    
-    var header="cedulaEstudiante"+"\t"+" carne"+"\t"+"codigoCarrera"+"\t"+"idSede"+"\t"+"generacion"+"\n";
-    writeStream.write(header);
-
-    const estudiantes = await estudianteDAO.getEstudianteSede(idSede);
- 
-    writeStream.write(header);
-
-    for(let i=0; i < estudiantes.length; i++){
-      var row = estudiantes[i].cedulaEstudiante+"\t"+estudiantes[i].carne+"\t"+estudiantes[i].codigoCarrera+"\t"+estudiantes[i].idSede+"\t"+estudiantes[i].generacion+"\n";
-      writeStream.write(row);
-    }
-
-    writeStream.close();
-    console.log("Excel generado exitosamente")
-
-  } catch (error) {
-    console.error("Error al generar el Excel ", error);
-  }
-}
-
 module.exports = router;
