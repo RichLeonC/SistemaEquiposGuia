@@ -27,7 +27,7 @@ export default function administrarActividad() {
   return (
     <div>
     <div>administrarActividad</div>
-    <div>Profesores encargados</div>
+    <div>Profesore encargado</div>
     <div class = "form-group">
       <select>
         {profesores.map((profesor) => (
@@ -40,3 +40,4 @@ export default function administrarActividad() {
     </div>
   )
 }
+

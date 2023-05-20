@@ -1,6 +1,7 @@
 const Actividad = require("../Modelos/Actividad")
 const ActividadDAO = require("../DAO/ActividadDAO.js");
 const express = require("express");
+const Actividad_Responsable = require("../Modelos/Actividad_Responsables");
 const router = express.Router();
 
 const actividadDAO = new ActividadDAO();
@@ -8,12 +9,12 @@ const actividadDAO = new ActividadDAO();
 // POST -> localhost:4000/actividades
 router.post('/', async (req, res) => {
     try {
-      const { tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActividad, fechaFinal } = req.body;
+      const { tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActividad, fechaFinal, generacion, idProfesor } = req.body;
   
       // Validar los datos de entrada
-      if (!tipoActividad || !nombreActividad || !fechaInicio || !horaInicio || !fechaCreacion || !modalidad || !estadoActividad || !fechaFinal) {
+      /*if (!tipoActividad || !nombreActividad || !fechaInicio || !horaInicio || !fechaCreacion || !modalidad || !estadoActividad || !fechaFinal) {
         return res.status(400).send('Todos los campos son obligatorios');
-      }
+      }*/
         // Convertir codigoActividad a número entero
       const codigoActividad = await actividadDAO.generarCodigoActividad();
       const nuevaActividad = new Actividad(
@@ -28,8 +29,15 @@ router.post('/', async (req, res) => {
         estadoActividad,
         fechaFinal
       );
+
+      const responsable = new Actividad_Responsable(
+        codigoActividad,
+        generacion,
+        idProfesor
+      )
   
       await actividadDAO.insertActividad(nuevaActividad);
+      await actividadDAO.insertProfesorEncargado(responsable);
   
       return res.status(201).send('Actividad creada exitosamente.');
     } catch (error) {

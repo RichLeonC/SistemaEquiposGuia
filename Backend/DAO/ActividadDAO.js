@@ -13,7 +13,7 @@ class ActividadDAO{
       VALUES (@codigoActividad, @tipoActividad, @nombreActividad, @fechaInicio, @horaInicio, @fechaCreacion, @modalidad, @enlaceReunion, @estadoActiviad, @fechaFinal);
     `;
   
-        console.log(actividad);
+       // console.log(actividad);
         request.input('codigoActividad', sql.Int, actividad.codigoActividad);
         request.input('tipoActividad', sql.Int, actividad.tipoActividad);
         request.input('nombreActividad', sql.VarChar, actividad.nombreActividad);
@@ -31,6 +31,27 @@ class ActividadDAO{
       console.log('Actividad insertada con éxito');
     } catch (error) {
       console.error('Error al insertar la actividad:', error);
+    }
+  }
+
+  async insertProfesorEncargado(datos){
+    const request = new sql.Request(dbSql.conection);
+
+    try{
+      const query = `
+      INSERT INTO actividad_responsables (idActividad, generacion, idProfesor)
+      VALUES (@idActividad, @generacion, @idProfesor);
+      `
+
+      request.input('idActividad', sql.Int, datos.idActividad);
+      request.input('generacion', sql.Int, datos.generacion);
+      request.input('idProfesor', sql.VarChar, datos.idProfesor);
+
+      const result = await request.query(query);
+
+      console.log('Encargado establecido con exito');
+    } catch(error){
+      console.error('Error al settear al encargado: ', error);
     }
   }
 
