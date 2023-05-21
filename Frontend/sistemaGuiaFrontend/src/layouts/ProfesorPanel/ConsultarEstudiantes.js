@@ -16,41 +16,59 @@ export default function ConsultarEstudiantes() {
 
     const [dataEstudiantes, setDataEstudiantes] = useState([]);
     const [profesorActual, setProfesorActual] = useState([]);
-    const [carneFiltro,setCarneFiltro] = useState("");
+    const [carneFiltro, setCarneFiltro] = useState("");
+    const [idSede,setIdSede] = useState('');
 
     const apiURIEstudiantes = "http://localhost:4000/estudiantes";
     const apiURIProfesores = "http://localhost:4000/profesores";
 
 
-    const handleChangeCarne=(e)=>{
+    const handleChangeCarne = (e) => {
         const value = e.target.value;
         const regex = /^[0-9\b]+$/; // Expresión regular para permitir solo números
 
-        if(value===""){
+        if (value === "") {
             setCarneFiltro(value);
             peticionGetEstudiantes();
         }
-        if ((regex.test(value))&&value.length<=10) {
-          setCarneFiltro(value);
-          filtrarPorCarne(value);
-          
+        if ((regex.test(value)) && value.length <= 10) {
+            setCarneFiltro(value);
+            filtrarPorCarne(value);
+
         }
     }
 
-    const filtrarPorCarne=(carne)=>{
+    const handleChangeSede = (event) => {
+        setIdSede(event.target.value);
+       // peticionGetEstudiantes();
+        filtrarPorSede(event.target.value);
+        
+    };
+
+    const filtrarPorCarne = (carne) => {
 
         const estudiantes = dataEstudiantes;
-        let estudianteCarne = estudiantes.filter(e=>e.carne == carne);
-        if(estudianteCarne.length>0){
+        let estudianteCarne = estudiantes.filter(e => e.carne == carne);
+        if (estudianteCarne.length > 0) {
             setDataEstudiantes(estudianteCarne);
         }
-        
+
+    }
+
+    const filtrarPorSede=async(idSede)=>{
+        const response = await peticionGetEstudiantes();
+        let estudiantes = response;
+        if(idSede!=0){
+            estudiantes = estudiantes.filter(e=>e.idSede == idSede);
+        }
+        setDataEstudiantes(estudiantes);
     }
 
     const peticionGetEstudiantes = async () => {
         try {
             const response = await axios.get(apiURIEstudiantes);
             setDataEstudiantes(response.data);
+            return response.data;
         } catch (error) {
             console.error(error);
         }
@@ -164,8 +182,36 @@ export default function ConsultarEstudiantes() {
             <DashboardNavbar />
             <Grid container marginLeft={2}>
 
-                <Grid item xs={10} sm={2}>
-                    <TextField name="carne" value={carneFiltro} label="Carné" onChange={handleChangeCarne} variant="outlined" fullWidth/>
+                <Grid item xs={12} sm={2}>
+                    <TextField name="carne" value={carneFiltro} label="Carné" onChange={handleChangeCarne} variant="outlined" fullWidth />
+                </Grid>
+
+                <Grid item xs={12} sm={2} >
+                    <TextField
+                        name="idSede"
+                        select
+                        labelId="idSede-label"
+                        id="idSede"
+                        value={idSede}
+                        onChange={handleChangeSede}
+                        label="Sede"
+                        variant='outlined'
+                        fullWidth
+                        style={{ "left": "1rem" }}
+                        InputProps={{
+                            style: {
+                                paddingTop: '14px',
+                                paddingBottom: '14px',
+                            },
+                        }}
+                    >
+                        <MenuItem value="0">Todas</MenuItem>
+                        <MenuItem value="1">Cartago</MenuItem>
+                        <MenuItem value="2">San José</MenuItem>
+                        <MenuItem value="3">Alajuela</MenuItem>
+                        <MenuItem value="4">Limón</MenuItem>
+                        <MenuItem value="5">San Carlos</MenuItem>
+                    </TextField>
                 </Grid>
             </Grid>
             <MDBox pt={6} pb={3}>
