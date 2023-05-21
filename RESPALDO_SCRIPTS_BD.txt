@@ -15,17 +15,19 @@ ALTER TABLE usuario ALTER COLUMN clave VARCHAR(100) NOT NULL
 CREATE TABLE estudiante (
     cedulaEstudiante int NOT NULL UNIQUE FOREIGN KEY REFERENCES usuario(cedulaUsuario),
     carne int NOT NULL PRIMARY KEY,
-    codigoCarrera VARCHAR(20) NOT NULL FOREIGN KEY REFERENCES carrera(codigoCarrera),
-    idSede int NOT NULL FOREIGN KEY REFERENCES carrera(idSede),
-    generacion int
+    codigoCarrera VARCHAR(20) NOT NULL,
+    idSede int NOT NULL,
+    generacion int,
+    FOREIGN KEY (idSede, codigoCarrera) REFERENCES carrera(idSede, codigoCarrera)
 );
 
 
-
 CREATE TABLE carrera (
-    codigoCarrera VARCHAR(20) NOT NULL PRIMARY KEY,
-    idSede INT NOT NULL UNIQUE FOREIGN KEY REFERENCES sede(idSede),
-    nombreCarrera VARCHAR(100) NOT NULL
+    codigoCarrera VARCHAR(20) NOT NULL,
+    idSede INT NOT NULL,
+    nombreCarrera VARCHAR(100) NOT NULL, 
+    PRIMARY KEY (idSede, codigoCarrera),
+    FOREIGN KEY (idSede) REFERENCES sede(idSede)
 );
 
 
