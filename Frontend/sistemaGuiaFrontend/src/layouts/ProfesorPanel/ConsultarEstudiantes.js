@@ -11,13 +11,18 @@ import Card from "@mui/material/Card";
 import DataTable from "examples/Tables/DataTable";
 import axios from 'axios';
 import { Modal, Box, TextField, MenuItem, Alert } from "@mui/material";
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
+import _ from 'lodash';
 
 export default function ConsultarEstudiantes() {
 
     const [dataEstudiantes, setDataEstudiantes] = useState([]);
     const [profesorActual, setProfesorActual] = useState([]);
     const [carneFiltro, setCarneFiltro] = useState("");
-    const [idSede,setIdSede] = useState('');
+    const [idSede, setIdSede] = useState('');
+    const [alertExito, setAlertExito] = useState(false);
+    const [alertError, setAlertError] = useState(false);
 
     const apiURIEstudiantes = "http://localhost:4000/estudiantes";
     const apiURIProfesores = "http://localhost:4000/profesores";
@@ -40,9 +45,9 @@ export default function ConsultarEstudiantes() {
 
     const handleChangeSede = (event) => {
         setIdSede(event.target.value);
-       // peticionGetEstudiantes();
+        // peticionGetEstudiantes();
         filtrarPorSede(event.target.value);
-        
+
     };
 
     const filtrarPorCarne = (carne) => {
@@ -55,11 +60,11 @@ export default function ConsultarEstudiantes() {
 
     }
 
-    const filtrarPorSede=async(idSede)=>{
+    const filtrarPorSede = async (idSede) => {
         const response = await peticionGetEstudiantes();
         let estudiantes = response;
-        if(idSede!=0){
-            estudiantes = estudiantes.filter(e=>e.idSede == idSede);
+        if (idSede != 0) {
+            estudiantes = estudiantes.filter(e => e.idSede == idSede);
         }
         setDataEstudiantes(estudiantes);
     }
@@ -81,6 +86,63 @@ export default function ConsultarEstudiantes() {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    const sedeMap = {
+        1: 'Cartago',
+        2: 'San José',
+        3: 'Alajuela',
+        4: 'Limón',
+        5: 'San Carlos'
+    };
+
+    const generarExcel = (paraMiSede) => {
+
+        try {
+            // Crear un libro de trabajo
+            const wb = XLSX.utils.book_new();
+
+            // Agrupar los estudiantes por sede
+            let estudiantesPorSede;
+            let nombreExcel = "";
+            console.log(paraMiSede);
+            if (paraMiSede) {
+                estudiantesPorSede = dataEstudiantes.filter(e => e.idSede == profesorActual.idSede);
+                nombreExcel = `estudiantes_sede_${sedeMap[profesorActual.idSede]}.xlsx`
+                // Crear una hoja de trabajo para la sede dada
+                const ws = XLSX.utils.json_to_sheet(estudiantesPorSede);
+                const sedeName = sedeMap[profesorActual.idSede];
+                XLSX.utils.book_append_sheet(wb, ws, `Sede ${sedeName}`);
+            }
+            else {
+                estudiantesPorSede = _.groupBy(dataEstudiantes, 'idSede');
+                nombreExcel = 'estudiantes_por_sede.xlsx';
+                // Crear una hoja de trabajo para cada sede
+                _.forEach(estudiantesPorSede, (estudiantes, idSede) => {
+                    const ws = XLSX.utils.json_to_sheet(estudiantes);
+                    const sedeName = sedeMap[idSede];
+                    XLSX.utils.book_append_sheet(wb, ws, `Sede ${sedeName}`);
+                });
+            }
+
+
+            // Escribir el libro de trabajo en un ArrayBuffer
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+            // Guardar el ArrayBuffer como un archivo Blob
+            const blob = new Blob([wbout], { type: 'application/octet-stream' });
+
+            // Guardar el archivo Blob en el cliente
+
+            saveAs(blob, nombreExcel);
+
+            setAlertExito(true);
+            return blob;
+        } catch (error) {
+            setAlertError(false);
+            console.error(error);
+        }
+
     }
 
     const columns = [
@@ -175,7 +237,19 @@ export default function ConsultarEstudiantes() {
         peticionGetEstudiantes();
         peticionGetProfesorActual();
         filtrarPorCarne();
-    }, []);
+        if (alertExito) {
+            const timer = setTimeout(() => {
+                setAlertExito(false);
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
+        if (alertError) {
+            const timer = setTimeout(() => {
+                setAlertError(false);
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [alertExito, alertError]);
 
     return (
         <DashboardLayout>
@@ -227,11 +301,20 @@ export default function ConsultarEstudiantes() {
                                 bgColor="info"
                                 borderRadius="lg"
                                 coloredShadow="info"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="space-between"
                             >
                                 <MDTypography variant="h6" color="white">
                                     Estudiantes
                                 </MDTypography>
+                                <MDButton style={{ marginLeft: '900px' }} size="small" color="primary" onClick={() => generarExcel(false)}>Generar Excel</MDButton>
+                                <MDButton size="small" color="primary"
+                                    onClick={() => generarExcel(true)}>Generar Excel Mi Sede</MDButton>
+
                             </MDBox>
+                            {alertExito && <Alert style={{ marginLeft: '1100px', marginTop: '5px' }} severity="success">Excel descargado correctamente</Alert>}
+                            {alertError && <Alert style={{ marginLeft: '1100px', marginTop: '5px' }} severity="error">Ha ocurrido un error</Alert>}
                             <MDBox pt={3}>
                                 <DataTable
                                     table={{ columns: columns, rows: rows }}
