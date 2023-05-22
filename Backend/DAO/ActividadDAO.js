@@ -1,4 +1,6 @@
 const Actividad = require("../Modelos/Actividad")
+const Actividad_Responsable = require("../Modelos/Actividad_Responsables")
+const Actividad_Cancelada = require("../Modelos/Actividad_Cancelada")
 const dbSql = require("../BaseDatos/AzureSQLDataBase.js");
 const sql = require("mssql");
 
@@ -55,6 +57,40 @@ class ActividadDAO{
     }
   }
 
+  async insertActividadCancelada(datos){
+
+    
+    try{
+      const query = `INSERT INTO actividad_cancelada (idActividad, observacion, fecha)
+      VALUES (@idActividad, @observacion, @fecha);`
+      const request = new sql.Request(dbSql.conection);
+
+      request.input('idActividad', sql.Int, datos.idActividad);
+      request.input('observacion', sql.VarChar, datos.observacion);
+      request.input('fecha', sql.Date, datos.fecha);
+
+      const result = await request.query(query);
+
+      console.log('Cancelacion añadida con exito');
+    } catch(error){
+      console.error('Error al settear la cancelacion: ', error);
+    }
+  }
+
+  async actualizarEstado(idActividad, estado){
+    try {
+      const query = `UPDATE actividad set estadoActiviad = @estado WHERE codigoActividad = @idActividad;`
+      const request = new sql.Request(dbSql.conection);
+
+      request.input('estado', sql.Int, estado);
+      request.input('idActividad', sql.Int, idActividad);
+
+      await request.query(query);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 async getAllActividades(){
         try{
           const query = `Select * from actividad`;
@@ -105,5 +141,26 @@ async getAllActividades(){
         }
 
       }
+
+      async getProfesorResponsable(idActividad){
+        try{
+            const query = `SELECT * FROM actividad_responsables WHERE idActividad = '${idActividad}'`;
+            const request = new sql.Request(dbSql.conection);
+            const resultado = await request.query(query);
+
+            if(resultado.recordset.length > 0){
+                const row = resultado.recordset[0];
+                const responsable = new Actividad_Responsable(
+                    row.idActividad,
+                    row.generacion,
+                    row.idProfesor
+                );
+            }else{
+                return null;
+            }
+        } catch(error){
+            console.error('Error al obtener responsable',error);
+        }
+    }
 }
   module.exports = ActividadDAO;

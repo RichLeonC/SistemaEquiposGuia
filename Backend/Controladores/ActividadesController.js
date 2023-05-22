@@ -2,6 +2,7 @@ const Actividad = require("../Modelos/Actividad")
 const ActividadDAO = require("../DAO/ActividadDAO.js");
 const express = require("express");
 const Actividad_Responsable = require("../Modelos/Actividad_Responsables");
+const Actividad_Cancelada = require("../Modelos/Actividad_Cancelada.js")
 const router = express.Router();
 
 const actividadDAO = new ActividadDAO();
@@ -56,6 +57,30 @@ router.get('/', async (req, res) => {
     } catch (error) {
       console.error("Error al obtener las actividades:", error);
       res.status(500).json({ error: "Error al obtener las actividades" });
+    }
+  });
+
+  //PUT -> localhost:4000/actividades/:id/cancelar
+  router.put('/estadoActividad', async (req, res) =>{
+    try{
+
+      const{idActividad, estado, observacion, fecha, evidencia} = req.body;
+
+   
+      await actividadDAO.actualizarEstado(parseInt(idActividad), parseInt(estado));
+
+      if(estado === 3){
+        const cancelada = new Actividad_Cancelada(idActividad, observacion, fecha);
+        await actividadDAO.insertActividadCancelada(cancelada);
+
+      } else if(estado === 2){
+        console.log("Evidencia de actividad realizada insertada")
+      }
+
+      return res.status(200).send('Estado de la actividad actualizado con éxito');
+    } catch (error) {
+      console.error('Error al actualizar el estado de la actividad:', error);
+      return res.status(500).send('Error al actualizar el estado de la actividad');
     }
   });
   

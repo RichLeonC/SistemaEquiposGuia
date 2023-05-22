@@ -131,7 +131,7 @@ const handleSubmit = async (event) => {
   return (
     <Form onSubmit={handleSubmit}>
 
-    <div>Seleccione el tipo de la nueva actividad</div>
+    <div>Tipo de actividad</div>
     <div class = "form-group">
       <select 
       className="form-control" 
@@ -139,6 +139,7 @@ const handleSubmit = async (event) => {
       value={form.tipoActividad} 
       id="tiposActividad" 
       onChange={handleChange}>
+        <option value="">Seleccione el tipo de actividad</option>
         {actividadOptions}
       </select>
     </div>
@@ -154,10 +155,6 @@ const handleSubmit = async (event) => {
       value={form.nombreActividad} 
       onChange={handleChange}/>
     </div>
-
-
-    <div>SEMANA</div>
-
 
     <div>FECHA INICIO</div>
     <p>Fecha seleccionada: {selectedDate}</p>
@@ -214,7 +211,7 @@ const handleSubmit = async (event) => {
         </FormGroup>
       )}
 
-  <div>Profesore encargado</div>
+  <div>Profesor encargado</div>
     <div class = "form-group">
       <select
       className="form-control"
@@ -222,6 +219,7 @@ const handleSubmit = async (event) => {
       value = {form.idProfesor}
       id ="idProfesor"
       onChange={handleChange}>
+        <option value="">Seleccione al profesor encargado</option>
         {profesoresOptions}
       </select>
     </div>

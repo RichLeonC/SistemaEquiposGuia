@@ -9,6 +9,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import ActividadesForm from './ActividadesForm'
+import AdministrarActividad from "./AdministrarActividad";
 import CommentSection from "./ComentSection";
 
 import axios from 'axios';
@@ -17,6 +18,8 @@ export const Calendar = () => {
   const [events, setEvents] = useState([]);
   const [modalOpenSelect, setModalOpenSelect] = useState(false);
   const [modalOpenEvent, setModalOpenEvent] = useState(false);
+  const [modalOpenMenu, setModalOpenMenu] = useState(false);
+
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -30,6 +33,10 @@ export const Calendar = () => {
 
   const toggleModalEvent = () => {
     setModalOpenEvent(!modalOpenEvent);
+  };
+
+  const toggleModalMenu = () => {
+    setModalOpenMenu(!modalOpenMenu); 
   };
 
   const handleDateSelect = (info) => {
@@ -112,18 +119,47 @@ export const Calendar = () => {
       <p>Fecha de Finalización: {event.end ? event.end.toISOString().split("T")[0] : ""}</p>
       <p>Tipo de actividad: {getTipoActividad(event.extendedProps.tipo)}</p>
       <p>Modalidad: {getIsVirtual(event.extendedProps.modalidad)}</p>
-      <p>Enlace: {event.extendedProps.enlace}</p>
+      <p>
+        {event.extendedProps.modalidad === 1 && (
+        <>Enlace: {event.extendedProps.enlace}</> 
+      )}
+      </p>
       <p>Estado: {getTipoEstado(event.extendedProps.estado)}</p>
+      <p>
+        {event.extendedProps.estado === 3 && (
+        <>Motivo: la actividad fue cancelada porque blah blah</> 
+      )}
+      </p>
       </ModalBody>
       <ModalFooter>
-        <Button color="Quarter">Administrar</Button>
+        <Button color="Terciary" onClick={toggleModalMenu} >Administrar</Button>
         <Button color="Secundary">Recordatorios</Button>
-        <Button color="primary" onClick={toggleModalEvent}>
+        <Button color="Primary" onClick={toggleModalEvent}>
           Close
         </Button>
       </ModalFooter>
+      {modalOpenMenu && <ActivityMenu event={event} />}
     </Modal>
     );
+    };
+
+
+    const ActivityMenu = ({ event }) => {
+      // Aquí puedes implementar el contenido y la lógica del menú de administración
+      // por ejemplo, puedes utilizar otros componentes de Reactstrap como FormGroup, Input, Label, etc.
+      return (
+        <Modal isOpen={modalOpenMenu}>
+          <ModalHeader toggle={toggleModalMenu}>{event.title}</ModalHeader>
+          <ModalBody>
+            <AdministrarActividad event = {event}/>
+          </ModalBody>
+          <ModalFooter>
+        <Button color="Primary" onClick={toggleModalMenu}>
+          Close
+        </Button>
+      </ModalFooter>
+        </Modal>
+      );
     };
 
     useEffect(() => {
