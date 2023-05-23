@@ -9,7 +9,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import ActividadesForm from './ActividadesForm'
-import AdministrarActividad from "./AdministrarActividad";
+import AdministrarActividad from "./administrarActividad";
 import CommentSection from "./ComentSection";
 
 import axios from 'axios';

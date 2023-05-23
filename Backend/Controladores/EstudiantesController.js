@@ -25,10 +25,10 @@ router.get('/', async (req, res) => {
 //POST ->localhost:4000/estudiantes
 router.post('/', async (req, res) => {
   try {
-    const { cedula, nombre, segundonombre, apellido1, apellido2, correo, clave, celular, idSede, codigoCarrera,generacion} = req.body;
+    const { cedulaUsuario, nombre, segundonombre, apellido1, apellido2, correo, clave, celular, idSede, codigoCarrera,generacion,carne} = req.body;
 
     // Validamos los datos de entrada
-    if (!cedula || !nombre || !apellido1 || !apellido2 || !correo || !clave || !celular
+    if (!cedulaUsuario || !nombre || !apellido1 || !apellido2 || !correo || !clave || !celular
       || !idSede ||!codigoCarrera||!generacion) {
       return res.status(400).send('Todos los campos son obligatorios, excepto segundoNombre.');
     }
@@ -37,8 +37,8 @@ router.post('/', async (req, res) => {
     const claveEncriptada = await bcrypt.hash(clave, salt);
 
 
-    const nuevoEstudiante = new Estudiante(cedula, nombre, segundonombre, apellido1, apellido2, correo,
-      claveEncriptada, celular, "ESTUDIANTE",codigoCarrera,idSede, generacion);
+    const nuevoEstudiante = new Estudiante(cedulaUsuario, nombre, segundonombre, apellido1, apellido2, correo,
+      claveEncriptada, celular, "ESTUDIANTE",carne,codigoCarrera,idSede, generacion);
     await estudianteDAO.crearEstudiante(nuevoEstudiante);
 
     return res.status(201).send('Estudiante creado exitosamente.');
