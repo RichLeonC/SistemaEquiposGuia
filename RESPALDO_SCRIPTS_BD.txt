@@ -44,8 +44,8 @@ CREATE TABLE personal (
 );
 
 CREATE TABLE listaEstudiantes ( 
-    idArchivo int not null PRIMARY KEY,
-    cedulaPersonal INT NOT NULL UNIQUE FOREIGN KEY REFERENCES personal(cedulaPersonal),
+    idArchivo int Identity(1,1) PRIMARY KEY,
+    cedulaPersonal INT NOT NULL FOREIGN KEY REFERENCES personal(cedulaPersonal),
     excel VARCHAR(255),
     fecha DATE
 );

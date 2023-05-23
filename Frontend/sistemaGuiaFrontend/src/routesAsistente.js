@@ -34,6 +34,7 @@ import RegistrarProfes from "layouts/AsistentePanel/RegistrarProfesores/Registra
 // @mui icons
 import Icon from "@mui/material/Icon";
 import AdministrarEquipos from "layouts/AsistentePanel/AdministrarEquipos";
+import CargarEstudiantes from "layouts/AsistentePanel/CargarEstudiantes";
 
 const routesAsistente = [
 
@@ -53,6 +54,14 @@ const routesAsistente = [
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/verEquiposGuia",
     component: <AdministrarEquipos></AdministrarEquipos>,
+  },
+  {
+    type: "collapse",
+    name: "Cargar Estudiantes",
+    key: "cargar_estudiantes",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/CargarEstudiantes",
+    component: <CargarEstudiantes/>,
   },
   {
     type: "collapse",
