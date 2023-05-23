@@ -13,6 +13,7 @@ const estudiantesRoute = require("./Controladores/EstudiantesController");
 const equiposRoute = require("./Controladores/EquipoGuiaController");
 const personalRoute = require("./Controladores/PersonalController");
 const actividadRoute = require("./Controladores/ActividadesController");
+const comentarioRoute = require("./Controladores/ComentariosController");
 
 
 //Settings
@@ -31,6 +32,7 @@ app.use("/estudiantes",estudiantesRoute);
 app.use("/equipos",equiposRoute);
 app.use("/asistentes",personalRoute);
 app.use("/actividades",actividadRoute);
+app.use("/comentarios",comentarioRoute);
 
 
 app.listen(app.get('port'),()=>{ //Va abrir el server en el puerto 4000

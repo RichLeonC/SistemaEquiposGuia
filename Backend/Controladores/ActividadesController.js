@@ -1,8 +1,10 @@
 const Actividad = require("../Modelos/Actividad")
-const ActividadDAO = require("../DAO/ActividadDAO.js");
-const express = require("express");
 const Actividad_Responsable = require("../Modelos/Actividad_Responsables");
 const Actividad_Cancelada = require("../Modelos/Actividad_Cancelada.js")
+
+const ActividadDAO = require("../DAO/ActividadDAO.js");
+
+const express = require("express");
 const router = express.Router();
 
 const actividadDAO = new ActividadDAO();
@@ -52,7 +54,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
       const actividades = await actividadDAO.getAllActividades();
-      console.log(actividades)
+      //console.log(actividades)
       res.status(200).json(actividades);
     } catch (error) {
       console.error("Error al obtener las actividades:", error);

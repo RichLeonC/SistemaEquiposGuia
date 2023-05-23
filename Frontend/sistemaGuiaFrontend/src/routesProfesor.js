@@ -39,7 +39,7 @@ const routesProfesor = [
     route: "/dashboard",
     component: <Dashboard />,
   },
-  {
+  /*{
     type: "collapse",
     name: "Tables",
     key: "tables",
@@ -62,7 +62,7 @@ const routesProfesor = [
     icon: <Icon fontSize="small">notifications</Icon>,
     route: "/notifications",
     component: <Notifications />,
-  },
+  },*/
   {
     type: "collapse",
     name: "Profile",

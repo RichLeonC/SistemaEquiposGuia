@@ -162,5 +162,69 @@ async getAllActividades(){
             console.error('Error al obtener responsable',error);
         }
     }
+
+
+    async getProfesorResponsable(idActividad){
+      try{
+          const query = `SELECT * FROM actividad_responsables WHERE idActividad = '${idActividad}'`;
+          const request = new sql.Request(dbSql.conection);
+          const resultado = await request.query(query);
+
+          if(resultado.recordset.length > 0){
+              const row = resultado.recordset[0];
+              const responsable = new Actividad_Responsable(
+                  row.idActividad,
+                  row.generacion,
+                  row.idProfesor
+              );
+          }else{
+              return null;
+          }
+      } catch(error){
+          console.error('Error al obtener responsable',error);
+      }
+  }
+
+  async getActividadCancelada(idActividad){
+    try{
+        const query = `SELECT * FROM actividad_cancelada WHERE idActividad = '${idActividad}'`;
+        const request = new sql.Request(dbSql.conection);
+        const resultado = await request.query(query);
+
+        if(resultado.recordset.length > 0){
+            const row = resultado.recordset[0];
+            const responsable = new Actividad_Cancelada(
+                row.idActividad,
+                row.observacion,
+                row.fecha
+            );
+        }else{
+            return null;
+        }
+    } catch(error){
+        console.error('Error al obtener actividad cancelada',error);
+    }
+  }
+
+  async getActividadRecordatorio(idActividad){
+      try{
+          const query = `SELECT * FROM actividad_recordatorio WHERE idActividad = '${idActividad}'`;
+          const request = new sql.Request(dbSql.conection);
+          const resultado = await request.query(query);
+  
+          if(resultado.recordset.length > 0){
+              const row = resultado.recordset[0];
+              const responsable = new Actividad_recordatorio(
+                  row.idActividad,
+                  row.observacion,
+                  row.fecha
+              );
+          }else{
+              return null;
+          }
+      } catch(error){
+          console.error('Error al obtener actividad cancelada',error);
+      }
+  }
 }
   module.exports = ActividadDAO;

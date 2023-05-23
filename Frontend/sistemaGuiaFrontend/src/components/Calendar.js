@@ -45,7 +45,7 @@ export const Calendar = () => {
   };
 
   const handleEventClick = (info) => {
-    console.log(info.event.extendedProps)
+    console.log(info.event.extendedProps.codigo)
     setSelectedEvent(info.event);
     toggleModalEvent();
   };
@@ -131,6 +131,7 @@ export const Calendar = () => {
       )}
       </p>
       </ModalBody>
+       <CommentSection idActividad={event.extendedProps.codigo}/>
       <ModalFooter>
         <Button color="Terciary" onClick={toggleModalMenu} >Administrar</Button>
         <Button color="Secundary">Recordatorios</Button>
