@@ -11,7 +11,7 @@ class ListaEstudiantesDAO{
 
             request.input('cedulaPersonal', sql.Int, archivo.cedulaPersonal);
             request.input('excel', sql.VarChar, archivo.excel);
-            request.input('fecha',sql.Date,archivo.fecha);
+            request.input('fecha',sql.DateTime,archivo.fecha);
 
             await request.query("INSERT INTO listaEstudiantes(cedulaPersonal,excel,fecha) VALUES(@cedulaPersonal,@excel,@fecha)");
 
@@ -22,7 +22,7 @@ class ListaEstudiantesDAO{
 
     async getRegistros(){
         try {
-            const query = "SELECT * FROM listaEstudiantes ORDER BY fecha DESC";
+            const query = "SELECT * FROM listaEstudiantes ORDER BY idArchivo DESC";
             const request = new sql.Request(dbSql.conection);
             const resultado = await request.query(query);
             if (resultado.recordset.length > 0) {
@@ -40,7 +40,7 @@ class ListaEstudiantesDAO{
                 return [];
             }
         } catch (error) {
-            
+            throw new Error(error);
         }
     }
 }

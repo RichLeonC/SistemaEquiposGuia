@@ -505,3 +505,25 @@ BEGIN
         THROW;
     END CATCH
 END;
+
+
+CREATE PROCEDURE eliminar_estudiante
+    @cedulaUsuario INT
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+        
+        DELETE FROM estudiante
+        WHERE cedulaEstudiante = @cedulaUsuario;
+        
+        DELETE FROM usuario
+        WHERE cedulaUsuario = @cedulaUsuario;
+        
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;

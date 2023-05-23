@@ -12,6 +12,8 @@ const multer = require('multer'); //Middleware para usar el upload.single, sirve
 const upload = multer({ dest: 'uploads/' });
 const blobStorage = require("../BaseDatos/AzureBlobStorage.js");
 const fs = require('fs'); //Lo vamos a utlizar para borrar los files que se crean en la carpeta uploads.
+const moment = require('moment-timezone'); 
+const miZonaHoraria = 'America/Costa_Rica'; 
 
 const listaEstudiantesDAO = new ListaEstudiantesDAO();
 const personalDAO = new PersonalDAO();
@@ -31,10 +33,10 @@ router.get('/:cedula', async (req, res) => {
 });
 
 //GET -> localhost:4000/asistentes/registros
-router.get('/registros', async (req, res) => {
+router.get('/registros/get', async (req, res) => {
     try {
-        const registros = await listaEstudiantesDAO.getRegistros();
-        res.status(200).json(registros);
+        const registros1 = await listaEstudiantesDAO.getRegistros();
+        res.status(200).json(registros1);
     } catch (error) {
         res.status(500).send("Error al obtener los registros");
 
@@ -49,8 +51,7 @@ router.post('/crearRegistro', upload.single('file'), async (req, res) => {
             return res.status(400).send("No se ha adjuntado el archivo excel");
         }
         const { cedulaPersonal } = req.body;
-        const fecha = new Date();
-        const fechaFormateada = fecha.toISOString().split('T')[0];
+        const fecha = moment().tz(miZonaHoraria).format('YYYY-MM-DD HH:mm:ss');
 
         //Leemos el excel
         const workbook = XLSX.readFile(req.file.path);
@@ -68,7 +69,7 @@ router.post('/crearRegistro', upload.single('file'), async (req, res) => {
 
         const excelURI = await blobStorage.subirArchivoABlobStorage('documentos-sistemaguia', req.file);
         fs.unlinkSync(req.file.path);
-        await listaEstudiantesDAO.crearRegistroArchivo(new ListaEstudiantes(null, cedulaPersonal, excelURI, fechaFormateada));
+        await listaEstudiantesDAO.crearRegistroArchivo(new ListaEstudiantes(null, cedulaPersonal, excelURI, fecha));
         //Subimos el archivo al blobStorage
         return res.status(200).send("Registro creado correctamente");
     } catch (error) {

@@ -7,7 +7,6 @@ class EstudianteDAO {
 
     async crearEstudiante(estudiante){
         try {
-            console.log(estudiante);
             const request = new sql.Request(dbSql.conection);
 
             const checkIfExists = await request.query(`SELECT COUNT(*) AS count FROM estudiante WHERE carne = ${estudiante.carne}`);
@@ -31,7 +30,6 @@ class EstudianteDAO {
             await request.execute('crear_estudiante');
         } catch (error) {
             console.error(error);
-            throw new Error("Verifica que no existan elementos duplicados")
         }
     }
 
