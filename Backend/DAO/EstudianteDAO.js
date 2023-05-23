@@ -15,7 +15,7 @@ class EstudianteDAO {
                 throw new Error('El estudiante ya existe en la base de datos.');
             }
             request.input('cedulaUsuario', sql.Int, estudiante.cedulaUsuario);
-            request.input('nombre', sql.VarChar, estudiante.codigo);
+            request.input('nombre', sql.VarChar, estudiante.nombre);
             request.input('segundonombre', sql.VarChar, estudiante.segundonombre);
             request.input('apellido1', sql.VarChar, estudiante.apellido1);
             request.input('apellido2', sql.VarChar, estudiante.apellido2);
@@ -28,9 +28,7 @@ class EstudianteDAO {
             request.input('idSede', sql.Int, estudiante.idSede);
             request.input('generacion', sql.Int, estudiante.generacion);
 
-            const query = `EXEC crearEstudiante @cedulaUsuario,@nombre,@segundonombre,@apellido1,@apellido2,@correo,@clave,@celular,
-            @rol,@carne,@codigoCarrera,@idSede,@generacion`;
-            await request.query(query);
+            await request.execute('crear_estudiante');
         } catch (error) {
             console.error(error);
             throw new Error("Verifica que no existan elementos duplicados")

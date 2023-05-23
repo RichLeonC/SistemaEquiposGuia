@@ -467,3 +467,41 @@ BEGIN
     INNER JOIN estudiante AS e ON u.cedulaUsuario = e.cedulaEstudiante
     WHERE e.idSede = @idSede;
 END;
+
+
+CREATE PROCEDURE crear_estudiante
+    @cedulaUsuario INT,
+    @nombre VARCHAR(25),
+    @segundonombre VARCHAR(25),
+    @apellido1 VARCHAR(25),
+    @apellido2 VARCHAR(25),
+    @correo VARCHAR(100),
+    @clave VARCHAR(100),
+    @celular INT,
+    @rol VARCHAR(20),
+    @carne INT,
+    @codigoCarrera VARCHAR(20),
+    @idSede INT,
+    @generacion INT
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+        
+        INSERT INTO usuario
+        (cedulaUsuario, nombre, segundonombre, apellido1, apellido2, correo, clave, celular, rol)
+        VALUES
+        (@cedulaUsuario, @nombre, @segundonombre, @apellido1, @apellido2, @correo, @clave, @celular, @rol);
+        
+        INSERT INTO estudiante
+        (cedulaEstudiante, carne, codigoCarrera, idSede, generacion)
+        VALUES
+        (@cedulaUsuario, @carne, @codigoCarrera, @idSede, @generacion);
+        
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
