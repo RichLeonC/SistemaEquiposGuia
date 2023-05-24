@@ -1,7 +1,8 @@
 class Actividad_Recordatorio{
-    constructor(idActividad, fecha){
+    constructor(idActividad, fecha, diasRepeticion){
         this.idActividad = idActividad;
         this.fecha = fecha;
+        this.diasRepeticion = diasRepeticion;
     }
 }
 

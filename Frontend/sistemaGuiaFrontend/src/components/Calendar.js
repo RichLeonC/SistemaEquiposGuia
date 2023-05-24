@@ -9,7 +9,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import ActividadesForm from './ActividadesForm'
-import AdministrarActividad from "./administrarActividad";
+import AdministrarActividad from "./AdministrarActividad";
 import CommentSection from "./ComentSection";
 
 import axios from 'axios';
@@ -45,7 +45,7 @@ export const Calendar = () => {
   };
 
   const handleEventClick = (info) => {
-    console.log(info.event.extendedProps.codigo)
+    console.log('fecha crewcion', info.event.extendedProps.creacion)
     setSelectedEvent(info.event);
     toggleModalEvent();
   };

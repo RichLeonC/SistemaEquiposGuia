@@ -77,6 +77,27 @@ class ActividadDAO{
     }
   }
 
+  
+  async insertActividadRecordatorio(datos){
+    
+    try{
+      const query = `INSERT INTO actividad_recordatorio (idActividad, fecha, diasRepeticion)
+      VALUES (@idActividad, @fecha, @diasRepeticion);`
+      const request = new sql.Request(dbSql.conection);
+
+      request.input('idActividad', sql.Int, datos.idActividad);
+      request.input('fecha', sql.Date, datos.fechaPublicacion);
+      request.input('diasRepeticion', sql.Int, datos.diasRepeticion);
+
+      const result = await request.query(query);
+
+      console.log('Recordatorio añadida con exito');
+    } catch(error){
+      console.error('Error al settear la recordatorio: ', error);
+    }
+  }
+
+
   async actualizarEstado(idActividad, estado){
     try {
       const query = `UPDATE actividad set estadoActiviad = @estado WHERE codigoActividad = @idActividad;`
@@ -102,7 +123,7 @@ async getAllActividades(){
               const fechaInicio = new Date(row.fechaInicio);
               const fechaFinal = new Date(row.fechaFinal);
       
-              fechaInicio.setHours(23, 59, 0); // Establecer hora de inicio a las 12 AM, minutos y segundos a 0
+              fechaInicio.setHours(23, 50, 0); // Establecer hora de inicio a las 12 AM, minutos y segundos a 0
               fechaFinal.setHours(23, 59, 0); // Establecer hora de finalización a las 11:59 PM, segundos a 0
               const actividad = {
                 title: row.nombreActividad,

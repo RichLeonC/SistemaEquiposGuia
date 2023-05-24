@@ -1,16 +1,22 @@
 const Actividad = require("../Modelos/Actividad")
 const Actividad_Responsable = require("../Modelos/Actividad_Responsables");
 const Actividad_Cancelada = require("../Modelos/Actividad_Cancelada.js")
+const Actividad_Recordatorio = require("../Modelos/Actividad_Recordatorio");
 
 const ActividadDAO = require("../DAO/ActividadDAO.js");
 
 const express = require("express");
 const router = express.Router();
 
+const multer = require('multer');
+const upload = multer({dest: 'uploads/'});
+const blobStorage = require("../BaseDatos/AzureBlobStorage.js");
+const fs = require('fs');
+
 const actividadDAO = new ActividadDAO();
 
 // POST -> localhost:4000/actividades
-router.post('/', async (req, res) => {
+router.post('/', upload.single('afiche'), async (req, res) => {
     try {
       const { tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActividad, fechaFinal, generacion, idProfesor } = req.body;
   
@@ -20,6 +26,8 @@ router.post('/', async (req, res) => {
       }*/
         // Convertir codigoActividad a número entero
       const codigoActividad = await actividadDAO.generarCodigoActividad();
+
+      
       const nuevaActividad = new Actividad(
         codigoActividad,
         tipoActividad,
@@ -66,8 +74,11 @@ router.get('/', async (req, res) => {
   router.put('/estadoActividad', async (req, res) =>{
     try{
 
-      const{idActividad, estado, observacion, fecha, evidencia} = req.body;
+      const{idActividad, estado, observacion, fecha, evidencia, fechaPublicacion, diasRepeticion} = req.body;
+      console.log(diasRepeticion);
 
+      const diasRepeticionInt = parseInt(req.body.diasRepeticion, 10);
+      console.log(diasRepeticionInt);
    
       await actividadDAO.actualizarEstado(parseInt(idActividad), parseInt(estado));
 
@@ -77,7 +88,13 @@ router.get('/', async (req, res) => {
 
       } else if(estado === 2){
         console.log("Evidencia de actividad realizada insertada")
-      }
+      } else if(estado === 1){
+
+        const recordatorio = new Actividad_Recordatorio(idActividad, fechaPublicacion, diasRepeticionInt);
+        await actividadDAO.insertActividadRecordatorio(recordatorio);
+        
+        console.log("Recordatorio insertado")
+      } 
 
       return res.status(200).send('Estado de la actividad actualizado con éxito');
     } catch (error) {
