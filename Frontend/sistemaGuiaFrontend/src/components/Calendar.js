@@ -52,12 +52,12 @@ export const Calendar = () => {
   };
 
   const handleDateSelect = (info) => {
-    //if(profesorActual.esCordinador === 1){
+    if(profesorActual.esCordinador === 1){
       setSelectedDate(info.startStr);
       toggleModalSelect();
-    /*} else {
+    } else {
       console.log("Solo cordinador puede crear cosas")
-    }*/
+    }
   
   };
 
@@ -218,11 +218,11 @@ export const Calendar = () => {
           )}
           {showEvidencia&& (
             <>
-              <div style={{ marginBottom: '10px' }}>
-                <strong>Fotografia Evento:</strong> 
-                <br />
-                <img src={evidencia.idImagen} alt="Foto" style={{ maxWidth: '100%' }} />  
-              </div>
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Evidencia:</strong>
+            <br />
+            <img src={evidencia.idImagen} alt="Evidencia" style={{ maxWidth: '100%' }} />
+          </div>
 
             </>
           )}
