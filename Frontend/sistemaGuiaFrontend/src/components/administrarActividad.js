@@ -16,7 +16,8 @@ export default function AdministrarActividad({event}) {
         estado: '', // 2 -> notificada || 3 -> cancelada || 4 -> realizada
         observacion: '', //justificacion de por qué está cancelada
         fecha: new Date(), //fecha de cancelacion
-        evidencia: '',
+        fotoEvidencia: '',
+        fotoParticipantes: '',
         fechaPublicacion: '',
         diasRepeticion: ''
     });

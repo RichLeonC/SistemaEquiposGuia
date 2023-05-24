@@ -207,6 +207,8 @@ export default function RegistrarProfes() {
                     formData.append('telOficina', form.telOficina);
                     formData.append('foto', fotoOriginal);
 
+        
+
                     const response = await axios.post(apiURI, formData);
 
                     if (response.status == 201) {

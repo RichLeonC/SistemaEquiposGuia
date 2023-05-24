@@ -11,8 +11,8 @@ class ActividadDAO{
 
     try {
     const query = `
-      INSERT INTO Actividad (codigoActividad, tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActiviad, fechaFinal)
-      VALUES (@codigoActividad, @tipoActividad, @nombreActividad, @fechaInicio, @horaInicio, @fechaCreacion, @modalidad, @enlaceReunion, @estadoActiviad, @fechaFinal);
+      INSERT INTO Actividad (codigoActividad, tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActiviad, fechaFinal, AficheURL)
+      VALUES (@codigoActividad, @tipoActividad, @nombreActividad, @fechaInicio, @horaInicio, @fechaCreacion, @modalidad, @enlaceReunion, @estadoActiviad, @fechaFinal, @AficheURL);
     `;
   
        // console.log(actividad);
@@ -26,6 +26,7 @@ class ActividadDAO{
         request.input('enlaceReunion', sql.VarChar, actividad.enlaceReunion);
         request.input('estadoActiviad', sql.Int, actividad.estadoActividad);
         request.input('fechaFinal', sql.Date, actividad.fechaFinal);
+        request.input('AficheURL', sql.VarChar, actividad.AficheURL);
 
         const result = await request.query(query);
 

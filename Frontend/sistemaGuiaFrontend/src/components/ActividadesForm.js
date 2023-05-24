@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { Form, FormGroup, Label, Input, Button  } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import axios from "axios";
@@ -9,7 +10,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 export default function ActividadesForm({ selectedDate }) {
 
   const [selectedFinishDate, setSelectedFinishDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
+  const [afiche, setAfiche] = useState(null);
   const [virtual, setVirtual] = useState(false);
   const [link, setLink] = useState("");
   const [profesores, setProfesores] = useState([]); 
@@ -18,7 +19,7 @@ export default function ActividadesForm({ selectedDate }) {
       idProfesor: '' //codigo de profesor seleccionado      
     });
   const [form, setForm] = useState({
-    codigoActividad: '',
+   // codigoActividad: '',
     tipoActividad: '',
     nombreActividad:'',
     fechaInicio: new Date(selectedDate),
@@ -30,7 +31,7 @@ export default function ActividadesForm({ selectedDate }) {
     fechaFinal: '',
     generacion: new Date().getFullYear(),
     idProfesor: '',
-    afiche: ''
+    afiche: afiche
 
 });
 
@@ -95,12 +96,15 @@ const handleChangeProf = e => {
   console.log(profesorEncargado);
 }
 
-const handleChangeAchivo = (event) => {
-  if (event.target.files.length > 0) {
-    const afiche = event.target.files[0];
+
+
+const handleChangeArchivo = (event) => {
+  const aficheFile = event.target.files[0];
+
+  if (aficheFile) {
     setForm((prevForm) => ({
       ...prevForm,
-      afiche: afiche,
+      afiche: event.target.files[0],
     }));
   } else {
     setForm((prevForm) => ({
@@ -110,14 +114,31 @@ const handleChangeAchivo = (event) => {
   }
 };
 
-
 const handleSubmit = async (event) => {
   event.preventDefault();
   console.log('Formulario:', form);
   console.log('Profesor: ', profesorEncargado)
+  console.log('Afiche', form.afiche)
 //proceso de insercion a la base de datos 
   try {
-    await axios.post('http://localhost:4000/actividades', form);
+
+    const formData = new FormData();
+    formData.append('tipoActividad', form.tipoActividad);
+    formData.append('nombreActividad', form.nombreActividad);
+    formData.append('fechaInicio', form.fechaInicio);
+    formData.append('horaInicio', form.horaInicio);
+    formData.append('fechaCreacion', form.fechaCreacion);
+    formData.append('modalidad', form.modalidad);
+    formData.append('enlaceReunion', form.enlaceReunion);
+    formData.append('estadoActividad', form.estadoActividad);
+    formData.append('fechaFinal', form.fechaFinal);
+    formData.append('generacion', form.generacion);
+    formData.append('idProfesor', form.idProfesor);
+    formData.append('afiche', form.afiche);
+
+    console.log('Formulario:', formData);
+
+    await axios.post('http://localhost:4000/actividades', formData);
     //console.log('Actividad creada exitosamente.');
     // Realiza cualquier acción adicional después de almacenar los datos en la base de datos
   } catch (error) {
@@ -243,10 +264,12 @@ const handleSubmit = async (event) => {
     </div>
 
     <div>AFICHE</div>
-    <Input type="file"
+    <Input 
+    type="file"
+    id="idAfiche"
     name="afiche"
-    onChange={handleChangeAchivo}
-    accept=".pdf"/>
+    onChange={handleChangeArchivo}
+    />
     <Button type="submit" color="primary">Guardar</Button>
     </Form>
     

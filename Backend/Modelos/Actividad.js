@@ -1,5 +1,5 @@
 class Actividad{
-    constructor(codigoActividad, tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActividad, fechaFinal){
+    constructor(codigoActividad, tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActividad, fechaFinal, AficheURL){
         this.codigoActividad = codigoActividad;
         this.tipoActividad = tipoActividad;
         this.nombreActividad = nombreActividad;
@@ -10,6 +10,7 @@ class Actividad{
         this.enlaceReunion = enlaceReunion;
         this.estadoActividad = estadoActividad;
         this.fechaFinal = fechaFinal;
+        this.AficheURL = AficheURL;
     }
 }
 

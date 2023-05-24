@@ -19,15 +19,17 @@ const actividadDAO = new ActividadDAO();
 router.post('/', upload.single('afiche'), async (req, res) => {
     try {
       const { tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActividad, fechaFinal, generacion, idProfesor } = req.body;
-  
       // Validar los datos de entrada
-      /*if (!tipoActividad || !nombreActividad || !fechaInicio || !horaInicio || !fechaCreacion || !modalidad || !estadoActividad || !fechaFinal) {
+      if (!tipoActividad || !nombreActividad || !fechaInicio || !horaInicio || !fechaCreacion || !modalidad || !estadoActividad || !fechaFinal) {
         return res.status(400).send('Todos los campos son obligatorios');
-      }*/
+      }
         // Convertir codigoActividad a número entero
       const codigoActividad = await actividadDAO.generarCodigoActividad();
 
-      
+      const aficheUrl = await blobStorage.subirArchivoABlobStorage('imagenes-sistemaguia', req.file);
+      fs.unlinkSync(req.file.path);
+
+
       const nuevaActividad = new Actividad(
         codigoActividad,
         tipoActividad,
@@ -38,7 +40,8 @@ router.post('/', upload.single('afiche'), async (req, res) => {
         modalidad,
         enlaceReunion,
         estadoActividad,
-        fechaFinal
+        fechaFinal,
+        aficheUrl
       );
 
       const responsable = new Actividad_Responsable(
