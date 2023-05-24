@@ -79,7 +79,7 @@ export default function AdministrarEquipos() {
 
     const validarGeneracion = () => {
         const formato = /^\d{4}/;
-        const existeGeneracion = dataEquipos.some(e => e.generacion == generacionInput)
+        const existeGeneracion = dataEquipos && dataEquipos.some(e => e.generacion == generacionInput)
         if (!formato.test(generacionInput) && generacionInput != "") {
             return true;
         }
@@ -386,7 +386,7 @@ useEffect(() => {
 
             <MDBox pt={6} pb={3}>
                 <Grid container spacing={6}>
-                    {dataEquipos.map((equipo, index) => {
+                    {dataEquipos && dataEquipos.map((equipo, index) => {
                         let rows = [];
                         if (profesTablas && allProfes) {
                             const profesGenActual = profesTablas.filter(p => p.generacion == equipo.generacion);
