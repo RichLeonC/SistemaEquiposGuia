@@ -29,9 +29,11 @@ export default function ActividadesForm({ selectedDate }) {
     estadoActividad: 0, //se crea como planeada
     fechaFinal: '',
     generacion: new Date().getFullYear(),
-    idProfesor: ''
+    idProfesor: '',
+    afiche: ''
 
 });
+
 
 const obtenerProfesores = async () => {
   try {
@@ -92,6 +94,22 @@ const handleChangeProf = e => {
   })
   console.log(profesorEncargado);
 }
+
+const handleChangeAchivo = (event) => {
+  if (event.target.files.length > 0) {
+    const afiche = event.target.files[0];
+    setForm((prevForm) => ({
+      ...prevForm,
+      afiche: afiche,
+    }));
+  } else {
+    setForm((prevForm) => ({
+      ...prevForm,
+      afiche: null,
+    }));
+  }
+};
+
 
 const handleSubmit = async (event) => {
   event.preventDefault();
@@ -225,6 +243,10 @@ const handleSubmit = async (event) => {
     </div>
 
     <div>AFICHE</div>
+    <Input type="file"
+    name="afiche"
+    onChange={handleChangeAchivo}
+    accept=".pdf"/>
     <Button type="submit" color="primary">Guardar</Button>
     </Form>
     

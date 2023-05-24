@@ -1,5 +1,6 @@
 import{ useEffect, useState } from 'react';
 import { Form, FormGroup, Label, Input, Button  } from 'reactstrap';
+import DatePicker from "react-datepicker";
 import axios from "axios";
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -7,18 +8,23 @@ import 'bootstrap/dist/css/bootstrap.css';
 export default function AdministrarActividad({event}) {
 
 
-    const tiposEstados = ['Actividad Realizada', 'Actividad Cancelada'];
+    const tiposEstados = ['Actividad Realizada', 'Actividad Cancelada', 'Establecer Recordatorio'];
+
+    const [fecha, setFecha] = useState(null);
     const [estado, setEstado] = useState({
         idActividad: event.extendedProps.codigo, //crear la tabla y actualizar estado en la actividad
-        estado: '', // 3 -> cancelada || 4 -> realizada
+        estado: '', // 2 -> notificada || 3 -> cancelada || 4 -> realizada
         observacion: '', //justificacion de por qué está cancelada
         fecha: new Date(), //fecha de cancelacion
-        evidencia: ''
+        evidencia: '',
+        fechaPublicacion: '',
+        diasRepeticion: ''
     });
 
 
     const [mostrarMotivoCancelacion, setMostrarMotivoCancelacion] = useState(false);
     const [mostrarCampoImagen, setMostrarCampoImagen] = useState(false);
+    const [mostrarCampoRecordatorio, setMostrarCampoRecordatorio] = useState(false);
 
 
     const estadoOptions = tiposEstados.map((tipo, index) => (
@@ -36,14 +42,30 @@ export default function AdministrarActividad({event}) {
       if (value === '1') {
         setMostrarMotivoCancelacion(true);
         setMostrarCampoImagen(false);
+        setMostrarCampoRecordatorio(false);
       } else if(value === '0') {
         setMostrarCampoImagen(true);
         setMostrarMotivoCancelacion(false);
-      } else {
+        setMostrarCampoRecordatorio(false);
+      } else if( value === '2'){
+        setMostrarCampoRecordatorio(true);
         setMostrarMotivoCancelacion(false);
         setMostrarCampoImagen(false);
+
+      }else {
+        setMostrarMotivoCancelacion(false);
+        setMostrarCampoImagen(false);
+        setMostrarCampoRecordatorio(false);
       }
   };
+
+  const handleFechaChange = (date) =>{
+    setFecha(date);
+    setEstado((prevEstado)  => ({
+      ...prevEstado,
+      fechaPublicacion: date,
+    }));
+  }
 
   const handleSubmit = async () => {
     console.log('Estado', estado);
@@ -107,10 +129,50 @@ export default function AdministrarActividad({event}) {
                 imagenActividad: e.target.files[0],
               })
             }
+            
           />
         <Button color="primary" onClick={handleSubmit}>Guardar Cambios</Button>
         </div>
       )}  
+
+      {mostrarCampoRecordatorio && (
+  <div>
+    <div className="form-group">
+      <label htmlFor="fechaRecordatorio">Fecha del recordatorio:</label>
+      <DatePicker
+        name="fechaPublicacion"
+        value={estado.fechaPublicacion}
+        selected={fecha}
+        onChange={handleFechaChange}
+        className="form-control"
+        minDate={new Date(event.extendedProps.creacion)}
+      />
+    </div>
+    <div className="form-group">
+      <label htmlFor="numeroRecordatorio">Número del 1 al 9:</label>
+      <input
+        type="number"
+        className="form-control"
+        id="numeroRecordatorio"
+        name="numeroRecordatorio"
+        min="1"
+        max="10"
+        value={estado.diasRepeticion}
+        onChange={e =>
+          setEstado({
+            ...estado,
+            estado: 1,
+            diasRepeticion: e.target.value
+          })
+        }
+      />
+    </div>
+    <Button color="primary" onClick={handleSubmit}>
+      Guardar Cambios
+    </Button>
+  </div>
+)}
+      
     </>
 
   )
