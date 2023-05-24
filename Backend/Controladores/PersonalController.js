@@ -78,4 +78,16 @@ router.post('/crearRegistro', upload.single('file'), async (req, res) => {
     }
 })
 
+//DELETE -> localhost:4000/asistentes/eliminarRegistro/:idArchivo
+router.delete('/eliminarRegistro/:idArchivo', async (req, res)=>{
+    
+    try {
+        const {idArchivo} = req.params;
+        await listaEstudiantesDAO.eliminarRegistro(idArchivo);
+        return res.status(200).send("Registro eliminado correctamente");
+    } catch (error) {
+        res.status(500).send("No se pudo eliminar el registo");
+    }
+});
+
 module.exports = router;

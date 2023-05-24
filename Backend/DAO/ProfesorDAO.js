@@ -30,8 +30,7 @@ class ProfesorDAO {
 
             await request.execute("crear_profesor");
         } catch (error) {
-            throw new Error("Verifica que no existan elementos duplicados")
-            console.log(error);
+            console.error(error);
         }
     }
 

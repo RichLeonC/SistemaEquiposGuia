@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {Typography,Alert } from '@mui/material';
+import { Typography, Alert } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -20,8 +20,10 @@ export default function CargarEstudiantes() {
     const [excel, setExcel] = useState(null);
     const [registros, setRegistros] = useState([]);
     const [asistenteActual, setAsistenteActual] = useState([]);
-    const [alertExito,setAlertExito] = useState(false);
-    const [alertError,setAlertError] = useState(false);
+    const [alertExito, setAlertExito] = useState(false);
+    const [alertError, setAlertError] = useState(false);
+    const [alertExitoEliminado, setAlertExitoEliminado] = useState(false);
+    const linkRef = React.useRef(null);
 
 
     const apiURIAsistentes = "http://localhost:4000/asistentes";
@@ -61,13 +63,13 @@ export default function CargarEstudiantes() {
         }
     }
 
-    const registrarArchivo=async()=>{
+    const registrarArchivo = async () => {
         try {
             const formData = new FormData();
-            formData.append('cedulaPersonal',localStorage.getItem("cedula"));
-            formData.append('file',excel);
-            const response = await axios.post(`${apiURIAsistentes}/crearRegistro`,formData);
-            if(response.status === 200){
+            formData.append('cedulaPersonal', localStorage.getItem("cedula"));
+            formData.append('file', excel);
+            const response = await axios.post(`${apiURIAsistentes}/crearRegistro`, formData);
+            if (response.status === 200) {
                 await peticionGetRegistros();
                 setAlertExito(true);
                 setExcel(null);
@@ -80,6 +82,28 @@ export default function CargarEstudiantes() {
             setAlertError(true);
             console.error(error);
             return false;
+        }
+    }
+
+    const descargarExcel = (registro) => {
+        const link = linkRef.current;
+        link.href = registro.excel;
+        link.download = `${nombreExcel(registro.excel)}`;
+        link.click();
+    }
+
+    const eliminarRegistro = async (registro) => {
+        try {
+            console.log(registro.idArchivo);
+            const response = await axios.delete(`${apiURIAsistentes}/eliminarRegistro/${registro.idArchivo}`);
+            if (response.status == 200) {
+                await peticionGetRegistros();
+                setAlertExitoEliminado(true);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error(error);
         }
     }
 
@@ -96,7 +120,13 @@ export default function CargarEstudiantes() {
             }, 4000);
             return () => clearTimeout(timer);
         }
-    }, [alertExito, alertError]);
+        if (alertExitoEliminado) {
+            const timer = setTimeout(() => {
+                setAlertExitoEliminado(false);
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [alertExito, alertError, alertExitoEliminado]);
 
     useEffect(() => {
         peticionGetRegistros();
@@ -129,7 +159,7 @@ export default function CargarEstudiantes() {
                                     startIcon={<CloudUploadIcon />}
                                     style={{ "margin-left": "2rem" }}
                                     disabled={excel ? false : true}
-                                    onClick={()=>registrarArchivo()}
+                                    onClick={() => registrarArchivo()}
                                 >
                                     Subir Archivo
                                 </MDButton>
@@ -138,7 +168,7 @@ export default function CargarEstudiantes() {
                                         <Typography variant='h7'>{excel.name}</Typography>
                                     </MDBox>
                                 )}
-                                {alertExito && <Alert  severity="success">Excel subido correctamente</Alert>}
+                                {alertExito && <Alert severity="success">Excel subido correctamente</Alert>}
                                 {alertError && <Alert severity="error">Ha ocurrido un error</Alert>}
 
                             </CardContent>
@@ -154,17 +184,24 @@ export default function CargarEstudiantes() {
                                     <MDBox display="flex" justifyContent="space-between" alignItems="center" p={2}>
                                         <TimelineItem
                                             color="success"
-                                            icon="notifications"
+                                            icon="payment"
                                             title={`#${r.idArchivo} - ${nombreExcel(r.excel)}`}
                                             dateTime={r.fecha}
+                                            description={`Cédula Autor: ${r.cedulaPersonal}`}
                                         />
-                                        <MDButton color="primary" size="small">Descargar</MDButton>
-                                        <MDButton color="primary" size="small">Eliminar</MDButton>
-
+                                        <MDButton color="primary" size="small"
+                                            onClick={() => descargarExcel(r)}>Descargar</MDButton>
+                                        <a ref={linkRef} style={{ display: 'none' }}>Descargar</a>
+                                        <MDButton color="primary" size="small"
+                                            onClick={() => { eliminarRegistro(r); }}
+                                            disabled={localStorage.getItem("cedula") == r.cedulaPersonal ? false : true}
+                                        >Eliminar</MDButton>
+                                       
 
                                     </MDBox>
+                                    
                                 ))}
-
+                            {alertExitoEliminado && <Alert severity="success">Excel eliminado correctamente</Alert>}
                             </CardContent>
                         </Card>
                     </Grid>

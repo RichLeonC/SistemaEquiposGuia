@@ -43,6 +43,18 @@ class ListaEstudiantesDAO{
             throw new Error(error);
         }
     }
+
+    async eliminarRegistro(idArchivo){
+        try {
+            const request = new sql.Request(dbSql.conection);
+            const query = `DELETE FROM listaEstudiantes WHERE idArchivo = @idArchivo`;
+            request.input('idArchivo',sql.Int,idArchivo);
+            await request.query(query);
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
 }
 
 module.exports = ListaEstudiantesDAO;
