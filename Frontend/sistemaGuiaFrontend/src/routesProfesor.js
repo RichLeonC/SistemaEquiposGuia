@@ -31,14 +31,14 @@ const routesProfesor = [
     route: "/actividades",
     component: <Calendar/>,
   },
-  {
-    type: "collapse",
-    name: "Dashboard",
-    key: "dashboard",
-    icon: <Icon fontSize="small">dashboard</Icon>,
-    route: "/dashboard",
-    component: <Dashboard />,
-  },
+  // {
+  //   type: "collapse",
+  //   name: "Dashboard",
+  //   key: "dashboard",
+  //   icon: <Icon fontSize="small">dashboard</Icon>,
+  //   route: "/dashboard",
+  //   component: <Dashboard />,
+  // },
   /*{
     type: "collapse",
     name: "Tables",
@@ -65,10 +65,10 @@ const routesProfesor = [
   },*/
   {
     type: "collapse",
-    name: "Profile",
+    name: "Perfil",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
-    route: "/profile",
+    route: "/perfil",
     component: <Profile />,
   },
 

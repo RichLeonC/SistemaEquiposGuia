@@ -63,18 +63,10 @@ const routesAsistente = [
     route: "/CargarEstudiantes",
     component: <CargarEstudiantes/>,
   },
-  {
-    type: "collapse",
-    name: "Dashboard",
-    key: "dashboard",
-    icon: <Icon fontSize="small">dashboard</Icon>,
-    route: "/dashboard",
-    component: <Dashboard />,
-  },
 
   {
     type: "collapse",
-    name: "Profile",
+    name: "Perfil",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/perfil",

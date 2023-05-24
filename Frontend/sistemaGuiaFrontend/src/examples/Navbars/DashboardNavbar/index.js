@@ -153,7 +153,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
             
             <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/profile">
+              <Link to="/perfil">
                  <Avatar src={foto}></Avatar> 
               </Link>
               <IconButton

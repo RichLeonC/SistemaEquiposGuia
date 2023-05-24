@@ -173,7 +173,7 @@ export default function App(props) {
     <Routes>
       
      {getRoutes(rutasRol[rol]) }
-      <Route path="/" element={<Navigate to="/dashboard" />} />
+      <Route path="/" element={<Navigate to="/perfil" />} />
       
     </Routes>
     </>
