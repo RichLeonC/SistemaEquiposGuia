@@ -38,7 +38,7 @@ export default function ActividadesForm({ selectedDate }) {
 
 const obtenerProfesores = async () => {
   try {
-    const response = await axios.get('http://localhost:4000/profesores');
+    const response = await axios.get(`localhost:4000/equipos/profesEquipoGuia/${form.generacion}`);
     setProfesores(response.data);
   } catch (error){
     console.error("error en obtener profesores", error);

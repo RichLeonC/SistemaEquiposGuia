@@ -184,7 +184,7 @@ async getAllActividades(){
 
       async getProfesorResponsable(idActividad){
         try{
-            const query = `SELECT * FROM actividad_responsables WHERE idActividad = '${idActividad}'`;
+            const query = `SELECT * FROM actividad inner left join actividad_responsables WHERE idActividad = '${idActividad}'`;
             const request = new sql.Request(dbSql.conection);
             const resultado = await request.query(query);
 

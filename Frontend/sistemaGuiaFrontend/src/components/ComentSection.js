@@ -5,6 +5,19 @@ import CommentList from './CommentList';
 
 const CommentSection = ({ idActividad }) => {
   const [comments, setComments] = useState([]);
+  const [profesorActual, setProfesorActual] = useState([]);
+  const apiURIProfesores = "http://localhost:4000/profesores";
+
+  const peticionGetProfesorActual = async () => {
+    try {
+        const response = await axios.get(apiURIProfesores + "/" + localStorage.getItem("cedula"));
+        //setProfesorActual(response.data);
+        //console.log(response.data)
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+  }
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -18,6 +31,7 @@ const CommentSection = ({ idActividad }) => {
     };
 
     fetchComments();
+    peticionGetProfesorActual();
   }, [idActividad]);
 
   const handleCommentSubmit = (newComment) => {
@@ -30,6 +44,7 @@ const CommentSection = ({ idActividad }) => {
       <CommentForm
         onCommentSubmit={handleCommentSubmit}
         idActividad={idActividad}
+        profesor={profesorActual}
       />
    <CommentList comentarios={comments} />
     </div>

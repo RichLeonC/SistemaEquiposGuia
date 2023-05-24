@@ -61,6 +61,17 @@ router.post('/', upload.single('afiche'), async (req, res) => {
     }
   });
 
+router.get('/profesorEncargado/:idActividad', async (req, res) => {
+  try{
+      const {idActividad} = req.params;
+      const profesor = await actividadDAO.getProfesorResponsable(parseInt(idActividad));
+      console.log(profesor);
+      return res.status(200).json(profesor);
+  } catch(error){
+    console.error(error);
+    res.status(500).send("Error al obtener al profesor encargado")
+  }
+})
   
 // GET -> localhost:4000/actividades
 router.get('/', async (req, res) => {

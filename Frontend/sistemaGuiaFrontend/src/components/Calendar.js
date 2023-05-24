@@ -24,8 +24,10 @@ export const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const [comments, setComments] = useState([]);
+  const [profesorActual, setProfesorActual] = useState([]);
+  const [profesorEncargado, setProfesorEncargado] = useState([]);
   
+  const apiURIProfesores = "http://localhost:4000/profesores";
 
   const toggleModalSelect = () => {
     setModalOpenSelect(!modalOpenSelect);
@@ -40,8 +42,13 @@ export const Calendar = () => {
   };
 
   const handleDateSelect = (info) => {
-    setSelectedDate(info.startStr);
-    toggleModalSelect();
+    if(profesorActual.esCordinador === 1){
+      setSelectedDate(info.startStr);
+      toggleModalSelect();
+    } else {
+      console.log("Solo cordinador puede crear cosas")
+    }
+  
   };
 
   const handleEventClick = (info) => {
@@ -50,6 +57,15 @@ export const Calendar = () => {
     toggleModalEvent();
   };
 
+
+  const peticionGetProfesorActual = async () => {
+    try {
+        const response = await axios.get(apiURIProfesores + "/" + localStorage.getItem("cedula"));
+        setProfesorActual(response.data);
+    } catch (error) {
+        console.log(error);
+    }
+}
 
   const EventItem = ({ info }) => {
     const { event } = info;
@@ -124,6 +140,7 @@ export const Calendar = () => {
         <>Enlace: {event.extendedProps.enlace}</> 
       )}
       </p>
+      <p>Profesor Encargado: {}</p>
       <p>Estado: {getTipoEstado(event.extendedProps.estado)}</p>
       <p>
         {event.extendedProps.estado === 3 && (
@@ -134,7 +151,6 @@ export const Calendar = () => {
        <CommentSection idActividad={event.extendedProps.codigo}/>
       <ModalFooter>
         <Button color="Terciary" onClick={toggleModalMenu} >Administrar</Button>
-        <Button color="Secundary">Recordatorios</Button>
         <Button color="Primary" onClick={toggleModalEvent}>
           Close
         </Button>
@@ -146,8 +162,6 @@ export const Calendar = () => {
 
 
     const ActivityMenu = ({ event }) => {
-      // Aquí puedes implementar el contenido y la lógica del menú de administración
-      // por ejemplo, puedes utilizar otros componentes de Reactstrap como FormGroup, Input, Label, etc.
       return (
         <Modal isOpen={modalOpenMenu}>
           <ModalHeader toggle={toggleModalMenu}>{event.title}</ModalHeader>
@@ -176,6 +190,7 @@ export const Calendar = () => {
       };
     
       obtenerActividades();
+      peticionGetProfesorActual();
     }, []);
   
   return (

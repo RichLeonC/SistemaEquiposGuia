@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const CommentForm = ({ idActividad, onCommentSubmit }) => {
+const CommentForm = ({ idActividad, onCommentSubmit, profesor }) => {
+
+  const apiURIProfesores = "http://localhost:4000/profesores";
+  
+  const [profesorActual, setProfesorActual] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [comentario, setComentario] = useState({
     idActividad: idActividad,
-    idProfesor: 'SJ-02', //el profesor que este loggeado
+    idProfesor: '',//localStorage.getItem("cedula"), //el profesor que este loggeado
     mensaje: '',
     fecha: new Date(),
     hora:''
@@ -12,14 +17,15 @@ const CommentForm = ({ idActividad, onCommentSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     try {
       console.log("Comentario", comentario)
       await axios.post('http://localhost:4000/comentarios', comentario);
-      const response = await axios.get(`http://localhost:4000/comentarios/${idActividad}`);
+      const response = await axios.get(`http://localhost:4000/comentarios/${idActividad}`);      
       onCommentSubmit(response.data);
       setComentario({
         idActividad: idActividad,
-        idProfesor: 'SJ-02',
+        idProfesor: profesorActual.codigo,
         mensaje: '',
         fecha: new Date(),
         hora: ''
@@ -29,6 +35,24 @@ const CommentForm = ({ idActividad, onCommentSubmit }) => {
     }
   };
 
+
+  useEffect(() => {
+    
+  const peticionGetProfesorActual = async () => {
+    try {
+        const response = await axios.get(apiURIProfesores + "/" + localStorage.getItem("cedula"));
+        setComentario((prevComentario) => ({
+          ...prevComentario,
+          idProfesor: response.data.codigo
+        }));
+        
+    } catch (error) {
+        console.log(error);
+    }
+  }
+    peticionGetProfesorActual();
+  }, []);
+
   return (
     <form onSubmit={handleSubmit}>
       <textarea
@@ -36,7 +60,7 @@ const CommentForm = ({ idActividad, onCommentSubmit }) => {
         value={comentario.mensaje}
         onChange={(e) => setComentario({...comentario, mensaje: e.target.value})}
       />
-      <button type="submit">Enviar</button>
+      <button type="submit">'Enviar'</button>
     </form>
   );
 };
