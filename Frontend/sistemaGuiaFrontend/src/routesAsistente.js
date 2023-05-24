@@ -30,6 +30,7 @@ import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import RegistrarProfes from "layouts/AsistentePanel/RegistrarProfesores/RegistrarProfes";
+import Perfil from "layouts/Perfil";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -70,7 +71,7 @@ const routesAsistente = [
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/perfil",
-    component: <Profile />,
+    component: <Perfil />,
   },
 
 ];

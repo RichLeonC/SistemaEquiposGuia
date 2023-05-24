@@ -13,6 +13,7 @@ import SignUp from "layouts/authentication/sign-up";
 // @mui icons
 import Icon from "@mui/material/Icon";
 import ConsultarEstudiantes from "layouts/ProfesorPanel/ConsultarEstudiantes";
+import Perfil from "layouts/Perfil";
 
 const routesProfesor = [
   {
@@ -69,7 +70,7 @@ const routesProfesor = [
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/perfil",
-    component: <Profile />,
+    component: <Perfil />,
   },
 
 ];
