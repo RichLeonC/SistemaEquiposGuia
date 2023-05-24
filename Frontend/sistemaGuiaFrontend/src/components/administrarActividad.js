@@ -29,6 +29,8 @@ export default function AdministrarActividad({event}) {
     const [mostrarCampoImagen, setMostrarCampoImagen] = useState(false);
     const [mostrarCampoRecordatorio, setMostrarCampoRecordatorio] = useState(false);
 
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const estadoOptions = tiposEstados.map((tipo, index) => (
       <option key={index} value={index}>
@@ -51,6 +53,32 @@ export default function AdministrarActividad({event}) {
           fotoEvidencia: null,
         }));
       }
+    };
+
+    const successMessageStyle = {
+      display: 'flex',
+      alignItems: 'center',
+      backgroundColor: '#dff0d8',
+      color: '#3c763d',
+      padding: '10px',
+      marginBottom: '10px'
+    };
+  
+    const successIconStyle = {
+      marginRight: '5px'
+    };
+  
+    const errorMessageStyle = {
+      display: 'flex',
+      alignItems: 'center',
+      backgroundColor: '#f2dede',
+      color: '#a94442',
+      padding: '10px',
+      marginBottom: '10px'
+    };
+  
+    const errorIconStyle = {
+      marginRight: '5px'
     };
 
     const handleChangeParticipantes = (event) => {
@@ -122,102 +150,130 @@ export default function AdministrarActividad({event}) {
 
         const response = await axios.put('http://localhost:4000/actividades/estadoActividad', formData);
         console.log(response.data);
+
+        setEstado({
+          idActividad: event.extendedProps.codigo,
+          estado: '',
+          observacion: '',
+          fecha: new Date(),
+          fotoEvidencia: null,
+          fotoParticipantes: null,
+          fechaPublicacion: '',
+          diasRepeticion: '',
+        });
+
+        setSuccessMessage('Estado de la actividad actualizado exitosamente');
+        setErrorMessage('');
       
 
     } catch(error){
       console.error('Error al actualizar el estado de la actividad', error);
+      setErrorMessage('Ocurrió un error al actualizar el estado de la actividad');
+      setSuccessMessage('');
     }
   }
 
 
   return (
-    <>
-    <div>administrarActividad</div>
-    <div>Tipo de actividad</div>
-    <div class = "form-group">
-      <select 
-      className="form-control" 
-      name="estado"  
-      id="estado" 
-      onChange={handleChange}>
-        <option value="">Seleccione el tipo de actividad</option>
-        {estadoOptions}
-      </select>
-    </div>
+<>
+  <div className="section">Administrar Estado de Actividad</div>
+  <div className="section">Estado</div>
+  <div className="form-group">
+    <select
+      className="form-control"
+      name="estado"
+      id="estado"
+      onChange={handleChange}
+    >
+      <option value="">Seleccione un estado</option>
+      {estadoOptions}
+    </select>
+  </div>
 
-    {mostrarMotivoCancelacion && (
-        <div className="form-group">
-          <label htmlFor="motivoCancelacion">Motivo de cancelación:</label>
-          <textarea
-            className="form-control"
-            id="motivoCancelacion"
-            name="observacion"
-            onChange={(e) =>
-              setEstado({
-                ...estado,
-                estado: 3,
-                observacion: e.target.value,
-              })
-            }
-          ></textarea>
-          <Button color="primary" onClick={handleSubmit}>Guardar Cambios</Button>
-        </div>
-      )}
-
-      
-      {mostrarCampoImagen && (
-        <div className="form-group">
-          <label htmlFor="imagenActividad">Subir imagen de la actividad realizada:</label>
-          <input
-            type="file"
-            id="idFotoEvidencia"
-            name="fotoEvidencia"
-            onChange={handleChangeEvidencia}           
-          />
-        <Button color="primary" onClick={handleSubmit}>Guardar Cambios</Button>
-        </div>
-      )}  
-
-      {mostrarCampoRecordatorio && (
-  <div>
+  {mostrarMotivoCancelacion && (
     <div className="form-group">
-      <label htmlFor="fechaRecordatorio">Fecha del recordatorio:</label>
-      <DatePicker
-        name="fechaPublicacion"
-        value={estado.fechaPublicacion}
-        selected={fecha}
-        onChange={handleFechaChange}
+      <label htmlFor="motivoCancelacion">Motivo de cancelación:</label>
+      <textarea
         className="form-control"
-        minDate={new Date(event.extendedProps.creacion)}
-      />
-    </div>
-    <div className="form-group">
-      <label htmlFor="numeroRecordatorio">Número del 1 al 9:</label>
-      <input
-        type="number"
-        className="form-control"
-        id="numeroRecordatorio"
-        name="numeroRecordatorio"
-        min="1"
-        max="10"
-        value={estado.diasRepeticion}
-        onChange={e =>
+        id="motivoCancelacion"
+        name="observacion"
+        onChange={(e) =>
           setEstado({
             ...estado,
-            estado: 1,
-            diasRepeticion: e.target.value
+            estado: 3,
+            observacion: e.target.value,
           })
         }
-      />
+      ></textarea>
+      <Button color="primary" onClick={handleSubmit}>Guardar Cambios</Button>
     </div>
-    <Button color="primary" onClick={handleSubmit}>
-      Guardar Cambios
-    </Button>
-  </div>
-)}
-      
-    </>
+  )}
 
-  )
+  {mostrarCampoImagen && (
+    <div className="form-group">
+      <label htmlFor="imagenActividad">Subir imagen de la actividad realizada:</label>
+      <Input
+        type="file"
+        id="idFotoEvidencia"
+        name="fotoEvidencia"
+        onChange={handleChangeEvidencia}           
+      />
+      <Button color="primary" onClick={handleSubmit}>Guardar Cambios</Button>
+    </div>
+  )}
+
+  {mostrarCampoRecordatorio && (
+    <div>
+      <div className="form-group">
+        <label htmlFor="fechaRecordatorio">Fecha del recordatorio:</label>
+        <DatePicker
+          name="fechaPublicacion"
+          value={estado.fechaPublicacion}
+          selected={fecha}
+          onChange={handleFechaChange}
+          className="form-control"
+          minDate={new Date(event.extendedProps.creacion)}
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="numeroRecordatorio">Número del 1 al 9:</label>
+        <input
+          type="number"
+          className="form-control"
+          id="numeroRecordatorio"
+          name="numeroRecordatorio"
+          min="1"
+          max="10"
+          value={estado.diasRepeticion}
+          onChange={e =>
+            setEstado({
+              ...estado,
+              estado: 1,
+              diasRepeticion: e.target.value
+            })
+          }
+        />
+      </div>
+      <Button color="primary" onClick={handleSubmit}>
+        Guardar Cambios
+      </Button>
+    </div>
+  )}
+
+      {successMessage && (
+        <div style={successMessageStyle}>
+          <span style={successIconStyle}>&#10004;</span>
+          {successMessage}
+        </div>
+      )}
+      {errorMessage && (
+        <div style={errorMessageStyle}>
+          <span style={errorIconStyle}>&#10008;</span>
+          {errorMessage}
+        </div>
+      )}
+  </>
+
+  );
 }
 

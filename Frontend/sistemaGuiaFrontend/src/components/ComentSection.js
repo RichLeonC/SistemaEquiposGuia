@@ -39,15 +39,15 @@ const CommentSection = ({ idActividad }) => {
   };
 
   return (
-    <div>
-      <h2>Comentarios</h2>
-      <CommentForm
-        onCommentSubmit={handleCommentSubmit}
-        idActividad={idActividad}
-        profesor={profesorActual}
-      />
-   <CommentList comentarios={comments} />
-    </div>
+<div style={{ marginTop: '20px' }}>
+  <h2 style={{ marginBottom: '10px' }}>Comentarios</h2>
+  <CommentForm
+    onCommentSubmit={handleCommentSubmit}
+    idActividad={idActividad}
+  />
+  <CommentList comentarios={comments} style={{ marginTop: '20px' }} />
+</div>
+
   );
 };
 

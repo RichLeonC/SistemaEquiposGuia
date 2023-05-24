@@ -54,14 +54,18 @@ const CommentForm = ({ idActividad, onCommentSubmit, profesor }) => {
   }, []);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
       <textarea
         placeholder="Comentario"
         value={comentario.mensaje}
         onChange={(e) => setComentario({...comentario, mensaje: e.target.value})}
+        style={{ width: '100%', height: '100px', padding: '10px' }}
       />
-      <button type="submit">'Enviar'</button>
+      <button type="submit" style={{ marginTop: '10px', padding: '5px 10px', background: '#f1f1f1', border: 'none' }}>
+        Enviar
+      </button>
     </form>
+
   );
 };
 

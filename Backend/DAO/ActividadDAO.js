@@ -58,29 +58,31 @@ class ActividadDAO{
     }
   }
 
-  async insertActividadCancelada(datos){
 
+  
+  async insertActividadRecordatorio(datos){
+    
     try{
-      const query = `INSERT INTO actividad_cancelada (idActividad, observacion, fecha)
-      VALUES (@idActividad, @observacion, @fecha);`
+      const query = `INSERT INTO actividad_recordatorio (idActividad, fecha, diasRepeticion)
+      VALUES (@idActividad, @fecha, @diasRepeticion);`
       const request = new sql.Request(dbSql.conection);
 
       request.input('idActividad', sql.Int, datos.idActividad);
-      request.input('observacion', sql.VarChar, datos.observacion);
       request.input('fecha', sql.Date, datos.fecha);
+      request.input('diasRepeticion', sql.Int, datos.diasRepeticion);
 
       const result = await request.query(query);
 
-      console.log('Cancelacion añadida con exito');
+      console.log('Recordatorio añadida con exito');
     } catch(error){
-      console.error('Error al settear la cancelacion: ', error);
+      console.error('Error al settear la recordatorio: ', error);
     }
   }
 
   async insertEvidenciaActividad(datos){
-
+    
     try{
-      const query = `INSERT INTO actividad_evidencia_asistencia (idActividad, idImagen, imgAsistencia)
+      const query = `INSERT INTO actividad_evidencia_assitencia (idActividad, idImagen, imgAsistencia)
       VALUES (@idActividad, @idImagen, @imgAsistencia);`
       const request = new sql.Request(dbSql.conection);
 
@@ -96,26 +98,25 @@ class ActividadDAO{
     }
   }
 
-  
-  async insertActividadRecordatorio(datos){
+
+  async insertActividadCancelada(datos){
     
     try{
-      const query = `INSERT INTO actividad_recordatorio (idActividad, fecha, diasRepeticion)
-      VALUES (@idActividad, @fecha, @diasRepeticion);`
+      const query = `INSERT INTO actividad_cancelada (idActividad, observacion, fecha)
+      VALUES (@idActividad, @observacion, @fecha);`
       const request = new sql.Request(dbSql.conection);
 
       request.input('idActividad', sql.Int, datos.idActividad);
-      request.input('fecha', sql.Date, datos.fechaPublicacion);
-      request.input('diasRepeticion', sql.Int, datos.diasRepeticion);
+      request.input('observacion', sql.VarChar, datos.observacion);
+      request.input('fecha', sql.Date, datos.fecha);
 
       const result = await request.query(query);
 
-      console.log('Recordatorio añadida con exito');
+      console.log('Cancelacion añadida con exito');
     } catch(error){
-      console.error('Error al settear la recordatorio: ', error);
+      console.error('Error al settear la Cancelacion', error);
     }
   }
-
 
   async actualizarEstado(idActividad, estado){
     try {
@@ -155,6 +156,7 @@ async getAllActividades(){
                 modalidad: row.modalidad,
                 enlace: row.enlaceReunion,
                 estado: row.estadoActiviad,
+                afiche: row.AficheURL
               };
               return actividad;
             });
@@ -182,28 +184,6 @@ async getAllActividades(){
 
       }
 
-      async getProfesorResponsable(idActividad){
-        try{
-            const query = `SELECT * FROM actividad inner left join actividad_responsables WHERE idActividad = '${idActividad}'`;
-            const request = new sql.Request(dbSql.conection);
-            const resultado = await request.query(query);
-
-            if(resultado.recordset.length > 0){
-                const row = resultado.recordset[0];
-                const responsable = new Actividad_Responsable(
-                    row.idActividad,
-                    row.generacion,
-                    row.idProfesor
-                );
-            }else{
-                return null;
-            }
-        } catch(error){
-            console.error('Error al obtener responsable',error);
-        }
-    }
-
-
     async getProfesorResponsable(idActividad){
       try{
           const query = `SELECT * FROM actividad_responsables WHERE idActividad = '${idActividad}'`;
@@ -227,43 +207,67 @@ async getAllActividades(){
 
   async getActividadCancelada(idActividad){
     try{
-        const query = `SELECT * FROM actividad_cancelada WHERE idActividad = '${idActividad}'`;
+        const query = `SELECT * FROM actividad_cancelada WHERE idActividad = ${idActividad}`;
         const request = new sql.Request(dbSql.conection);
         const resultado = await request.query(query);
 
         if(resultado.recordset.length > 0){
             const row = resultado.recordset[0];
-            const responsable = new Actividad_Cancelada(
-                row.idActividad,
-                row.observacion,
-                row.fecha
-            );
+            const cancelacion = {
+               idActividad: row.idActividad,
+               observacion: row.observacion,
+               fecha: row.fecha
+            };
+            return cancelacion;
         }else{
             return null;
         }
     } catch(error){
         console.error('Error al obtener actividad cancelada',error);
     }
+}
+
+async getEvidenciaActividad(idActividad){
+  try{
+      const query = `SELECT * FROM actividad_evidencia_asitencia WHERE idActividad = ${idActividad}`;
+      const request = new sql.Request(dbSql.conection);
+      const resultado = await request.query(query);
+
+      if(resultado.recordset.length > 0){
+          const row = resultado.recordset[0];
+          const evidencia = {
+             idActividad: row.idActividad,
+             idImagen: row.idImagen,
+             imgAsistencia: row.imgAsistencia
+          };
+          return evidencia;
+      }else{
+          return null;
+      }
+  } catch(error){
+      console.error('Error al obtener actividad evidencia',error);
   }
+}
 
   async getActividadRecordatorio(idActividad){
       try{
-          const query = `SELECT * FROM actividad_recordatorio WHERE idActividad = '${idActividad}'`;
+          const query = `SELECT * FROM actividad_recordatorio WHERE idActividad = ${idActividad}`;
           const request = new sql.Request(dbSql.conection);
           const resultado = await request.query(query);
   
           if(resultado.recordset.length > 0){
               const row = resultado.recordset[0];
-              const responsable = new Actividad_recordatorio(
-                  row.idActividad,
-                  row.observacion,
-                  row.fecha
-              );
+              const recordatorio = {
+                 idActividad: row.idActividad,
+                 fecha: row.fecha,
+                 dias: row.diasRepeticion
+              };
+              return recordatorio;
           }else{
               return null;
           }
       } catch(error){
-          console.error('Error al obtener actividad cancelada',error);
+          console.error('Error al obtener actividad recordatorio',error);
       }
   }
 }

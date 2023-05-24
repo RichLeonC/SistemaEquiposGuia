@@ -14,6 +14,7 @@ export default function ActividadesForm({ selectedDate }) {
   const [virtual, setVirtual] = useState(false);
   const [link, setLink] = useState("");
   const [profesores, setProfesores] = useState([]); 
+
   const [profesorEncargado, setProfesorEncargado] = useState({
       generacion: new Date().getFullYear(), //se tiene que hacer otro proceso para obtener la generacion del profesor seleccionado
       idProfesor: '' //codigo de profesor seleccionado      
@@ -35,10 +36,14 @@ export default function ActividadesForm({ selectedDate }) {
 
 });
 
+const [formError, setFormError] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [submitSuccess, setSubmitSuccess] = useState(false);
 
 const obtenerProfesores = async () => {
   try {
-    const response = await axios.get(`localhost:4000/equipos/profesEquipoGuia/${form.generacion}`);
+    //const response = await axios.get(`http://localhost:4000/equipos/profesEquipoGuia/${form.generacion}`);
+    const response = await axios.get('http://localhost:4000/profesores');
     setProfesores(response.data);
   } catch (error){
     console.error("error en obtener profesores", error);
@@ -56,6 +61,21 @@ const handleVirtualChange = (event) => {
     ...prevForm,
     modalidad: isChecked ? 1 : 0,
   }));
+};
+
+const validateForm = () => {
+  if (
+    form.tipoActividad === '' ||
+    form.nombreActividad === '' ||
+    form.fechaFinal === '' ||
+    form.horaInicio === '' ||
+    form.idProfesor === '' ||
+    form.afiche === null
+  ) {
+    setFormError(true);
+  } else {
+    setFormError(false);
+  }
 };
 
 const handleLinkChange = (event) => {
@@ -106,34 +126,34 @@ const handleChangeArchivo = (event) => {
 
 const handleSubmit = async (event) => {
   event.preventDefault();
-  console.log('Formulario:', form);
-  console.log('Profesor: ', profesorEncargado)
-  console.log('Afiche', form.afiche)
-//proceso de insercion a la base de datos 
-  try {
+  validateForm();
 
-    const formData = new FormData();
-    formData.append('tipoActividad', form.tipoActividad);
-    formData.append('nombreActividad', form.nombreActividad);
-    formData.append('fechaInicio', form.fechaInicio);
-    formData.append('horaInicio', form.horaInicio);
-    formData.append('fechaCreacion', form.fechaCreacion);
-    formData.append('modalidad', form.modalidad);
-    formData.append('enlaceReunion', form.enlaceReunion);
-    formData.append('estadoActividad', form.estadoActividad);
-    formData.append('fechaFinal', form.fechaFinal);
-    formData.append('generacion', form.generacion);
-    formData.append('idProfesor', form.idProfesor);
-    formData.append('afiche', form.afiche);
+  if (!formError) {
+    setIsSubmitting(true);
 
-    console.log('Formulario:', formData);
+    try {
+      const formData = new FormData();
+      formData.append('tipoActividad', form.tipoActividad);
+      formData.append('nombreActividad', form.nombreActividad);
+      formData.append('fechaInicio', form.fechaInicio);
+      formData.append('horaInicio', form.horaInicio);
+      formData.append('fechaCreacion', form.fechaCreacion);
+      formData.append('modalidad', form.modalidad);
+      formData.append('enlaceReunion', form.enlaceReunion);
+      formData.append('estadoActividad', form.estadoActividad);
+      formData.append('fechaFinal', form.fechaFinal);
+      formData.append('generacion', form.generacion);
+      formData.append('idProfesor', form.idProfesor);
+      formData.append('afiche', form.afiche);
 
-    await axios.post('http://localhost:4000/actividades', formData);
-    //console.log('Actividad creada exitosamente.');
-    //Realiza cualquier acción adicional después de almacenar los datos en la base de datos
-  } catch (error) {
-    console.error('Error al crear la Actividad:', error);
-    // Maneja el error de acuerdo a tus necesidades
+      await axios.post('http://localhost:4000/actividades', formData);
+      setSubmitSuccess(true);
+    } catch (error) {
+      console.error('Error al crear la Actividad:', error);
+      setSubmitSuccess(false);
+    }
+
+    setIsSubmitting(false);
   }
 };
 
@@ -158,110 +178,132 @@ const handleSubmit = async (event) => {
       }, []);
 
   return (
-    <Form onSubmit={handleSubmit}>
+<Form onSubmit={handleSubmit}>
+  {isSubmitting && (
+    <div className="alert alert-info" role="alert">
+      Enviando formulario...
+    </div>
+  )}
 
-    <div>Tipo de actividad</div>
-    <div class = "form-group">
-      <select 
+  {submitSuccess && (
+    <div className="alert alert-success" role="alert">
+      ¡El formulario se envió exitosamente!
+    </div>
+  )}
+
+  {formError && !isSubmitting && (
+    <div className="alert alert-danger" role="alert">
+      Error al enviar el formulario. Por favor, completa todos los campos requeridos.
+    </div>
+  )}
+
+  <div className={`form-group ${formError && form.tipoActividad === '' ? 'is-invalid' : ''}`}>
+    <label htmlFor="tiposActividad">Tipo de actividad</label>
+    <select 
       className="form-control" 
       name="tipoActividad" 
       value={form.tipoActividad} 
       id="tiposActividad" 
-      onChange={handleChange}>
-        <option value="">Seleccione el tipo de actividad</option>
-        {actividadOptions}
-      </select>
-    </div>
+      onChange={handleChange}
+    >
+      <option value="">Seleccione el tipo de actividad</option>
+      {actividadOptions}
+    </select>
+  </div>
 
-
-    <div>Nombre de la actividad</div>
-    <div class="input-group mb-3">
-      <input type="text" 
-      class="form-control" a
-      ria-label="Sizing example input" 
-      aria-describedby="inputGroup-sizing-default" 
-      name = "nombreActividad" 
+  <div className="form-group">
+    <label htmlFor="nombreActividad">Nombre de la actividad</label>
+    <input
+      type="text" 
+      className="form-control"
+      id="nombreActividad" 
+      name="nombreActividad" 
       value={form.nombreActividad} 
-      onChange={handleChange}/>
-    </div>
+      onChange={handleChange}
+    />
+  </div>
 
-    <div>FECHA INICIO</div>
-    <p>Fecha seleccionada: {selectedDate}</p>
+  <div>FECHA INICIO</div>
+  <p>Fecha seleccionada: {selectedDate}</p>
 
-
-    <>FECHA FINAL</>
-    <FormGroup>
-    <Label>Selecciona una fecha:</Label>
+  <div className="form-group">
+    <label>FECHA FINAL</label>
     <DatePicker
       name="fechaFinal"
-      value= {form.fechaFinal}
+      value={form.fechaFinal}
       selected={selectedFinishDate}
       onChange={handleFechaFinalChange}
-      minDate={new Date(selectedDate)} // Aquí estableces la fecha mínima
+      minDate={new Date(selectedDate)}
       className="form-control"
     />
+  </div>
+
+  <div className="form-group">
+    <label htmlFor="timePicker">HORA INICIO</label>
+    <input
+      type="time"
+      id="timePicker"
+      name="horaInicio"
+      value={form.horaInicio}
+      onChange={handleChange}
+      className="form-control"
+    />
+    <p>Hora seleccionada: {form.horaInicio}</p>
+  </div>
+
+  <div className="form-group">
+    <label className="mr-2">MODALIDAD</label>
+    <FormGroup check inline>
+      <Label check>
+        <Input
+          type="checkbox"
+          checked={virtual}
+          onChange={handleVirtualChange}
+        />{" "}
+        Virtual
+      </Label>
     </FormGroup>
+  </div>
 
-    <div>HORA INICIO</div>
-    <div>
-      <label htmlFor="timePicker">Selecciona una hora:</label>
+  {virtual && (
+    <div className="form-group">
+      <label htmlFor="link">Enlace:</label>
       <input
-        type="time"
-        id="timePicker"
-        name="horaInicio"
-        value={form.horaInicio}
-        onChange={handleChange}
+        type="text"
+        id="link"
+        value={link}
+        onChange={handleLinkChange}
+        className="form-control"
       />
-      <p>Hora seleccionada: {form.horaInicio}</p>
     </div>
+  )}
 
-
-
-    <div>MODALIDAD</div> 
-    <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            checked={virtual}
-            onChange={handleVirtualChange}
-          />{" "}
-          Virtual
-        </Label>
-      </FormGroup>
-      {virtual && (
-        <FormGroup>
-          <Label for="link">Enlace:</Label>
-          <Input
-            type="text"
-            id="link"
-            value={link}
-            onChange={handleLinkChange}
-          />
-        </FormGroup>
-      )}
-
-  <div>Profesor encargado</div>
-    <div class = "form-group">
-      <select
+  <div className="form-group">
+    <label htmlFor="idProfesor">Profesor encargado</label>
+    <select
       className="form-control"
-      name = "idProfesor"
-      value = {form.idProfesor}
-      id ="idProfesor"
-      onChange={handleChange}>
-        <option value="">Seleccione al profesor encargado</option>
-        {profesoresOptions}
-      </select>
-    </div>
+      name="idProfesor"
+      value={form.idProfesor}
+      id="idProfesor"
+      onChange={handleChange}
+    >
+      <option value="">Seleccione al profesor encargado</option>
+      {profesoresOptions}
+    </select>
+  </div>
 
-    <div>AFICHE</div>
+  <div className="form-group">
+    <label htmlFor="idAfiche">AFICHE</label>
     <Input 
-    type="file"
-    id="idAfiche"
-    name="afiche"
-    onChange={handleChangeArchivo}
+      type="file"
+      id="idAfiche"
+      name="afiche"
+      onChange={handleChangeArchivo}
     />
-    <Button type="submit" color="primary">Guardar</Button>
-    </Form>
+  </div>
+
+  <Button type="submit" color="primary">Guardar</Button>
+</Form>
     
   )
 }

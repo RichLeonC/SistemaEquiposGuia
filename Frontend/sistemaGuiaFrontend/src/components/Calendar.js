@@ -16,6 +16,7 @@ import axios from 'axios';
 
 export const Calendar = () => {
   const [events, setEvents] = useState([]);
+
   const [modalOpenSelect, setModalOpenSelect] = useState(false);
   const [modalOpenEvent, setModalOpenEvent] = useState(false);
   const [modalOpenMenu, setModalOpenMenu] = useState(false);
@@ -24,8 +25,17 @@ export const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const [profesorActual, setProfesorActual] = useState([]);
-  const [profesorEncargado, setProfesorEncargado] = useState([]);
+  const[profesorActual, setProfesorActual] = useState([]);
+
+  const [showRecordatorio, setShowRecordatorio] = useState(false);
+  const [recordatorio, setRecordatorio] = useState('');
+
+  
+  const [showCancelado, setShowCancelado] = useState(false);
+  const [cancelacion, setCancelacion] = useState('');
+
+  const [showEvidencia, setShowEvidencia] = useState(false);
+  const [evidencia, setEvidencia] = useState('');
   
   const apiURIProfesores = "http://localhost:4000/profesores";
 
@@ -42,18 +52,46 @@ export const Calendar = () => {
   };
 
   const handleDateSelect = (info) => {
-    if(profesorActual.esCordinador === 1){
+    //if(profesorActual.esCordinador === 1){
       setSelectedDate(info.startStr);
       toggleModalSelect();
-    } else {
+    /*} else {
       console.log("Solo cordinador puede crear cosas")
-    }
+    }*/
   
   };
 
-  const handleEventClick = (info) => {
+  const handleEventClick = async (info) => {
     console.log('fecha crewcion', info.event.extendedProps.creacion)
     setSelectedEvent(info.event);
+    setShowRecordatorio(info.event.extendedProps.estado === 1);
+    setShowEvidencia(info.event.extendedProps.estado === 2);
+    setShowCancelado(info.event.extendedProps.estado === 3);
+    if (info.event.extendedProps.estado === 1) {
+      try {
+        const response = await axios.get(`http://localhost:4000/actividades/${info.event.extendedProps.codigo}/recordatorio`);
+        setRecordatorio(response.data);
+        console.log('recordatorio',response.data);
+      } catch (error) {
+        console.error('Error al obtener el recordatorio:', error);
+      }
+    } else if (info.event.extendedProps.estado === 2){
+      try {
+        const response = await axios.get(`http://localhost:4000/actividades/${info.event.extendedProps.codigo}/evidencia`);
+        setEvidencia(response.data);
+        console.log('Evidencia',response.data);
+      } catch (error) {
+        console.error('Error al obtener Evidencia:', error);
+      }
+    } else if (info.event.extendedProps.estado === 3){
+      try {
+        const response = await axios.get(`http://localhost:4000/actividades/${info.event.extendedProps.codigo}/cancelada`);
+        setCancelacion(response.data);
+        console.log('Cancelacion',response.data);
+      } catch (error) {
+        console.error('Error al obtener el Cancelamiento:', error);
+      }
+    }
     toggleModalEvent();
   };
 
@@ -124,42 +162,81 @@ export const Calendar = () => {
   
 
   const EventModal = ({ event }) => {
+    return (
+      <Modal isOpen={modalOpenEvent} toggle={toggleModalEvent}>
+        <ModalHeader toggle={toggleModalEvent}>{event.title}</ModalHeader>
+        <ModalBody>
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Fecha de Inicio:</strong> {event.start ? event.start.toISOString().split("T")[0] : ""}
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Hora de inicio:</strong> {event.extendedProps.horaInicio}
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Fecha de Finalización:</strong> {event.end ? event.end.toISOString().split("T")[0] : ""}
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Tipo de actividad:</strong> {getTipoActividad(event.extendedProps.tipo)}
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Modalidad:</strong> {getIsVirtual(event.extendedProps.modalidad)}
+          </div>
+          {event.extendedProps.modalidad === 1 && (
+            <div style={{ marginBottom: '10px' }}>
+              <strong>Enlace:</strong> {event.extendedProps.enlace}
+            </div>
+          )}
+        {event.extendedProps.afiche && (
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Afiche:</strong>
+            <br />
+            <img src={event.extendedProps.afiche} alt="Afiche" style={{ maxWidth: '100%' }} />
+          </div>
+        )}
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Estado:</strong> {getTipoEstado(event.extendedProps.estado)}
+          </div>
+          {showRecordatorio && (
+            <>
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Se recordará a partir de:</strong> {recordatorio.fecha}
+              </div>
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Se recordará cada:</strong> {recordatorio.dias} días
+              </div>
+            </>
+          )}
+          {showCancelado && (
+            <>
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Motivo:</strong> {cancelacion.observacion}
+              </div>
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Fecha en que se canceló:</strong> {cancelacion.fecha}
+              </div>
+            </>
+          )}
+          {showEvidencia&& (
+            <>
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Fotografia Evento:</strong> 
+                <br />
+                <img src={evidencia.idImagen} alt="Foto" style={{ maxWidth: '100%' }} />  
+              </div>
 
-    return(
-    
-    <Modal isOpen={modalOpenEvent} toggle={toggleModalEvent}>
-      <ModalHeader toggle={toggleModalEvent}>{event.title}</ModalHeader>
-      <ModalBody>
-      <p>Fecha de Inicio: { event.start ? event.start.toISOString().split("T")[0] : ""}</p>
-      <p>Hora de incio: {event.extendedProps.horaInicio}</p>
-      <p>Fecha de Finalización: {event.end ? event.end.toISOString().split("T")[0] : ""}</p>
-      <p>Tipo de actividad: {getTipoActividad(event.extendedProps.tipo)}</p>
-      <p>Modalidad: {getIsVirtual(event.extendedProps.modalidad)}</p>
-      <p>
-        {event.extendedProps.modalidad === 1 && (
-        <>Enlace: {event.extendedProps.enlace}</> 
-      )}
-      </p>
-      <p>Profesor Encargado: {}</p>
-      <p>Estado: {getTipoEstado(event.extendedProps.estado)}</p>
-      <p>
-        {event.extendedProps.estado === 3 && (
-        <>Motivo: la actividad fue cancelada porque blah blah</> 
-      )}
-      </p>
-      </ModalBody>
-       <CommentSection idActividad={event.extendedProps.codigo}/>
-      <ModalFooter>
-        <Button color="Terciary" onClick={toggleModalMenu} >Administrar</Button>
-        <Button color="Primary" onClick={toggleModalEvent}>
-          Close
-        </Button>
-      </ModalFooter>
-      {modalOpenMenu && <ActivityMenu event={event} />}
-    </Modal>
+            </>
+          )}
+        </ModalBody>
+        <CommentSection idActividad={event.extendedProps.codigo} />
+        <ModalFooter>
+          <Button color="Terciary" onClick={toggleModalMenu}>Administrar</Button>
+          <Button color="Primary" onClick={toggleModalEvent}>Close</Button>
+        </ModalFooter>
+        {modalOpenMenu && <ActivityMenu event={event} />}
+      </Modal>
     );
-    };
-
+  };
+  
 
     const ActivityMenu = ({ event }) => {
       return (

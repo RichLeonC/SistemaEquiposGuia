@@ -21,7 +21,7 @@ router.post('/', upload.single('afiche'), async (req, res) => {
     try {
       const { tipoActividad, nombreActividad, fechaInicio, horaInicio, fechaCreacion, modalidad, enlaceReunion, estadoActividad, fechaFinal, generacion, idProfesor } = req.body;
       // Validar los datos de entrada
-      if (!tipoActividad || !nombreActividad || !fechaInicio || !horaInicio || !fechaCreacion || !modalidad || !estadoActividad || !fechaFinal) {
+      if (!tipoActividad || !nombreActividad || !fechaInicio || !horaInicio || !fechaCreacion || !estadoActividad || !fechaFinal) {
         return res.status(400).send('Todos los campos son obligatorios');
       }
         // Convertir codigoActividad a número entero
@@ -85,6 +85,57 @@ router.get('/', async (req, res) => {
     }
   });
 
+  // GET -> localhost:4000/actividades/:idActividad/recordatorio
+router.get('/:idActividad/recordatorio', async (req, res) => {
+  try {
+    const idActividad = req.params.idActividad;
+    const recordatorio = await actividadDAO.getActividadRecordatorio(idActividad);
+    if (recordatorio) {
+      res.status(200).json(recordatorio);
+    } else {
+      res.status(404).json({ error: "Recordatorio no encontrado" });
+    }
+  } catch (error) {
+    console.error("Error al obtener el recordatorio:", error);
+    res.status(500).json({ error: "Error al obtener el recordatorio" });
+  }
+});
+
+
+  // GET -> localhost:4000/actividades/:idActividad/evidencia
+  router.get('/:idActividad/evidencia', async (req, res) => {
+    try {
+      const idActividad = req.params.idActividad;
+      const evidencia = await actividadDAO.getEvidenciaActividad(idActividad);
+      if (evidencia) {
+        res.status(200).json(evidencia);
+      } else {
+        res.status(404).json({ error: "evidencia no encontrado" });
+      }
+    } catch (error) {
+      console.error("Error al obtener el evidencia:", error);
+      res.status(500).json({ error: "Error al obtener el evidencia" });
+    }
+  });
+
+  // GET -> localhost:4000/actividades/:idActividad/cancelacion
+  router.get('/:idActividad/cancelada', async (req, res) => {
+    try {
+      const idActividad = req.params.idActividad;
+      const cancelacion = await actividadDAO.getActividadCancelada(idActividad);
+      if (cancelacion) {
+        res.status(200).json(cancelacion);
+      } else {
+        res.status(404).json({ error: "cancelacion no encontrado" });
+      }
+    } catch (error) {
+      console.error("Error al obtener el cancelacion:", error);
+      res.status(500).json({ error: "Error al obtener el cancelacion" });
+    }
+  });
+
+
+
   //PUT -> localhost:4000/actividades/:id/estadoActividad
   router.put('/estadoActividad', upload.single('fotoEvidencia'), async (req, res) =>{
     try{
@@ -114,9 +165,6 @@ router.get('/', async (req, res) => {
             
             console.log("Recordatorio insertado")
           } 
-
-
-      
     
       return res.status(200).send('Estado de la actividad actualizado con éxito');
     } catch (error) {
