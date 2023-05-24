@@ -12,6 +12,7 @@ const multer = require('multer');
 const upload = multer({dest: 'uploads/'});
 const blobStorage = require("../BaseDatos/AzureBlobStorage.js");
 const fs = require('fs');
+const Actividad_Evidencia_Asistencia = require("../Modelos/Actividad_Evidencia_Asistencia");
 
 const actividadDAO = new ActividadDAO();
 
@@ -73,32 +74,39 @@ router.get('/', async (req, res) => {
     }
   });
 
-  //PUT -> localhost:4000/actividades/:id/cancelar
-  router.put('/estadoActividad', async (req, res) =>{
+  //PUT -> localhost:4000/actividades/:id/estadoActividad
+  router.put('/estadoActividad', upload.single('fotoEvidencia'), async (req, res) =>{
     try{
 
-      const{idActividad, estado, observacion, fecha, evidencia, fechaPublicacion, diasRepeticion} = req.body;
-      console.log(diasRepeticion);
-
-      const diasRepeticionInt = parseInt(req.body.diasRepeticion, 10);
-      console.log(diasRepeticionInt);
-   
+      const{idActividad, estado, observacion, fecha, fechaPublicacion, diasRepeticion} = req.body;
+      console.log(estado)
+      estadoInt = parseInt(estado);
       await actividadDAO.actualizarEstado(parseInt(idActividad), parseInt(estado));
+      
 
-      if(estado === 3){
-        const cancelada = new Actividad_Cancelada(idActividad, observacion, fecha);
-        await actividadDAO.insertActividadCancelada(cancelada);
+    
+          if(estadoInt === 3){
+            const cancelada = new Actividad_Cancelada(idActividad, observacion, fecha);
+            await actividadDAO.insertActividadCancelada(cancelada);
 
-      } else if(estado === 2){
-        console.log("Evidencia de actividad realizada insertada")
-      } else if(estado === 1){
+          } else if(estadoInt === 2){
+            const evidenciaUrl = await blobStorage.subirArchivoABlobStorage('imagenes-sistemaguia', req.file);
+            fs.unlinkSync(req.file.path);
+            const evidencia = new Actividad_Evidencia_Asistencia(idActividad, evidenciaUrl, null);
+            await actividadDAO.insertEvidenciaActividad(evidencia)
+            console.log("Evidencia de actividad realizada insertada")
 
-        const recordatorio = new Actividad_Recordatorio(idActividad, fechaPublicacion, diasRepeticionInt);
-        await actividadDAO.insertActividadRecordatorio(recordatorio);
-        
-        console.log("Recordatorio insertado")
-      } 
+          } else if(estadoInt === 1){          
+            const diasRepeticionInt = parseInt(req.body.diasRepeticion, 10);
+            const recordatorio = new Actividad_Recordatorio(idActividad, fechaPublicacion, diasRepeticionInt);
+            await actividadDAO.insertActividadRecordatorio(recordatorio);
+            
+            console.log("Recordatorio insertado")
+          } 
 
+
+      
+    
       return res.status(200).send('Estado de la actividad actualizado con éxito');
     } catch (error) {
       console.error('Error al actualizar el estado de la actividad:', error);

@@ -11,13 +11,15 @@ export default function AdministrarActividad({event}) {
     const tiposEstados = ['Actividad Realizada', 'Actividad Cancelada', 'Establecer Recordatorio'];
 
     const [fecha, setFecha] = useState(null);
+    const [fotoEvidencia, setFotoEvidencia] = useState(null);
+    const [fotoParticipantes, setFotoParticipantes] = useState(null);
     const [estado, setEstado] = useState({
         idActividad: event.extendedProps.codigo, //crear la tabla y actualizar estado en la actividad
         estado: '', // 2 -> notificada || 3 -> cancelada || 4 -> realizada
         observacion: '', //justificacion de por qué está cancelada
         fecha: new Date(), //fecha de cancelacion
-        fotoEvidencia: '',
-        fotoParticipantes: '',
+        fotoEvidencia: fotoEvidencia,
+        fotoParticipantes: fotoParticipantes,
         fechaPublicacion: '',
         diasRepeticion: ''
     });
@@ -33,6 +35,41 @@ export default function AdministrarActividad({event}) {
         {tipo}
       </option>
     ));
+
+    const handleChangeEvidencia = (event) => {
+      const foto = event.target.files[0];
+    
+      if (foto) {
+        setEstado((prevEstado) => ({
+          ...prevEstado,
+          estado:2,
+          fotoEvidencia: event.target.files[0],
+        }));
+      } else {
+        setEstado((prevEstado) => ({
+          ...prevEstado,
+          fotoEvidencia: null,
+        }));
+      }
+    };
+
+    const handleChangeParticipantes = (event) => {
+      const foto = event.target.files[0];
+    
+      if (foto) {
+        setEstado((prevEstado) => ({
+          ...prevEstado,
+          estado: 2,
+          fotoParticipantes: event.target.files[0],
+        }));
+      } else {
+        setEstado((prevEstado) => ({
+          ...prevEstado,
+          fotoParticipantes: null,
+        }));
+      }
+    };
+
 
     const handleChange = e => {
       const { name, value } = e.target;
@@ -72,8 +109,21 @@ export default function AdministrarActividad({event}) {
     console.log('Estado', estado);
     console.log();
     try{
-      const response = await axios.put('http://localhost:4000/actividades/estadoActividad', estado);
-      console.log(response.data);
+
+        const formData = new FormData();
+        formData.append('idActividad', estado.idActividad);
+        formData.append('estado', estado.estado);
+        formData.append('observacion', estado.observacion);
+        formData.append('fecha', estado.fecha);
+        formData.append('fotoEvidencia', estado.fotoEvidencia);
+        formData.append('fotoParticipantes', estado.fotoParticipantes);
+        formData.append('fechaPublicacion', estado.fechaPublicacion);
+        formData.append('diasRepeticion', estado.diasRepeticion);
+
+        const response = await axios.put('http://localhost:4000/actividades/estadoActividad', formData);
+        console.log(response.data);
+      
+
     } catch(error){
       console.error('Error al actualizar el estado de la actividad', error);
     }
@@ -120,17 +170,9 @@ export default function AdministrarActividad({event}) {
           <label htmlFor="imagenActividad">Subir imagen de la actividad realizada:</label>
           <input
             type="file"
-            className="form-control-file"
-            id="imagenActividad"
-            name="imagenActividad"
-            onChange={(e) =>
-              setEstado({
-                ...estado,
-                estado: 2,
-                imagenActividad: e.target.files[0],
-              })
-            }
-            
+            id="idFotoEvidencia"
+            name="fotoEvidencia"
+            onChange={handleChangeEvidencia}           
           />
         <Button color="primary" onClick={handleSubmit}>Guardar Cambios</Button>
         </div>

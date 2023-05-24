@@ -87,16 +87,6 @@ const handleLinkChange = (event) => {
     console.log(form);
 }
 
-const handleChangeProf = e => {
-  const { name, value } = e.target;
-  setProfesorEncargado({
-      ...profesorEncargado,
-      [name]: value
-  })
-  console.log(profesorEncargado);
-}
-
-
 
 const handleChangeArchivo = (event) => {
   const aficheFile = event.target.files[0];
@@ -140,7 +130,7 @@ const handleSubmit = async (event) => {
 
     await axios.post('http://localhost:4000/actividades', formData);
     //console.log('Actividad creada exitosamente.');
-    // Realiza cualquier acción adicional después de almacenar los datos en la base de datos
+    //Realiza cualquier acción adicional después de almacenar los datos en la base de datos
   } catch (error) {
     console.error('Error al crear la Actividad:', error);
     // Maneja el error de acuerdo a tus necesidades

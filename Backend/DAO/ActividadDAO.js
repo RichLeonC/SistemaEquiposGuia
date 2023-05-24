@@ -60,7 +60,6 @@ class ActividadDAO{
 
   async insertActividadCancelada(datos){
 
-    
     try{
       const query = `INSERT INTO actividad_cancelada (idActividad, observacion, fecha)
       VALUES (@idActividad, @observacion, @fecha);`
@@ -75,6 +74,25 @@ class ActividadDAO{
       console.log('Cancelacion añadida con exito');
     } catch(error){
       console.error('Error al settear la cancelacion: ', error);
+    }
+  }
+
+  async insertEvidenciaActividad(datos){
+
+    try{
+      const query = `INSERT INTO actividad_evidencia_asistencia (idActividad, idImagen, imgAsistencia)
+      VALUES (@idActividad, @idImagen, @imgAsistencia);`
+      const request = new sql.Request(dbSql.conection);
+
+      request.input('idActividad', sql.Int, datos.idActividad);
+      request.input('idImagen', sql.VarChar, datos.idImagen);
+      request.input('imgAsistencia', sql.VarChar, datos.imgAsistencia);
+
+      const result = await request.query(query);
+
+      console.log('Evidencia añadida con exito');
+    } catch(error){
+      console.error('Error al settear la Evidencia: ', error);
     }
   }
 
