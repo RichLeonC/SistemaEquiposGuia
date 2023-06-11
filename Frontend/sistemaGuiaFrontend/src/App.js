@@ -26,6 +26,7 @@ import themeDark from "assets/theme-dark";
 // Material Dashboard 2 React routes
 import routesProfesor from "routesProfesor";
 import routesAsistente from "routesAsistente";
+import routesEstudiante from "routesEstudiante";
 
 // Material Dashboard 2 React contexts
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
@@ -142,11 +143,13 @@ export default function App(props) {
 
     const mensajeRol = {
       "PROFESOR_GUIA":"PANEL PROFESORES GUIA",
-      "ASISTENTE":"PANEL ASISTENTES"
+      "ASISTENTE":"PANEL ASISTENTES",
+      "ESTUDIANTE":"PANEL ESTUDIANTES"
     }
     const rutasRol={
       "PROFESOR_GUIA":routesProfesor,
-      "ASISTENTE":routesAsistente
+      "ASISTENTE":routesAsistente,
+      "ESTUDIANTE":routesEstudiante
     }
 
   return (

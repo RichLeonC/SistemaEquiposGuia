@@ -52,7 +52,7 @@ export const Calendar = () => {
   };
 
   const handleDateSelect = (info) => {
-    if(profesorActual.esCordinador === 1){
+    if(profesorActual && profesorActual.esCordinador === 1){
       setSelectedDate(info.startStr);
       toggleModalSelect();
     } else {
@@ -92,6 +92,7 @@ export const Calendar = () => {
         console.error('Error al obtener el Cancelamiento:', error);
       }
     }
+
     toggleModalEvent();
   };
 
@@ -227,9 +228,9 @@ export const Calendar = () => {
             </>
           )}
         </ModalBody>
-        <CommentSection idActividad={event.extendedProps.codigo} />
+        {profesorActual?<CommentSection idActividad={event.extendedProps.codigo} />:[]}
         <ModalFooter>
-          <Button color="Terciary" onClick={toggleModalMenu}>Administrar</Button>
+          <Button color="Terciary" disabled={profesorActual?false:true} onClick={toggleModalMenu}>Administrar</Button>
           <Button color="Primary" onClick={toggleModalEvent}>Close</Button>
         </ModalFooter>
         {modalOpenMenu && <ActivityMenu event={event} />}
