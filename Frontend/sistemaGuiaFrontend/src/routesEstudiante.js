@@ -1,6 +1,7 @@
 import Icon from "@mui/material/Icon";
 import Perfil from "layouts/Perfil";
 import Calendar from 'components/Calendar';
+import Notificaciones from "components/Notificaciones";
 const routesEstudiante=[
 
     {
@@ -19,6 +20,15 @@ const routesEstudiante=[
         icon: <Icon fontSize="small">dashboard</Icon>,
         route: "/actividades",
         component: <Calendar/>,
+      },
+
+      {
+        type: "collapse",
+        name: "Notificaciones",
+        key: "notificaciones",
+        icon: <Icon fontSize="small">dashboard</Icon>,
+        route: "/notificaciones",
+        component: <Notificaciones/>,
       },
 
 ];

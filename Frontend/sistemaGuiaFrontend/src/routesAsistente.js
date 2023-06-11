@@ -36,6 +36,7 @@ import Perfil from "layouts/Perfil";
 import Icon from "@mui/material/Icon";
 import AdministrarEquipos from "layouts/AsistentePanel/AdministrarEquipos";
 import CargarEstudiantes from "layouts/AsistentePanel/CargarEstudiantes";
+import Notificaciones from "components/Notificaciones";
 
 const routesAsistente = [
 
@@ -72,6 +73,14 @@ const routesAsistente = [
     icon: <Icon fontSize="small">person</Icon>,
     route: "/perfil",
     component: <Perfil />,
+  },
+  {
+    type: "collapse",
+    name: "Notificaciones",
+    key: "notificaciones",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "/notificaciones",
+    component: <Notificaciones/>,
   },
 
 ];

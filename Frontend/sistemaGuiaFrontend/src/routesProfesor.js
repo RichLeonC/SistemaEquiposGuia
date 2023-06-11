@@ -14,6 +14,7 @@ import SignUp from "layouts/authentication/sign-up";
 import Icon from "@mui/material/Icon";
 import ConsultarEstudiantes from "layouts/ProfesorPanel/ConsultarEstudiantes";
 import Perfil from "layouts/Perfil";
+import Notificaciones from "components/Notificaciones";
 
 const routesProfesor = [
   {
@@ -71,6 +72,15 @@ const routesProfesor = [
     icon: <Icon fontSize="small">person</Icon>,
     route: "/perfil",
     component: <Perfil />,
+  },
+
+  {
+    type: "collapse",
+    name: "Notificaciones",
+    key: "notificaciones",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "/notificaciones",
+    component: <Notificaciones/>,
   },
 
 ];

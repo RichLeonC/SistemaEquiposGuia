@@ -47,7 +47,7 @@ CREATE TABLE listaEstudiantes (
     idArchivo int Identity(1,1) PRIMARY KEY,
     cedulaPersonal INT NOT NULL FOREIGN KEY REFERENCES personal(cedulaPersonal),
     excel VARCHAR(255),
-    fecha DATE
+    fecha DATETIME
 );
 
 
@@ -143,10 +143,15 @@ CREATE TABLE actividad_comentario_respuesta(
     hora VARCHAR(10)
 )
 
+CREATE TABLE Notificacion(
+    id int NOT NULL PRIMARY KEY,
+    emisor VARCHAR(50) NOT NULL,
+    receptor int NOT NULL FOREIGN KEY REFERENCES usuario(cedulaUsuario),
+    contenido VARCHAR(500),
+    fechaHora  DATETIME,
+    estadoLeido BIT
 
-c
-drop procedure verProfesores
-EXEC verProfesores;
+);
 
 CREATE PROCEDURE verProfesoresPorCedulaOCodigo
   @cedula INT = NULL,
