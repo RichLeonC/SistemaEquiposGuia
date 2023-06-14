@@ -548,7 +548,7 @@ AS
 BEGIN
     SELECT *
     FROM Notificacion
-    WHERE receptor = @receptor;
+    WHERE receptor = @receptor ORDER BY fechaHora DESC;
 END
 
 CREATE PROCEDURE verNotificacionPorReceptorYEstado
