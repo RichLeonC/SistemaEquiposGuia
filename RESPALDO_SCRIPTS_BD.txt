@@ -144,7 +144,7 @@ CREATE TABLE actividad_comentario_respuesta(
 )
 
 CREATE TABLE Notificacion(
-    id int NOT NULL PRIMARY KEY,
+    id int Identity(1,1) PRIMARY KEY,
     emisor VARCHAR(50) NOT NULL,
     receptor int NOT NULL FOREIGN KEY REFERENCES usuario(cedulaUsuario),
     contenido VARCHAR(500),
@@ -532,3 +532,41 @@ BEGIN
         THROW;
     END CATCH
 END;
+
+CREATE PROCEDURE verNotificacionPorEstado
+    @estadoLeido BIT
+AS
+BEGIN
+    SELECT *
+    FROM Notificacion
+    WHERE estadoLeido = @estadoLeido;
+END
+
+CREATE PROCEDURE verNotificacionPorReceptor
+    @receptor INT
+AS
+BEGIN
+    SELECT *
+    FROM Notificacion
+    WHERE receptor = @receptor;
+END
+
+CREATE PROCEDURE verNotificacionPorReceptorYEstado
+    @receptor INT,
+    @estadoLeido BIT
+AS
+BEGIN
+    SELECT *
+    FROM Notificacion
+    WHERE receptor = @receptor AND estadoLeido = @estadoLeido;
+END
+
+CREATE PROCEDURE cambiarEstadoLeidoNotificacion
+    @id INT,
+    @estadoLeido BIT
+AS
+BEGIN
+    UPDATE Notificacion
+    SET estadoLeido = @estadoLeido
+    WHERE id = @id;
+END

@@ -14,6 +14,7 @@ const equiposRoute = require("./Controladores/EquipoGuiaController");
 const personalRoute = require("./Controladores/PersonalController");
 const actividadRoute = require("./Controladores/ActividadesController");
 const comentarioRoute = require("./Controladores/ComentariosController");
+const notificacionesRoute = require("./Controladores/NotificacionesController");
 
 
 //Settings
@@ -33,6 +34,7 @@ app.use("/equipos",equiposRoute);
 app.use("/asistentes",personalRoute);
 app.use("/actividades",actividadRoute);
 app.use("/comentarios",comentarioRoute);
+app.use("/notificaciones",notificacionesRoute);
 
 
 app.listen(app.get('port'),()=>{ //Va abrir el server en el puerto 4000
