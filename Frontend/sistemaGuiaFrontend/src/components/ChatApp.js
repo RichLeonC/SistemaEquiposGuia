@@ -31,9 +31,10 @@ const ChatApp = () => {
       messages: [],
     },
   ]);
+  
   const obtenerConversations = async () => {
     try{
-      const response = await axios.get(`http://localhost:4000/chat/${ localStorage.getItem("cedula")}`);
+      const response = await axios.get(`http://localhost:4000/chat/${localStorage.getItem("cedula")}`);
       setConversations(response.data);
     } catch(error){
       console.error("error al obtener conversaciones", error);
@@ -41,9 +42,11 @@ const ChatApp = () => {
   };
 
   const [participantsOptions, setParticipantsOptions] = useState([]);
+  
   const obtenerParticipantsOptions = async () => {
     try{
       const response = await axios.get('http://localhost:4000/estudiantes');
+      console.log(response.data)
       setParticipantsOptions(response.data);
     } catch(error){
       console.error("error al obtener a los posibles participantes", error);
@@ -54,7 +57,7 @@ const ChatApp = () => {
     idProfesorCreador: localStorage.getItem("cedula"),
     nombre: '',
     participants: [],
-  })
+  });
 
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -81,21 +84,36 @@ const ChatApp = () => {
   };
 
   const handleParticipantSelection = (e) => {
-    const selectedParticipant = e.target.value;
-    const selectedParticipants = newConversation.participants;
-
-    if (selectedParticipants.includes(selectedParticipant)) {
-      // Deselect participant if already selected
+    const selectedParticipantId = e.target.value;
+  
+    // Buscar el participante correspondiente en participantsOptions
+    const selectedParticipant = participantsOptions.find(
+      (participant) => participant.cedulaUsuario == selectedParticipantId
+    );
+  
+    if (selectedParticipant) {
+      // Verificar si el participante ya está seleccionado
+      const isSelected = newConversation.participants.includes(selectedParticipant);
+  
+      // Copiar el arreglo de participantes actual
+      const updatedParticipants = [...newConversation.participants];
+  
+      if (isSelected) {
+        // Deseleccionar el participante
+        const index = updatedParticipants.indexOf(selectedParticipant);
+        updatedParticipants.splice(index, 1);
+      } else {
+        // Seleccionar el participante
+        updatedParticipants.push(selectedParticipant);
+      }
+  
+      // Actualizar el estado con los participantes actualizados
       setNewConversation({
         ...newConversation,
-        participants: selectedParticipants.filter((participant) => participant !== selectedParticipant),
+        participants: updatedParticipants,
       });
     } else {
-      // Select participant if not already selected
-      setNewConversation({
-        ...newConversation,
-        participants: [...selectedParticipants, selectedParticipant],
-      });
+      console.log('Participante no encontrado');
     }
   };
 
@@ -106,15 +124,15 @@ const ChatApp = () => {
       await axios.post('http://localhost:4000/chat', newConversation);
       setConversations([...conversations, newConversation]);
     } catch(error){
-      console.error('Error al crear la conversacion, error')
+      console.error('Error al crear la conversacion', error);
     }
 
     toggleModal();
   };
 
   const opcionesParticipante = participantsOptions.map((option) => (
-    <option key={option.cedula} value={option.cedula}>
-      {option.nombre + " " + option.apellido1}
+    <option key={option.cedulaUsuario} value={option.cedulaUsuario}>
+      {option.cedulaUsuario + "-" + option.nombre + " " + option.apellido1}
     </option>
   ));
 
@@ -146,27 +164,36 @@ const ChatApp = () => {
         <ModalHeader toggle={toggleModal}>Crear nuevo chat</ModalHeader>
         <ModalBody>
           <Form onSubmit={handleSubmit}>
-          <FormGroup>
-            <Label for="nombre">Nombre del chat</Label>
-            <Input type="text" className="form-control" id="nombre" name="nombre" value={newConversation.nombre} onChange={handleChange}/>
-          </FormGroup>
-          <FormGroup>
-            <Label for="participants">Participantes</Label>
-            <Input
-              type="select"
-              id="participants"
-              multiple
-              value={newConversation.participants}
-              onChange={handleParticipantSelection}
-            >
-              {opcionesParticipante}
-            </Input>
-          </FormGroup>
-          <Button type="submit" color="primary">Crear</Button>
+            <FormGroup>
+              <Label for="nombre">Nombre del chat</Label>
+              <Input type="text" className="form-control" id="nombre" name="nombre" value={newConversation.nombre} onChange={handleChange}/>
+            </FormGroup>
+            <FormGroup>
+              <Label for="participants">Participantes</Label>
+              <Input
+                type="select"
+                id="participants"
+                multiple
+                value={newConversation.participants.map(participant => participant.cedulaUsuario)}
+                onChange={handleParticipantSelection}
+              >
+                {opcionesParticipante}
+              </Input>
+            </FormGroup>
+            <FormGroup>
+              <Label>Participantes seleccionados:</Label>
+              <ul>
+                {newConversation.participants.map(participant => (
+                  <li key={participant.cedulaUsuario}>
+                    {participant.cedulaUsuario}-{participant.nombre} {participant.apellido1}
+                  </li>
+                ))}
+              </ul>
+            </FormGroup>
+            <Button type="submit" color="primary">Crear</Button>
           </Form>
         </ModalBody>
         <ModalFooter>
-          
           <Button color="secondary" onClick={toggleModal}>Cancelar</Button>
         </ModalFooter>
       </Modal>

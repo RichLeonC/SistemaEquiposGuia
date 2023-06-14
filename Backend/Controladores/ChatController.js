@@ -12,7 +12,7 @@ chatDAO = new ChatDAO();
 //POST -> Localhost:4000/chat
 router.post('/', async (req, res) => {
     try {
-        const{idProfesorCreador, nombre, participantes} = req.body;
+        const{idProfesorCreador, nombre, participants} = req.body;
 
         const idChat = await chatDAO.generarCodigoChat();
         console.log(req.body);
@@ -22,15 +22,23 @@ router.post('/', async (req, res) => {
             nombre
         );
 
-        const creadorParticipante = new ChatParticipantes(
+        const Participante = new ChatParticipantes(
             idChat,
             idProfesorCreador
         );
 
         console.log(nuevoChat);
         await chatDAO.createNewChat(nuevoChat);
+        await chatDAO.addParticipanteNewChat(Participante);
 
-        await chatDAO.addParticipanteNewChat(creadorParticipante);
+        participants.forEach(async (participante) => {
+            //console.log(participante);
+            const idParticipante = participante.cedulaUsuario;
+            console.log(participante.cedulaUsuario)
+            const nuevoParticipante = new ChatParticipantes(idChat, idParticipante); // Crear una nueva instancia de ChatParticipantes con el id del chat y la nueva cédula
+            await chatDAO.addParticipanteNewChat(nuevoParticipante); // Utilizar la nueva instancia de ChatParticipantes en lugar de Participante
+        });
+        
 
     } catch(error){
         console.error('Error en insertChat', error);
