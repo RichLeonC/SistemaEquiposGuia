@@ -1,39 +1,63 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ConversationList from './ConversationList';
 import Conversation from './Conversation';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Label } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Input, Label } from 'reactstrap';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+
+import axios from "axios";
 
 const ChatApp = () => {
   const [conversations, setConversations] = useState([
     {
-      id: 1,
-      name: 'Conversación 1',
+      idChat: 1,
+      nombre: 'Conversación 1',
       messages: [
         { id: 1, sender: 'Usuario1', content: 'Hola' },
         { id: 2, sender: 'Usuario2', content: 'Hola, ¿cómo estás?' },
       ],
     },
     {
-      id: 2,
-      name: 'Conversación 2',
+      idChat: 2,
+      nombre: 'Conversación 2',
       messages: [
         { id: 1, sender: 'Usuario3', content: '¡Hola a todos!' },
         { id: 2, sender: 'Usuario1', content: 'Hola Usuario3' },
       ],
     },
     {
-      id: 3,
-      name: 'Conversación 3',
+      idChat: 3,
+      nombre: 'Conversación 3',
       messages: [],
     },
   ]);
+  const obtenerConversations = async () => {
+    try{
+      const response = await axios.get(`http://localhost:4000/chat/${ localStorage.getItem("cedula")}`);
+      setConversations(response.data);
+    } catch(error){
+      console.error("error al obtener conversaciones", error);
+    }
+  };
+
+  const [participantsOptions, setParticipantsOptions] = useState([]);
+  const obtenerParticipantsOptions = async () => {
+    try{
+      const response = await axios.get('http://localhost:4000/estudiantes');
+      setParticipantsOptions(response.data);
+    } catch(error){
+      console.error("error al obtener a los posibles participantes", error);
+    }
+  };
+
+  const [newConversation, setNewConversation] = useState({
+    idProfesorCreador: localStorage.getItem("cedula"),
+    nombre: '',
+    participants: [],
+  })
 
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [chatName, setChatName] = useState('');
-  const [participants, setParticipants] = useState([]);
 
   const selectConversation = (conversationId) => {
     setSelectedConversation(conversationId);
@@ -56,18 +80,57 @@ const ChatApp = () => {
     setModalOpen(!modalOpen);
   };
 
-  const createConversation = () => {
-    const newConversation = {
-      id: conversations.length + 1,
-      name: chatName,
-      messages: [],
-    };
+  const handleParticipantSelection = (e) => {
+    const selectedParticipant = e.target.value;
+    const selectedParticipants = newConversation.participants;
 
-    setConversations([...conversations, newConversation]);
-    setChatName('');
-    setParticipants([]);
+    if (selectedParticipants.includes(selectedParticipant)) {
+      // Deselect participant if already selected
+      setNewConversation({
+        ...newConversation,
+        participants: selectedParticipants.filter((participant) => participant !== selectedParticipant),
+      });
+    } else {
+      // Select participant if not already selected
+      setNewConversation({
+        ...newConversation,
+        participants: [...selectedParticipants, selectedParticipant],
+      });
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      console.log(newConversation)
+      await axios.post('http://localhost:4000/chat', newConversation);
+      setConversations([...conversations, newConversation]);
+    } catch(error){
+      console.error('Error al crear la conversacion, error')
+    }
+
     toggleModal();
   };
+
+  const opcionesParticipante = participantsOptions.map((option) => (
+    <option key={option.cedula} value={option.cedula}>
+      {option.nombre + " " + option.apellido1}
+    </option>
+  ));
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setNewConversation({
+      ...newConversation,
+      [name]: value
+    });
+    console.log(newConversation);
+  };
+
+  useEffect(() => {
+    obtenerConversations();
+    obtenerParticipantsOptions();
+  }, []);
 
   return (
     <DashboardLayout>
@@ -82,21 +145,28 @@ const ChatApp = () => {
       <Modal isOpen={modalOpen} toggle={toggleModal}>
         <ModalHeader toggle={toggleModal}>Crear nuevo chat</ModalHeader>
         <ModalBody>
+          <Form onSubmit={handleSubmit}>
           <FormGroup>
-            <Label for="chatName">Nombre del chat</Label>
-            <Input type="text" id="chatName" value={chatName} onChange={(e) => setChatName(e.target.value)} />
+            <Label for="nombre">Nombre del chat</Label>
+            <Input type="text" className="form-control" id="nombre" name="nombre" value={newConversation.nombre} onChange={handleChange}/>
           </FormGroup>
           <FormGroup>
             <Label for="participants">Participantes</Label>
-            <Input type="select" id="participants" multiple value={participants} onChange={(e) => setParticipants(Array.from(e.target.selectedOptions, (option) => option.value))}>
-              <option value="Usuario1">Usuario1</option>
-              <option value="Usuario2">Usuario2</option>
-              <option value="Usuario3">Usuario3</option>
+            <Input
+              type="select"
+              id="participants"
+              multiple
+              value={newConversation.participants}
+              onChange={handleParticipantSelection}
+            >
+              {opcionesParticipante}
             </Input>
           </FormGroup>
+          <Button type="submit" color="primary">Crear</Button>
+          </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={createConversation}>Crear</Button>
+          
           <Button color="secondary" onClick={toggleModal}>Cancelar</Button>
         </ModalFooter>
       </Modal>

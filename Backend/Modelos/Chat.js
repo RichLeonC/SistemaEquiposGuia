@@ -1,5 +1,5 @@
 class Chat{
-    constuctor(idChat, idProfesorCreador, nombre){
+    constructor(idChat, idProfesorCreador, nombre){
         this.idChat = idChat;
         this.idProfesorCreador = idProfesorCreador;
         this.nombre = nombre;

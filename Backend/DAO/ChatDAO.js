@@ -4,6 +4,7 @@ const sql = require("mssql");
 
 class ChatDAO{
     async createNewChat(chat){
+        const request = new sql.Request(dbSql.conection);
         try{
             const query = `INSERT INTO chat (idChat, idProfesorCreador, nombre)
                             VALUES(@idChat, @idProfesorCreador, @nombre);`
@@ -15,11 +16,12 @@ class ChatDAO{
         const result = await request.query(query);
         console.log("Chat nuevo creado :)")
         } catch(error){
-            console.error('Error al crear el nuevo chat')
+            console.error('Error al crear el nuevo chat', error)
         }
     }
 
     async addParticipanteNewChat(participante){
+        const request = new sql.Request(dbSql.conection);
         try{
             const query = `
             INSERT INTO chatParticipantes (idChat, idParticipante)
@@ -33,12 +35,13 @@ class ChatDAO{
             const result = await request.query(query);
             console.log("Participante añadido")
         } catch(error){
-            console.error('Error al añadir participante :c')
+            console.error('Error al añadir participante :c', error)
         }
 
     }
 
     async addNewMensajeChatActual(mensaje){
+        const request = new sql.Request(dbSql.conection);
         try{
             const query = `
             INSERT INTO mensaje (idMensaje, idParticipante, idChat, mensaje)
@@ -64,7 +67,7 @@ class ChatDAO{
             SELECT c.*
             FROM chat c
             JOIN chatParticipantes p ON c.idchat = p.idchat
-            WHERE p.idUsuario = '${cedulaUsuario}';
+            WHERE p.idParticipante = '${cedulaUsuario}';
             `
             const request = new sql.Request(dbSql.conection);
             const resultado = await request.query(query);
@@ -117,5 +120,35 @@ class ChatDAO{
 
     }
 
+    async generarCodigoChat(){
+        try{
+          const request = new sql.Request(dbSql.conection);
+          const resultado = await request.query(`SELECT COUNT(*) AS cantidad FROM Chat`);
+
+          const cantChat = resultado.recordset[0].cantidad;         
+          return `${cantChat + 1}`;
+
+        }catch(error) {
+          console.error("error al recuperar la cantidad de chats", error)
+        }
+
+      }
+
+      async generarCodigoMensajes(){
+        try{
+          const request = new sql.Request(dbSql.conection);
+          const resultado = await request.query(`SELECT COUNT(*) AS cantidad FROM Mensaje`);
+
+          const cantMensaje = resultado.recordset[0].cantidad;         
+          return `${cantMensaje + 1}`;
+
+        }catch(error) {
+          console.error("error al recuperar la cantidad de mensajes", error)
+        }
+
+      }
+
 
 }
+
+module.exports = ChatDAO;

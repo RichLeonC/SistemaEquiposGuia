@@ -7,8 +7,8 @@ const ConversationList = ({ conversations, selectConversation }) => {
       <ul>
         {conversations.map((conversation) => (
           <li key={conversation.id}>
-            <button onClick={() => selectConversation(conversation.id)}>
-              {conversation.name}
+            <button onClick={() => selectConversation(conversation.idChat)}>
+              {conversation.nombre}
             </button>
           </li>
         ))}
