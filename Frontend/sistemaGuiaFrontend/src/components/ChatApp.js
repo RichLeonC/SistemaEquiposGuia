@@ -115,6 +115,16 @@ const ChatApp = () => {
     </option>
   ));
 
+const [usuarioActual, setUsuarioActual] = useState([])
+  const peticionGetUsuarioActual = async () => {
+    try {
+        const response = await axios.get(`http://localhost:4000/usuarios/${localStorage.getItem("cedula")}`);
+        setUsuarioActual(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
   const handleChange = e => {
     const { name, value } = e.target;
     setNewConversation({
@@ -127,13 +137,14 @@ const ChatApp = () => {
   useEffect(() => {
     obtenerConversations();
     obtenerParticipantsOptions();
+    peticionGetUsuarioActual();
   }, []);
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <div>
-        <Button color="primary" onClick={toggleModal}>Crear nueva conversación</Button>
+        <Button color="primary" onClick={toggleModal}  disabled={usuarioActual.rol != "PROFESOR_GUIA"}>Crear nueva conversación</Button>
         <ConversationList conversations={conversations} selectConversation={selectConversation} />
         {selectedConversation && (
           <Conversation messages = {messages} idChat={selectedConversation} />
@@ -169,7 +180,7 @@ const ChatApp = () => {
                 ))}
               </ul>
             </FormGroup>
-            <Button type="submit" color="primary">Crear</Button>
+            <Button type="submit" color="primary" disabled={usuarioActual.rol != "PROFESOR_GUIA"}>Crear</Button>
           </Form>
         </ModalBody>
         <ModalFooter>
