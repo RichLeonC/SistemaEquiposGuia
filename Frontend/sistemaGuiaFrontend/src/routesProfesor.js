@@ -6,6 +6,7 @@ import Billing from "layouts/billing";
 import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import Calendar from 'components/Calendar';
+import ChatApp from "components/ChatApp";
 import CommentSection from "components/ComentSection";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
@@ -32,6 +33,15 @@ const routesProfesor = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/actividades",
     component: <Calendar/>,
+  },
+
+  {
+    type: "collapse",
+    name: "Gestion Mensajeria",
+    key: "mensajeria",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "/chat",
+    component: <ChatApp/>,
   },
   // {
   //   type: "collapse",
