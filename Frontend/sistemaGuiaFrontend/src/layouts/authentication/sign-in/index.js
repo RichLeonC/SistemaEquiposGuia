@@ -31,6 +31,8 @@ function Basic({ onLogin }) {
   const [rememberMe, setRememberMe] = useState(false);
 
   const apiURI = "http://localhost:4000/usuarios/login";
+  const apiURISub = "http://localhost:4000/notificaciones/suscribir";
+
 
   const [form, setForm] = useState({
     correo: '',
@@ -44,6 +46,13 @@ function Basic({ onLogin }) {
       [name]: value
     })
     console.log(form);
+  }
+  const suscribirUsuario = async(cedula)=>{
+    try {
+        await axios.post(`${apiURISub}/${cedula}`);
+    } catch (error) {
+      console.error(error);
+        }
   }
 
   const iniciarSesion = async () => {
@@ -61,6 +70,7 @@ function Basic({ onLogin }) {
       console.log(token);
       console.log(rol);
       alert(`Bievenido ${nombre}`);
+      suscribirUsuario(cedula);
       onLogin(rol);
       
 
