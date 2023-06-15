@@ -1,6 +1,7 @@
 import Icon from "@mui/material/Icon";
 import Perfil from "layouts/Perfil";
 import Calendar from 'components/Calendar';
+import ChatApp from "components/ChatApp";
 import Notificaciones from "components/Notificaciones";
 const routesEstudiante=[
 
@@ -21,7 +22,14 @@ const routesEstudiante=[
         route: "/actividades",
         component: <Calendar/>,
       },
-
+      {
+        type: "collapse",
+        name: "Gestion Mensajeria",
+        key: "mensajeria",
+        icon: <Icon fontSize="small">dashboard</Icon>,
+        route: "/chat",
+        component: <ChatApp/>,
+      },
       {
         type: "collapse",
         name: "Notificaciones",

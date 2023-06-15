@@ -8,29 +8,8 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import axios from "axios";
 
 const ChatApp = () => {
-  const [conversations, setConversations] = useState([
-    {
-      idChat: 1,
-      nombre: 'Conversación 1',
-      messages: [
-        { id: 1, sender: 'Usuario1', content: 'Hola' },
-        { id: 2, sender: 'Usuario2', content: 'Hola, ¿cómo estás?' },
-      ],
-    },
-    {
-      idChat: 2,
-      nombre: 'Conversación 2',
-      messages: [
-        { id: 1, sender: 'Usuario3', content: '¡Hola a todos!' },
-        { id: 2, sender: 'Usuario1', content: 'Hola Usuario3' },
-      ],
-    },
-    {
-      idChat: 3,
-      nombre: 'Conversación 3',
-      messages: [],
-    },
-  ]);
+  const [conversations, setConversations] = useState([]);
+  const [messages, setMessages] = useState([]);
   
   const obtenerConversations = async () => {
     try{
@@ -38,6 +17,16 @@ const ChatApp = () => {
       setConversations(response.data);
     } catch(error){
       console.error("error al obtener conversaciones", error);
+    }
+  };
+
+  const obtenerMensajesDeChat = async (chatId) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/chat/mensajes/${chatId}`);
+      console.log(response.data)
+      setMessages(response.data);
+    } catch (error) {
+      console.error("Error al obtener los mensajes del chat", error);
     }
   };
 
@@ -53,6 +42,8 @@ const ChatApp = () => {
     }
   };
 
+  
+
   const [newConversation, setNewConversation] = useState({
     idProfesorCreador: localStorage.getItem("cedula"),
     nombre: '',
@@ -64,20 +55,9 @@ const ChatApp = () => {
 
   const selectConversation = (conversationId) => {
     setSelectedConversation(conversationId);
+    obtenerMensajesDeChat(conversationId); // Llamada a la función para obtener los mensajes del chat seleccionado
   };
-
-  const sendMessage = (messageContent) => {
-    const newMessage = {
-      id: conversations[selectedConversation - 1].messages.length + 1,
-      sender: 'Usuario',
-      content: messageContent,
-    };
-
-    const updatedConversations = [...conversations];
-    updatedConversations[selectedConversation - 1].messages.push(newMessage);
-
-    setConversations(updatedConversations);
-  };
+;
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -126,7 +106,6 @@ const ChatApp = () => {
     } catch(error){
       console.error('Error al crear la conversacion', error);
     }
-
     toggleModal();
   };
 
@@ -157,7 +136,7 @@ const ChatApp = () => {
         <Button color="primary" onClick={toggleModal}>Crear nueva conversación</Button>
         <ConversationList conversations={conversations} selectConversation={selectConversation} />
         {selectedConversation && (
-          <Conversation messages={conversations[selectedConversation - 1].messages} sendMessage={sendMessage} />
+          <Conversation messages = {messages} idChat={selectedConversation} />
         )}
       </div>
       <Modal isOpen={modalOpen} toggle={toggleModal}>

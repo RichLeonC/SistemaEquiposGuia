@@ -62,6 +62,7 @@ class ChatDAO{
     }
 
     async getChatsUsuarioActual(cedulaUsuario){
+        console.log(cedulaUsuario)
         try{
             const query = `
             SELECT c.*
@@ -71,6 +72,7 @@ class ChatDAO{
             `
             const request = new sql.Request(dbSql.conection);
             const resultado = await request.query(query);
+            console.log()
 
             
           if(resultado.recordset.length > 0){
@@ -94,12 +96,14 @@ class ChatDAO{
     }
 
     async getMensajesChatActual(idChat){
+        console.log(idChat)
         try{
         const query = `SELECT * FROM mensaje WHERE idChat = '${idChat}'`;
         const request = new sql.Request(dbSql.conection);
         const resultado = await request.query(query);
+   
 
-        if(resultado.recordsert.length > 0){
+        if(resultado.recordset.length > 0){
             const mensajes = resultado.recordset.map(row => {
                 const mensaje = {
                     idMensaje: row.idMensaje,
@@ -108,6 +112,7 @@ class ChatDAO{
                     mensaje: row.mensaje,
                 };
                 return mensaje;
+                console.log(mensaje)
             });
             return mensajes;
         }else {
