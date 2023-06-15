@@ -1,10 +1,14 @@
 const Notificacion = require("../Modelos/Notificacion");
 const NotificacionDAO = require("../DAO/NotificacionDAO");
+const ServicioNotificaciones = require("../Patrones/ServicioNotificaciones")
+const Usuario = require("../Modelos/Usuario");
 const express = require("express");
 const router = express.Router();
 const moment = require('moment-timezone'); 
 const miZonaHoraria = 'America/Costa_Rica'; 
 const notificacionDAO = new NotificacionDAO();
+
+const servicioNotificaciones = new ServicioNotificaciones();
 
 //GET -> localhost:4000/notificaciones
 router.get('/', async (req, res) => {
@@ -75,6 +79,50 @@ router.delete('/:id',async(req,res)=>{
     } catch (error) {
         return res.status(500).send('Error al eliminar la notificacion');
         
+    }
+});
+
+// POST -> localhost:4000/notificaciones/suscribir
+router.post('/suscribir/:cedula', async (req, res) => {
+    try {
+        const { cedula } = req.params;
+
+        // const fecha = moment().tz(miZonaHoraria).format('YYYY-MM-DD HH:mm:ss');
+
+        // const nuevaNotificacion = new Notificacion(null,emisor,cedula,contenido,fecha,0);
+        // await notificacionDAO.crearNotificacion(nuevaNotificacion);
+        servicioNotificaciones.suscribe(cedula);
+        return res.status(201).send('Usuario suscrito exitosamente.');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('Error al suscribir al usuario.');
+    }
+});
+
+// POST -> localhost:4000/notificaciones/suscribir
+router.post('/notificar', async (req, res) => {
+    try {
+
+        const {emisor,contenido} = req.body;
+        servicioNotificaciones.notify(new Notificacion(null,emisor,null,contenido,null,0));
+        return res.status(201).send('Usuarios notificados exitosamente.');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('Error al notificar a los usuarios.');
+    }
+});
+
+// DELETE -> localhost:4000/notificaciones/desuscribir
+router.delete('/desuscribir/:cedula', async (req, res) => {
+    try {
+        const { cedula } = req.params;
+
+        servicioNotificaciones.unsubscribe(cedula);
+        console.log(servicioNotificaciones.suscriptores)
+        return res.status(201).send('Usuario desuscrito exitosamente.');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('Error al desuscribir al usuario.');
     }
 });
 
