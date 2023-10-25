@@ -3,6 +3,7 @@ class Actividad_Evidencia_Asistencia{
         this.idActividad = idActividad;
         this.idImagen = idImagen;
         this.imgAsistencia = imgAsistencia;
+        //comentario de prueba
     }
 }
 
